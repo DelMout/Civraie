@@ -6,48 +6,38 @@ const userCtrl = require("../controllers/user");
 const multer = require("../middleware/multer-config"); //Upload files
 const auth = require("../middleware/auth"); // Request authentification
 const admin = require("../middleware/isAdmin"); // Request authentification for admin
-const { route } = require("./publication");
-
-// * Voir tous users
-router.get("/users", userCtrl.getAllUsers); //! Retiré admin
 
 // * Sign Up
-router.post("/signup", admin, multer, userCtrl.signup);
+router.post("/signup", userCtrl.signup);
 
 // * Login
 router.post("/login", userCtrl.login);
 
 // * Update last connection date
-router.put("/login/:userid", auth, userCtrl.lastconn);
+router.put("/login/:userid", userCtrl.lastconn); //! retiré auth
 
-// * Demand Modify user datas
-router.get("/modif/:userid", auth, userCtrl.demandmodif);
+// * See all users
+router.get("/allusers", userCtrl.getAllUsers); //! Retiré admin
 
-// * Modify user datas
-router.put("/modif/:userid", auth, multer, userCtrl.modif);
+// * Comment a user
+router.put("/comment/:userid", userCtrl.comment); //! retiré admin
 
-// * Modify user datas without connection
-router.put("/modifpassword/:userid", userCtrl.modifPassword);
+// * Modify password after lost
+router.put("/password/:userid", userCtrl.updatePassword);
 
 // * Delete user
-router.delete("/delete/:userid", auth, multer, userCtrl.delete);
-
-// * Identify user
-router.get("/ident/:userid", userCtrl.ident);
+router.delete("/delete/:userid", userCtrl.delete); //! retiré admin
 
 // * send email for updating password
-router.post("/emailpassword/:prenom/:message", userCtrl.emailPassword);
-
-// * send email automatic when new publication
-router.post("/emailpub/:prenom/:titre", auth, userCtrl.emailPub);
-
-// * send email automatic when new comment
-router.post("/emailcom/:pubid", auth, userCtrl.emailCom);
+router.post("/emailpassword/:email", userCtrl.emailPassword);
 
 // * Find user from his jeton
-router.get("/user/:jeton", userCtrl.userJeton);
+router.get("/:jeton", userCtrl.jeton);
 
-// // * Find user by email
-// router.get("/find/:email", admin, userCtrl.findUser);
+// * send email to all users for ordering
+router.post("/emailorder", userCtrl.emailOrder); //! retiré admin
+
+// * send email to all users for specific information
+router.post("/emailinfo", userCtrl.emailInfo); //! retiré admin
 
 module.exports = router;

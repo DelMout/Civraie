@@ -1,8 +1,8 @@
 const { Sequelize } = require(".");
 
 module.exports = (sequelize, DataTypes) => {
-	const user = sequelize.define(
-		"user",
+	const producer = sequelize.define(
+		"producer",
 		{
 			nom: {
 				type: DataTypes.STRING,
@@ -14,57 +14,39 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			prenom: {
 				type: DataTypes.STRING,
-				allowNull: false,
+				allowNull: true,
 				validate: {
 					notEmpty: true,
 					is: ["^[a-zÀ-ÿ-]+$", "i"],
 				},
 			},
-			email: {
+			entreprise: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				unique: true,
-				validate: {
-					isEmail: true,
-					notEmpty: true,
-				},
+			},
+			products: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
+			address: {
+				type: DataTypes.STRING,
+				allowNull: false,
 			},
 			phone: {
 				type: DataTypes.INT,
 				allowNull: true,
 			},
-
-			password: {
-				type: DataTypes.STRING,
-				allowNull: false,
-				validate: {
-					notEmpty: true,
-				},
-			},
-			jeton: {
-				type: DataTypes.STRING,
-				allowNull: false,
-				unique: true,
-			},
-
-			last_connect: {
-				type: DataTypes.DATEONLY,
-				defaultValue: DataTypes.NOW,
-				allowNull: false,
-			},
-
-			comment: {
+			email: {
 				type: DataTypes.STRING,
 				allowNull: true,
-			},
-			isAdmin: {
-				type: DataTypes.TINYINT,
-				defaultValue: 0,
+				validate: {
+					isEmail: true,
+				},
 			},
 		},
 		{
 			timestamps: false,
 		}
 	);
-	return user;
+	return producer;
 };

@@ -1,35 +1,28 @@
 const { Sequelize } = require(".");
 
 module.exports = (sequelize, DataTypes) => {
-	const pub = sequelize.define(
-		"publication",
+	const order = sequelize.define(
+		"order",
 		{
-			titre: {
-				type: DataTypes.STRING,
+			quantity: {
+				type: DataTypes.INT,
 				allowNull: false,
 				require,
 				validate: {
 					notEmpty: true,
 				},
 			},
-			texte_pub: {
-				type: DataTypes.TEXT,
+			delivery_date: {
+				type: DataTypes.DATEONLY,
 				allowNull: false,
-				validate: {
-					notEmpty: true,
-				},
-			},
-			photo: {
-				type: DataTypes.STRING,
-				allowNull: true,
 			},
 		},
 		{
 			timestamps: true,
 			updatedAt: false,
-			createdAt: "date_crea_pub",
+			createdAt: "order_date",
 			defaultValue: DataTypes.NOW,
 		}
 	);
-	return pub;
+	return order;
 };
