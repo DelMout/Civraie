@@ -5,16 +5,12 @@ module.exports = (sequelize, DataTypes) => {
 		"order",
 		{
 			quantity: {
-				type: DataTypes.INT,
+				type: DataTypes.INTEGER,
 				allowNull: false,
 				require,
 				validate: {
 					notEmpty: true,
 				},
-			},
-			delivery_date: {
-				type: DataTypes.DATEONLY,
-				allowNull: false,
 			},
 		},
 		{

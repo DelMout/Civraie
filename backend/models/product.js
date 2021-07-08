@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
 				allowNull: true,
 			},
 			stock_init: {
-				type: DataTypes.INT,
+				type: DataTypes.INTEGER,
 				allowNull: false,
 				require,
 				validate: {
@@ -37,11 +37,11 @@ module.exports = (sequelize, DataTypes) => {
 				},
 			},
 			stock_updated: {
-				type: DataTypes.INT,
+				type: DataTypes.INTEGER,
 				allowNull: true,
 			},
 			alert_stock: {
-				type: DataTypes.INT,
+				type: DataTypes.INTEGER,
 				allowNull: false,
 				require,
 				validate: {
