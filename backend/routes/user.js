@@ -29,15 +29,15 @@ router.put("/password/:userid", userCtrl.updatePassword);
 router.delete("/delete/:userid", userCtrl.delete); //! retiré admin
 
 // * send email for updating password
-// router.post("/emailpassword/:email", userCtrl.emailPassword);
+router.post("/emailpassword/:email", userCtrl.emailPassword);
 
 // * Find user from his jeton
 router.get("/:jeton", userCtrl.jeton);
 
 // * send email to all users for ordering
-// router.post("/emailorder", userCtrl.emailOrder); //! retiré admin
+router.post("/emailorder", userCtrl.emailOrder); //! retiré admin
 
 // * send email to all users for specific information
-// router.post("/emailinfo", userCtrl.emailInfo); //! retiré admin
+router.post("/emailinfo", userCtrl.emailInfo); //! retiré admin
 
 module.exports = router;
