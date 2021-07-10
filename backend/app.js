@@ -8,7 +8,7 @@ const helmet = require("helmet"); // Protect HTTP headers
 
 const userRoutes = require("./routes/user");
 // const productRoutes = require("./routes/product");
-// const producerRoutes = require("./routes/producer");
+const producerRoutes = require("./routes/producer");
 // const orderRoutes = require("./routes/order");
 // const dateRoutes = require("./routes/date");
 
@@ -45,8 +45,8 @@ app.use("/api/user", userRoutes);
 // * Product
 // app.use("/api/product", productRoutes);
 
-// // * Producer
-// app.use("/api/producer", producerRoutes);
+// * Producer
+app.use("/api/producer", producerRoutes);
 
 // // * Order
 // app.use("/api/order", orderRoutes);

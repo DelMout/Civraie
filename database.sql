@@ -26,7 +26,7 @@ prenom VARCHAR(255),
 entreprise VARCHAR(255) NOT NULL,  
 products VARCHAR(255), 
 address VARCHAR(255) NOT NULL,
-phone INT,
+phone VARCHAR(255),
 email VARCHAR(255)
 )
 ENGINE=INNODB;

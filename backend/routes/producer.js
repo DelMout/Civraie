@@ -10,13 +10,13 @@ const admin = require("../middleware/isAdmin"); // Request authentification for 
 // * Create a producer
 router.post("/createproducer", producerCtrl.createProducer); //! Retiré admin
 
-// * See all products
-router.get("/", producerCtrl.getAllProducers); //! Retiré admin
+// // * See all products
+// router.get("/", producerCtrl.getAllProducers); //! Retiré admin
 
-// * Modify a producer
-router.put("/modif/:producerid", producerCtrl.modifProducer); //! retiré admin
+// // * Modify a producer
+// router.put("/modif/:producerid", producerCtrl.modifProducer); //! retiré admin
 
-// * Delete a product
-router.delete("/delete/:producerid", producerCtrl.deleteProducer); //! retiré admin
+// // * Delete a product
+// router.delete("/delete/:producerid", producerCtrl.deleteProducer); //! retiré admin
 
 module.exports = router;
