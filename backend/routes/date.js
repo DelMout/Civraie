@@ -11,6 +11,6 @@ const admin = require("../middleware/isAdmin"); // Request authentification for 
 router.get("/find", dateCtrl.find); //! Retiré auth
 
 // * Modify dates
-router.put("/update/:id", dateCtrl.update); //! retiré admin
+// router.put("/update/:id", dateCtrl.update); //! retiré admin
 
 module.exports = router;

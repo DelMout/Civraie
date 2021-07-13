@@ -52,12 +52,13 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.TINYINT,
 				defaultValue: 0,
 			},
+			photo: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
 		},
 		{
-			timestamps: true,
-			updatedAt: false,
-			createdAt: "date_crea_pub",
-			defaultValue: DataTypes.NOW,
+			timestamps: false,
 		}
 	);
 	return product;

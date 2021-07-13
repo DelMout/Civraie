@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
 					isEmail: true,
 				},
 			},
+			site_web: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
 		},
 		{
 			timestamps: false,

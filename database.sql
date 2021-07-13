@@ -28,6 +28,7 @@ products VARCHAR(255),
 address VARCHAR(255) NOT NULL,
 phone VARCHAR(255),
 email VARCHAR(255)
+site_web VARCHAR(255)
 )
 ENGINE=INNODB;
 
@@ -51,7 +52,7 @@ stock_init INT NOT NULL,
 stock_updated INT,
 alert_stock INT NOT NULL,
 ordering TINYINT, 
-date_crea_pub DATE NOT NULL,
+photo VARCHAR(255),
 CONSTRAINT fk_producerId_product FOREIGN KEY (producerId) REFERENCES producers(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
