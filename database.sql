@@ -1,4 +1,4 @@
--- Read instructions on README for setting up the database on MySQL server
+Read instructions on README for setting up the database on MySQL server
 
 CREATE DATABASE civraie CHARACTER SET 'utf8mb4';
 USE civraie;
@@ -64,15 +64,15 @@ CREATE TABLE orders
 id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,    
 userId SMALLINT UNSIGNED NOT NULL,
 productId SMALLINT UNSIGNED NOT NULL,
+dateId SMALLINT UNSIGNED NOT NULL,
 quantity INT NOT NULL,
 order_date DATE NOT NULL,
-dateId SMALLINT UNSIGNED NOT NULL,
 CONSTRAINT fk_userId_order FOREIGN KEY (userId) REFERENCES users(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE,
 CONSTRAINT fk_productId_order FOREIGN KEY (productId) REFERENCES products(id)
 ON DELETE CASCADE
-ON UPDATE CASCADE
+ON UPDATE CASCADE,
 CONSTRAINT fk_dateId_order FOREIGN KEY (dateId) REFERENCES dates(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
