@@ -20,42 +20,37 @@ exports.createOrder = (req, res) => {
 		});
 };
 
-//! * Get all producers
-exports.getAllProducers = (req, res) => {
-	producer
+// * Get orders according to delivery date (dateId)
+exports.getAllOrders = (req, res) => {
+	order
 		.findAll({
-			order: [["entreprise", "ASC"]],
+			where: { dateid: req.params.dateid },
 		})
 		.then((obj) => {
 			res.send(obj);
 		});
 };
 
-//* Modify producer datas
-exports.modifProducer = (req, res) => {
-	producer
-		.update(
-			{
-				...req.body,
-			},
-			{ where: { id: req.params.producerid } }
-		)
-		.then(() => {
-			res.send("datas producer modified");
+// * Get orders according to delivery date (dateId) and sorted by user
+exports.getOrdersByUser = (req, res) => {
+	order
+		.findAll({
+			where: { dateid: req.params.dateid },
+			order: [["userid", "ASC"]],
 		})
-		.catch((err) => {
-			res.status(401).send(err);
+		.then((obj) => {
+			res.send(obj);
 		});
 };
 
-//* Delete a producer
-exports.deleteProducer = (req, res) => {
-	producer
-		.destroy({ where: { id: req.params.producerid } })
-		.then(() => {
-			res.send("producer deleted");
+// * Get orders according to delivery date (dateId) and sorted by product
+exports.getOrdersByProd = (req, res) => {
+	order
+		.findAll({
+			where: { dateid: req.params.dateid },
+			order: [["productid", "ASC"]],
 		})
-		.catch((err) => {
-			res.status(401).send(err);
+		.then((obj) => {
+			res.send(obj);
 		});
 };
