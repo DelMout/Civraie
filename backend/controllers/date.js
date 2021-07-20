@@ -39,3 +39,12 @@ exports.update = (req, res) => {
 			res.status(401).send(err);
 		});
 };
+
+// * Get datas of a date via id
+exports.getDate = (req, res) => {
+	date.findOne({
+		where: { id: req.params.dateid },
+	}).then((obj) => {
+		res.send(obj);
+	});
+};

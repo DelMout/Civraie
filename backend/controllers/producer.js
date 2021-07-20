@@ -2,7 +2,7 @@ const { producer } = require("../models");
 const fs = require("fs");
 const { Op } = require("sequelize");
 
-//! * Create a new producer
+// * Create a new producer
 exports.createProducer = (req, res) => {
 	const newProducer = new producer({
 		...req.body,
@@ -18,11 +18,22 @@ exports.createProducer = (req, res) => {
 		});
 };
 
-//! * Get all producers
+// * Get all producers
 exports.getAllProducers = (req, res) => {
 	producer
 		.findAll({
 			order: [["entreprise", "ASC"]],
+		})
+		.then((obj) => {
+			res.send(obj);
+		});
+};
+
+// * Get datas of a producer via id
+exports.getProducer = (req, res) => {
+	producer
+		.findOne({
+			where: { id: req.params.producerid },
 		})
 		.then((obj) => {
 			res.send(obj);

@@ -32,7 +32,7 @@ product.belongsTo(producer);
 module.exports = { producer, product };
 
 //association tables date/order
-product.belongsTo(date);
+order.belongsTo(date);
 module.exports = { date, order };
 
 app.use(cors()); // Security CORS

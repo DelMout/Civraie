@@ -13,7 +13,7 @@ const { resolve } = require("path");
 //* Schema Password
 schemaPassword.is().min(10).has().uppercase().has().lowercase().has().digits();
 
-//! * Create a new user
+// * Create a new user
 exports.signup = (req, res) => {
 	if (!schemaPassword.validate(req.body.password)) {
 		return res
@@ -57,7 +57,7 @@ exports.signup = (req, res) => {
 	}
 };
 
-//! * Login
+// * Login
 exports.login = (req, res) => {
 	const email_saisi = req.body.email;
 	const password_saisi = req.body.password;
@@ -86,7 +86,7 @@ exports.login = (req, res) => {
 		});
 };
 
-//! * Update connexion date and jeton (used when user forgot password)
+// * Update connexion date and jeton (used when user forgot password)
 exports.lastconn = (req, res) => {
 	const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	let jeton = "";
@@ -109,7 +109,7 @@ exports.lastconn = (req, res) => {
 		});
 };
 
-//! * Get all users
+// * Get all users
 exports.getAllUsers = (req, res) => {
 	user.findAll({
 		order: [["last_connect", "ASC"]],
@@ -118,7 +118,16 @@ exports.getAllUsers = (req, res) => {
 	});
 };
 
-//! * Update comment
+// * Get datas of a user via id
+exports.getUser = (req, res) => {
+	user.findOne({
+		where: { id: req.params.userid },
+	}).then((obj) => {
+		res.send(obj);
+	});
+};
+
+// * Update comment
 exports.comment = (req, res) => {
 	user.update(
 		{

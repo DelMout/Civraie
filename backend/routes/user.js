@@ -19,6 +19,9 @@ router.put("/login/:userid", userCtrl.lastconn); //! retiré auth
 // * See all users
 router.get("/allusers", userCtrl.getAllUsers); //! Retiré admin
 
+// * See datas for a user via id
+router.get("/getuser/:userid", userCtrl.getUser); //! Retiré admin
+
 // * Comment a user
 router.put("/comment/:userid", userCtrl.comment); //! retiré admin
 
