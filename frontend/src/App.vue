@@ -1,19 +1,11 @@
 <template>
-	<!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
-	<p>Coucou les copains !!!</p>
-	<!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
+	<div id="nav">
+		<router-link to="/">Accueil</router-link> |
+		<router-link to="/about">A propos</router-link>
+	</div>
+	<router-view />
 </template>
-
-<script>
-// import HelloWorld from "./components/HelloWorld.vue";
-
-export default {
-	name: "App",
-	// components: {
-	// 	HelloWorld,
-	// },
-};
-</script>
+scrip
 
 <style>
 #app {
@@ -22,6 +14,19 @@ export default {
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	color: #2c3e50;
-	margin-top: 60px;
+}
+
+#nav {
+	padding: 30px;
+}
+
+a {
+	text-decoration: none;
+	color: #999;
+}
+
+a.router-link-exact-active {
+	color: rgb(11, 112, 11);
+	font-weight: 600;
 }
 </style>
