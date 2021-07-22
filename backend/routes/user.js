@@ -13,8 +13,11 @@ router.post("/signup", userCtrl.signup);
 // * Login
 router.post("/login", userCtrl.login);
 
-// * Update last connection date
-router.put("/login/:userid", userCtrl.lastconn); //! retiré auth
+// * See datas for a user via email
+router.get("/firstname/:email", userCtrl.firstname); //! Retiré auth
+
+// * Update last connection date + jeton
+router.put("/login/:email", userCtrl.lastconn); //! retiré auth
 
 // * See all users
 router.get("/allusers", userCtrl.getAllUsers); //! Retiré admin
@@ -26,7 +29,7 @@ router.get("/getuser/:userid", userCtrl.getUser); //! Retiré admin
 router.put("/comment/:userid", userCtrl.comment); //! retiré admin
 
 // * Modify password after lost
-router.put("/password/:userid", userCtrl.updatePassword);
+router.put("/password/:jeton", userCtrl.updatePassword);
 
 // * Delete user
 router.delete("/delete/:userid", userCtrl.delete); //! retiré admin

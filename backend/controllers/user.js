@@ -86,6 +86,15 @@ exports.login = (req, res) => {
 		});
 };
 
+// * Get firstname and name from email for a user
+exports.firstname = (req, res) => {
+	user.findOne({
+		where: { email: req.params.email },
+	}).then((obj) => {
+		res.send(obj);
+	});
+};
+
 // * Update connexion date and jeton (used when user forgot password)
 exports.lastconn = (req, res) => {
 	const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -98,7 +107,7 @@ exports.lastconn = (req, res) => {
 			last_connect: Date(),
 			jeton: jeton,
 		},
-		{ where: { id: req.params.userid } }
+		{ where: { email: req.params.email } }
 	)
 		.then(() => {
 			res.send("user modified !");
@@ -153,7 +162,7 @@ exports.updatePassword = (req, res) => {
 			{
 				password: bcrypt.hashSync(req.body.password, 10),
 			},
-			{ where: { id: req.params.userid } }
+			{ where: { jeton: req.params.jeton } }
 		)
 			.then(() => {
 				res.send("password modified");

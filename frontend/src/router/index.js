@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Signup from "../views/Signup.vue";
+import Password from "../views/Password.vue";
+import ProdShop from "../views/ProdShop.vue";
+import ProdOrder from "../views/ProdOrder.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -12,16 +15,30 @@ const routes = [
 		},
 	},
 	{
-		path: "/about",
-		name: "About",
-		// route level code-splitting
-		// this generates a separate chunk (about.[hash].js) for this route
-		// which is lazy-loaded when the route is visited.
-		component: () => import(/* webpackChunkName: "about" */ "../views/About.vue"),
+		path: "/setpassword/:jeton",
+		name: "Password",
+		component: Password,
 		meta: {
-			title: "Ferme La Civraie / About",
+			title: "Ferme La Civraie / Initialisation mot de passe",
 		},
 	},
+	{
+		path: "/produits_vente_magasin",
+		name: "ProdShop",
+		component: ProdShop,
+		meta: {
+			title: "Ferme La Civraie / Produits magasin",
+		},
+	},
+	{
+		path: "/produits_vente_commande",
+		name: "ProdOrder",
+		component: ProdOrder,
+		meta: {
+			title: "Ferme La Civraie / Produits commande",
+		},
+	},
+
 	{
 		path: "/:pathMatch(.*)",
 		name: "NotFound",
