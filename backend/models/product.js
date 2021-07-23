@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			stock_updated: {
 				type: DataTypes.INTEGER,
-				allowNull: true,
+				allowNull: false,
 			},
 			alert_stock: {
 				type: DataTypes.INTEGER,

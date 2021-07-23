@@ -9,6 +9,7 @@ exports.createProduct = (req, res) => {
 		req.body.photo = null;
 	}
 	const newProduct = new product({
+		stock_updated: req.body.stock_init,
 		...req.body,
 	});
 	newProduct

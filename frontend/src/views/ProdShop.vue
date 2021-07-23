@@ -5,15 +5,19 @@
 		<table>
 			<tr>
 				<th>Produit</th>
-				<th>ProducerId</th>
-				<th>Unité vente</th>
-				<th>Prix unité vente</th>
+				<th>Producteur</th>
+				<th>Prix/kg</th>
+				<th>Quantité minimum à commander</th>
+				<th>Prix Quantité mini</th>
+				<!-- <th>Alerte stock</th> -->
 			</tr>
 			<tr v-for="prod in products" :key="prod.product">
 				<td>{{ prod.product }}</td>
-				<td>{{ prod.producerid }}</td>
+				<td>{{ prod.producer }}</td>
+				<td>{{ prod.price_kg }} <span v-if="prod.price_kg"> €</span></td>
 				<td>{{ prod.unite_vente }}</td>
-				<td>10€</td>
+				<td>{{ prod.price_unite_vente }} <span v-if="prod.price_unite_vente">€</span></td>
+				<td v-if="prod.alert <= 0">Attention stock faible !</td>
 			</tr>
 		</table>
 
@@ -35,15 +39,24 @@ export default {
 	},
 	created: function() {
 		//* All products with NO ordering
-		axios.get(process.env.VUE_APP_API + "product/0").then((prod) => {
+		axios.get(process.env.VUE_APP_API + "product/1").then((prod) => {
 			// console.log(products);
 			this.length = prod.data.length;
 			for (let i = 0; i < this.length; i++) {
-				this.products.push({
-					product: prod.data[i].product,
-					producerid: prod.data[i].producerId,
-					unite_vente: prod.data[i].unite_vente,
-				});
+				axios
+					.get(
+						process.env.VUE_APP_API + "producer/getproducer/" + prod.data[i].producerId
+					)
+					.then((producer) => {
+						this.products.push({
+							product: prod.data[i].product,
+							producer: producer.data.entreprise,
+							price_kg: prod.data[i].price_kg,
+							unite_vente: prod.data[i].unite_vente,
+							price_unite_vente: prod.data[i].price_unite_vente,
+							alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
+						});
+					});
 			}
 			console.log(this.products);
 		});
