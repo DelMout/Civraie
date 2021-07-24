@@ -7,7 +7,7 @@
 				<th>Produit</th>
 				<th>Producteur</th>
 				<th>Prix/kg</th>
-				<th>Quantité minimum à commander</th>
+				<th>Quantité minimum vente</th>
 				<th>Prix Quantité mini</th>
 				<!-- <th>Alerte stock</th> -->
 			</tr>
@@ -38,7 +38,7 @@ export default {
 		this.products = [];
 	},
 	created: function() {
-		//* All products with NO ordering
+		//* All products with NO ordering (1)
 		axios.get(process.env.VUE_APP_API + "product/1").then((prod) => {
 			// console.log(products);
 			this.length = prod.data.length;
@@ -66,6 +66,12 @@ export default {
 <style scoped>
 td {
 	border: 1px solid black;
+	width: 200px;
+	height: 40px;
+}
+th {
+	width: 200px;
+	height: 40px;
 }
 table {
 	border-collapse: collapse;

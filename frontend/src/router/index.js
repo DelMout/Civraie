@@ -3,6 +3,7 @@ import Signup from "../views/Signup.vue";
 import Password from "../views/Password.vue";
 import ProdShop from "../views/ProdShop.vue";
 import ProdOrder from "../views/ProdOrder.vue";
+import Products from "../views/Products.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -37,6 +38,15 @@ const routes = [
 		meta: {
 			title: "Ferme La Civraie / Produits commande",
 		},
+	},
+	{
+		path: "/tous_produits",
+		name: "Products",
+		component: Products,
+		meta: {
+			title: "Ferme La Civraie / Tous Produits",
+		},
+		//TODO Limiter l'accès au proprio
 	},
 
 	{

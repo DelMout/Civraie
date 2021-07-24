@@ -55,6 +55,7 @@ export default {
 			email: "",
 			phone: "",
 			password: "",
+			admin: "",
 			infoPrem: "",
 			info: "",
 			creation: false,
@@ -86,6 +87,7 @@ export default {
 				.catch((err) => {
 					this.info = err;
 					// this.info = "Votre compte n'a pas pu être créé :-(";
+					//TODO Info si compte déjà existant (adresse email)
 					console.log(err);
 				});
 		},
@@ -104,20 +106,28 @@ export default {
 						.then((user) => {
 							this.prenom = user.data.prenom;
 							this.nom = user.data.nom;
+							this.admin = user.data.isAdmin;
 
 							// MAJ last_connect + jeton
 							axios
 								.put(process.env.VUE_APP_API + "user/login/" + this.email)
 								.then(() => {
-									this.info =
-										"Bonjour " +
-										this.prenom +
-										" " +
-										this.nom +
-										", vous êtes connecté(e).";
+									//TODO Info à transmettre dans Vuex
+									// this.info =
+									// 	"Bonjour " +
+									// 	this.prenom +
+									// 	" " +
+									// 	this.nom +
+									// 	", vous êtes connecté(e).";
 									this.logged = true;
 									this.creation = false;
 									this.forgot = false;
+									if (this.admin === 0) {
+										this.$router.push("/produits_vente_commande");
+									}
+									if (this.admin === 1) {
+										this.$router.push("/tous_produits");
+									}
 								})
 
 								.catch(() => {

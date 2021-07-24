@@ -11,6 +11,7 @@ const productRoutes = require("./routes/product");
 const producerRoutes = require("./routes/producer");
 const orderRoutes = require("./routes/order");
 const dateRoutes = require("./routes/date");
+const infoRoutes = require("./routes/information");
 
 // Models
 const { user } = require("./models");
@@ -18,6 +19,7 @@ const { product } = require("./models");
 const { producer } = require("./models");
 const { order } = require("./models");
 const { date } = require("./models");
+const { information } = require("./models");
 
 //association tables user/order et product/order et date/user
 order.belongsTo(user);
@@ -55,6 +57,9 @@ app.use("/api/order", orderRoutes);
 
 // * Date
 app.use("/api/date", dateRoutes);
+
+// * Information
+app.use("/api/information", infoRoutes);
 
 // * Access images
 app.use("/images/", express.static(path.join(__dirname, "images")));

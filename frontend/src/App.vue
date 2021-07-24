@@ -3,6 +3,7 @@
 		<router-link to="/">Accueil</router-link> |
 		<router-link to="/produits_vente_magasin">Produits à la vente</router-link> |
 		<router-link to="/produits_vente_commande">Produits à la commande</router-link> |
+		<router-link to="/tous_produits">* Liste Produits *</router-link> |
 	</div>
 	<router-view />
 </template>
