@@ -14,24 +14,99 @@
 				<th class="numb">Stock après conso</th>
 				<th class="numb">Stock limite</th>
 				<th>Support vente</th>
+				<th>Photo</th>
 				<!-- <th>Alerte stock</th> -->
 			</tr>
-			<tr v-for="prod in products" :key="prod.product">
-				<td>{{ prod.product }}</td>
-				<td>{{ prod.producer }}</td>
-				<td class="numb">{{ prod.price_kg }} <span v-if="prod.price_kg"> €</span></td>
-				<td>{{ prod.unite_vente }}</td>
-				<td class="numb">
-					{{ prod.price_unite_vente }} <span v-if="prod.price_unite_vente">€</span>
+			<tr v-for="prod in products" :key="prod.id">
+				<td @click="modifProd($event, prod)">
+					<p v-if="!prod.modif">{{ prod.product }}</p>
+					<input
+						v-if="prod.modif"
+						class="create numb"
+						type="text"
+						v-model="prod.product"
+					/>
 				</td>
-				<td class="numb">{{ prod.stock_init }}</td>
+				<td @click="displayProducersModif($event, prod)" :id="prod.selectProdu">
+					<p v-if="!produSelected">{{ prod.producer }}</p>
+					<p v-if="produSelected">{{ produSelected }}</p>
+				</td>
+				<td class="numb" @click="modifProd($event, prod)">
+					<p v-if="!prod.modif">
+						{{ prod.price_kg }} <span v-if="prod.price_kg"> €</span>
+					</p>
+					<input
+						v-if="prod.modif"
+						class="create numb"
+						type="text"
+						v-model="prod.price_kg"
+					/>
+				</td>
+				<td @click="modifProd($event, prod)">
+					<p v-if="!prod.modif">{{ prod.unite_vente }}</p>
+					<input
+						v-if="prod.modif"
+						class="create numb"
+						type="text"
+						v-model="prod.unite_vente"
+					/>
+				</td>
+				<td class="numb" @click="modifProd($event, prod)">
+					<p v-if="!prod.modif">
+						{{ prod.price_unite_vente }} <span v-if="prod.price_unite_vente">€</span>
+					</p>
+					<input
+						v-if="prod.modif"
+						class="create numb"
+						type="text"
+						v-model="prod.price_unite_vente"
+					/>
+				</td>
+				<td class="numb" @click="modifProd($event, prod)">
+					<p v-if="!prod.modif">{{ prod.stock_init }}</p>
+					<input
+						v-if="prod.modif"
+						class="create numb"
+						type="text"
+						v-model="prod.stock_init"
+					/>
+				</td>
 				<td class="numb">{{ prod.stock_updated }}</td>
-				<td class="numb">{{ prod.alert_stock }}</td>
+				<td class="numb" @click="modifProd($event, prod)">
+					<p v-if="!prod.modif">{{ prod.alert_stock }}</p>
+					<input
+						v-if="prod.modif"
+						class="create numb"
+						type="text"
+						v-model="prod.alert_stock"
+					/>
+				</td>
 
-				<td>{{ prod.support }}</td>
+				<td @click="displayOrderingModif($event, prod)" :id="prod.selectOrdering">
+					<p v-if="!orderingSelected">{{ prod.support }}</p>
+					<p v-if="orderingSelected">{{ orderingSelected }}</p>
+				</td>
+				<td>
+					<img
+						v-if="prod.photo"
+						style="width:80px;"
+						:src="prod.photo"
+						alt="product photo"
+					/>
+				</td>
 				<td v-if="prod.alert <= 0">Attention stock faible !</td>
+				<td v-if="prod.modif">
+					<button
+						style="background-color:greenyellow;"
+						class="modif"
+						type="button"
+						@click="validModif($event, prod)"
+					>
+						Valider les modifications
+					</button>
+				</td>
 			</tr>
-			<!-- Line for creating new product -->
+			<!-- Row for creating new product -->
 			<tr class="create">
 				<td><input class="create" type="text" id="name" v-model="name" /></td>
 				<td @click="displayProducers">
@@ -61,6 +136,9 @@
 				</td>
 				<td @click="displayOrdering">{{ ordering }}</td>
 				<td>
+					<input class="" type="file" name="image" @change="onFileChange" />
+				</td>
+				<td>
 					<button class="valCreate" type="button" @click="validateCreate">
 						Créer ce produit
 					</button>
@@ -71,7 +149,7 @@
 		<!-- Table of producers -->
 		<div v-if="displayP">
 			<table v-for="prodc in producers" :key="prodc.entreprise">
-				<tr @click="selectProdc($event, prodc)">
+				<tr @click="selectProdc($event, prodc, prod)">
 					{{
 						prodc.entreprise
 					}}
@@ -109,14 +187,23 @@ export default {
 			PriceQtyMini: "Prix qté mini",
 			stockInit: "Stock initial",
 			stockLimit: "Stock limite",
-			displayP: false,
-			displayO: false,
+			priceKgM: "",
+			photo: "", // total name paste in database
+			image: null, // file received brut
+			displayP: false, // Display Producers
+			displayO: false, //Display Ordering
 			producers: [],
 			producerId: "",
 			orderinginfo: [],
 			orderingItem: "",
 			ordering: "Support vente (liste)",
 			prodcToSelect: "Producteur (liste)",
+			prodId: "",
+			modif: false,
+			produSelected: "",
+			orderingSelected: "",
+			index: "",
+			backgreen: "",
 		};
 	},
 	beforeCreate: function() {
@@ -142,7 +229,9 @@ export default {
 							)
 							.then((ordering) => {
 								this.products.push({
+									id: prod.data[i].id,
 									product: prod.data[i].product,
+									producerId: prod.data[i].producerId,
 									producer: producer.data.entreprise,
 									price_kg: prod.data[i].price_kg,
 									unite_vente: prod.data[i].unite_vente,
@@ -150,8 +239,14 @@ export default {
 									stock_init: prod.data[i].stock_init,
 									stock_updated: prod.data[i].stock_updated,
 									alert_stock: prod.data[i].alert_stock,
+									photo: prod.data[i].photo,
 									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
+									ordering: prod.data[i].ordering,
 									support: ordering.data,
+									modif: 0,
+									delete: 0,
+									selectProdu: 0,
+									selectOrdering: 0,
 								});
 							});
 					});
@@ -160,7 +255,7 @@ export default {
 		});
 	},
 	methods: {
-		//* Display all producers
+		//* Display all producers (when creation product)
 		displayProducers: function() {
 			this.displayP = true;
 			//* All producers
@@ -176,9 +271,64 @@ export default {
 			});
 		},
 
-		//* Display all orderings
+		//* Display all producers (when modif product)
+		displayProducersModif: function(event, prod) {
+			this.products.forEach(function(item) {
+				item.selectProdu = 0;
+				item.selectOrdering = 0;
+			});
+			prod.selectProdu = "green"; // color background when cell of producer selected
+			this.producers = [];
+			this.displayP = true;
+			this.displayO = false;
+			prod.modif = true;
+			this.modif = true;
+			this.index = this.products.findIndex((x) => x.product === prod.product);
+			console.log("index= " + this.index);
+			this.prodId = prod.product;
+			//* All producers
+			axios.get(process.env.VUE_APP_API + "producer").then((prodc) => {
+				this.lengthPc = prodc.data.length;
+				for (let i = 0; i < this.lengthPc; i++) {
+					this.producers.push({
+						entreprise: prodc.data[i].entreprise,
+						id: prodc.data[i].id,
+					});
+				}
+				console.log(prodc);
+			});
+		},
+
+		//* Display all orderings (when creation)
 		displayOrdering: function() {
 			this.displayO = true;
+			//* All orderings
+			axios.get(process.env.VUE_APP_API + "information/supportvente").then((ord) => {
+				this.lengthPc = ord.data.length;
+				for (let i = 0; i < this.lengthPc; i++) {
+					this.orderinginfo.push({
+						ordering: ord.data[i].content,
+						item: ord.data[i].item,
+					});
+				}
+				console.log(ord);
+			});
+		},
+
+		//* Display all orderings (when modif)
+		displayOrderingModif: function(event, prod) {
+			this.products.forEach(function(item) {
+				item.selectOrdering = 0;
+				item.selectProdu = 0;
+			});
+			prod.selectOrdering = "green"; // color background when cell of producer selected
+			this.orderinginfo = [];
+			this.displayO = true;
+			this.displayP = false;
+			prod.modif = true;
+			this.modif = true;
+			this.index = this.products.findIndex((x) => x.product === prod.product);
+			this.prodId = prod.product;
 			//* All orderings
 			axios.get(process.env.VUE_APP_API + "information/supportvente").then((ord) => {
 				this.lengthPc = ord.data.length;
@@ -198,6 +348,10 @@ export default {
 			this.producerId = prodc.id;
 			this.displayP = false;
 			this.producers = [];
+			if (this.modif) {
+				this.products[this.index].producer = this.prodcToSelect;
+				this.products[this.index].producerId = this.producerId;
+			}
 		},
 
 		//* Ordering selected
@@ -206,24 +360,36 @@ export default {
 			this.orderingItem = ord.item;
 			this.displayO = false;
 			this.orderinginfo = [];
+			console.log("ordering=" + this.ordering);
+			console.log("orderingItem=" + this.orderingItem);
+			if (this.modif) {
+				this.products[this.index].support = this.ordering;
+				this.products[this.index].ordering = this.orderingItem; //id
+			}
+		},
+		//* Select a photo
+		onFileChange: function(event) {
+			this.image = event.target.files[0];
 		},
 
 		//* Create a product
 		validateCreate: function() {
+			// let img = document.getElementById("picture").files[0];
 			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
+			const formData = new FormData();
+			formData.append("product", this.name);
+			formData.append("producerId", this.producerId);
+			formData.append("price_kg", this.priceKg);
+			formData.append("unite_vente", this.qtyMini);
+			formData.append("price_unite_vente", this.PriceQtyMini);
+			formData.append("stock_init", this.stockInit);
+			formData.append("stock_updated", this.stockInit);
+			formData.append("alert_stock", this.stockLimit);
+			formData.append("ordering", this.orderingItem);
+			formData.append("image", this.image);
 
 			axios
-				.post(process.env.VUE_APP_API + "product/createproduct", {
-					product: this.name,
-					producerId: this.producerId,
-					price_kg: this.priceKg,
-					unite_vente: this.qtyMini,
-					price_unite_vente: this.PriceQtyMini,
-					stock_init: this.stockInit,
-					stock_updated: this.stockInit,
-					alert_stock: this.stockLimit,
-					ordering: this.orderingItem,
-				})
+				.post(process.env.VUE_APP_API + "product/createproduct", formData)
 				.then(() => {
 					this.infoProd = "Produit créé !";
 					this.producerId = "";
@@ -231,6 +397,56 @@ export default {
 				})
 				.catch((err) => {
 					this.infoProd = err;
+					console.log(this.image);
+				});
+		},
+
+		//* Want to modify a product
+		modifProd: function(event, prod) {
+			// document.location.reload();
+
+			// this.products.forEach(function(item) {
+			// 	item.modif = false;
+			// });
+			prod.modif = true;
+			this.prodId = prod.product;
+			this.producerId = prod.producerId; //! a retirer
+			this.ordering = prod.ordering;
+		},
+
+		//* Validation modifications
+		validModif: function(event, prod) {
+			const id = prod.id;
+			console.log(id);
+			const formData = new FormData();
+			formData.append("product", prod.product);
+			formData.append("producerId", prod.producerId);
+			formData.append("price_kg", prod.price_kg);
+			formData.append("unite_vente", prod.unite_vente);
+			formData.append("price_unite_vente", prod.price_unite_vente);
+			formData.append("stock_init", prod.stock_init);
+			formData.append("stock_updated", prod.stock_init);
+			formData.append("alert_stock", prod.alert_stock);
+			formData.append("ordering", prod.ordering);
+			// formData.append("image", this.image);
+			axios
+				.put(process.env.VUE_APP_API + "product/modif/" + id, formData)
+				// headers: {
+				// 	Authorization: `Bearer ${this.token}`,
+				// },
+
+				.then(() => {
+					prod.modif = false;
+					this.produSelected = "";
+					this.products.forEach(function(item) {
+						item.selectOrdering = 0;
+						item.selectProdu = 0;
+					});
+					this.infoProd = "Vos modifications ont été prises en compte";
+				})
+				.catch((err) => {
+					this.infoProd = err;
+					console.log(err);
 				});
 		},
 	},
@@ -262,6 +478,9 @@ table {
 }
 .create,
 .valCreate {
+	background-color: greenyellow;
+}
+#green {
 	background-color: greenyellow;
 }
 .nocolor {

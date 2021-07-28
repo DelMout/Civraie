@@ -5,6 +5,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const path = require("path");
 const helmet = require("helmet"); // Protect HTTP headers
+const sharp = require("sharp"); // Reduction image
 
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");

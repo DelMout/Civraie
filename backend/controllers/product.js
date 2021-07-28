@@ -4,7 +4,7 @@ const fs = require("fs"); // handle files
 //* Create a new product
 exports.createProduct = (req, res) => {
 	if (req.file) {
-		req.body.photo = `https://${req.get("host")}/images/${req.file.filename}`;
+		req.body.photo = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
 	} else {
 		req.body.photo = null;
 	}
@@ -59,22 +59,81 @@ exports.getDatasProduct = (req, res) => {
 
 //* Modify a product
 exports.modifProduct = (req, res) => {
-	product
-		.update(
-			{
-				...req.body,
-			},
-			{ where: { id: req.params.productid } }
-		)
-		.then(() => {
-			res.send("datas product modified");
-		})
-		.catch((err) => {
-			res.status(401).send(err);
-		});
+	if (req.file) {
+		req.body.photo = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+		//delete the previous image file
+		product
+			.findOne({ where: { id: req.params.productid } })
+			.then((rep) => {
+				if (rep.photo != null) {
+					//if already photo
+					const filename = rep.photo.split("/images/")[1];
+					fs.unlink(`images/${filename}`, () => {
+						product
+							.update(
+								{ ...req.body, stock_updated: req.body.stock_init },
+								{ where: { id: req.params.productid } }
+							)
+							.then(() => {
+								res.send("product and image file modified");
+							})
+							.catch((err) => {
+								res.send(err);
+							});
+					});
+				} else {
+					product
+						.update(
+							{ ...req.body, stock_updated: req.body.stock_init },
+							{ where: { id: req.params.productid } }
+						)
+						.then(() => {
+							res.send("product modified and image file saved");
+						})
+						.catch((err) => {
+							res.send(err);
+						});
+				}
+			})
+			.catch((err) => {
+				res.status(401).send(err.errors[0].validatorKey);
+			});
+	} else {
+		req.body.photo = null;
+		product
+			.update(
+				{
+					...req.body,
+					stock_updated: req.body.stock_init,
+				},
+				{ where: { id: req.params.productid } }
+			)
+			.then(() => {
+				res.send("product modified !");
+			})
+			.catch((err) => {
+				// res.status(401).send(err);
+				res.status(401).send(err.errors[0].validatorKey);
+			});
+	}
+
+	// product
+	// 	.update(
+	// 		{
+	// 			...req.body,
+	// 		},
+	// 		{ where: { id: req.params.productid } }
+	// 	)
+	// 	.then(() => {
+	// 		res.send("datas product modified");
+	// 	})
+	// 	.catch((err) => {
+	// 		res.status(401).send(err);
+	// 	});
 };
 
 //* Delete a product
+//! Rajouter suppression photo
 exports.deleteProduct = (req, res) => {
 	product
 		.destroy({ where: { id: req.params.productid } })
