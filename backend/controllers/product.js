@@ -99,7 +99,7 @@ exports.modifProduct = (req, res) => {
 				res.status(401).send(err.errors[0].validatorKey);
 			});
 	} else {
-		req.body.photo = null;
+		// req.body.photo = null;
 		product
 			.update(
 				{
@@ -136,11 +136,28 @@ exports.modifProduct = (req, res) => {
 //! Rajouter suppression photo
 exports.deleteProduct = (req, res) => {
 	product
-		.destroy({ where: { id: req.params.productid } })
-		.then(() => {
-			res.send("product deleted");
+		.findOne({ where: { id: req.params.productid } })
+		.then((prod) => {
+			if (prod.photo != null) {
+				const filename = prod.photo.split("/images/")[1];
+				fs.unlink(`images/${filename}`, () => {
+					product
+						.destroy({ where: { id: req.params.productid } })
+						.then(() => res.send("product and image file deleted"))
+						.catch((err) => {
+							res.send(err);
+						});
+				});
+			} else {
+				product
+					.destroy({ where: { id: req.params.productid } })
+					.then(() => res.send("product deleted"))
+					.catch((err) => {
+						res.send(err);
+					});
+			}
 		})
 		.catch((err) => {
-			res.status(401).send(err);
+			res.send(err);
 		});
 };

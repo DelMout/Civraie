@@ -2,6 +2,7 @@
 	<div>
 		<h1>Liste des produits</h1>
 		<p>{{ infoProd }}</p>
+		<p>Renseigner "0" ou "-1" pour case à laisser vide (pour : Prix/kg, Prix qté mini).</p>
 
 		<table>
 			<tr>
@@ -14,14 +15,14 @@
 				<th class="numb">Stock après conso</th>
 				<th class="numb">Stock limite</th>
 				<th>Support vente</th>
-				<th>Photo</th>
+				<th class="photo">Photo</th>
 				<!-- <th>Alerte stock</th> -->
 			</tr>
-			<tr v-for="prod in products" :key="prod.id">
+			<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
 				<td @click="modifProd($event, prod)">
-					<p v-if="!prod.modif">{{ prod.product }}</p>
+					<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
 					<input
-						v-if="prod.modif"
+						v-if="prod.modif && !prod.delete"
 						class="create numb"
 						type="text"
 						v-model="prod.product"
@@ -32,40 +33,40 @@
 					<p v-if="produSelected">{{ produSelected }}</p>
 				</td>
 				<td class="numb" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif">
-						{{ prod.price_kg }} <span v-if="prod.price_kg"> €</span>
+					<p v-if="(!prod.modif && prod.price_kg > 0) || prod.delete">
+						{{ prod.price_kg }} <span> €</span>
 					</p>
 					<input
-						v-if="prod.modif"
+						v-if="prod.modif && !prod.delete"
 						class="create numb"
 						type="text"
 						v-model="prod.price_kg"
 					/>
 				</td>
 				<td @click="modifProd($event, prod)">
-					<p v-if="!prod.modif">{{ prod.unite_vente }}</p>
+					<p v-if="!prod.modif || prod.delete">{{ prod.unite_vente }}</p>
 					<input
-						v-if="prod.modif"
+						v-if="prod.modif && !prod.delete"
 						class="create numb"
 						type="text"
 						v-model="prod.unite_vente"
 					/>
 				</td>
 				<td class="numb" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif">
-						{{ prod.price_unite_vente }} <span v-if="prod.price_unite_vente">€</span>
+					<p v-if="(!prod.modif && prod.price_unite_vente > 0) || prod.delete">
+						{{ prod.price_unite_vente }} <span>€</span>
 					</p>
 					<input
-						v-if="prod.modif"
+						v-if="prod.modif && !prod.delete"
 						class="create numb"
 						type="text"
 						v-model="prod.price_unite_vente"
 					/>
 				</td>
 				<td class="numb" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif">{{ prod.stock_init }}</p>
+					<p v-if="!prod.modif || prod.delete">{{ prod.stock_init }}</p>
 					<input
-						v-if="prod.modif"
+						v-if="prod.modif && !prod.delete"
 						class="create numb"
 						type="text"
 						v-model="prod.stock_init"
@@ -73,9 +74,9 @@
 				</td>
 				<td class="numb">{{ prod.stock_updated }}</td>
 				<td class="numb" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif">{{ prod.alert_stock }}</p>
+					<p v-if="!prod.modif || prod.delete">{{ prod.alert_stock }}</p>
 					<input
-						v-if="prod.modif"
+						v-if="prod.modif && !prod.delete"
 						class="create numb"
 						type="text"
 						v-model="prod.alert_stock"
@@ -86,23 +87,49 @@
 					<p v-if="!orderingSelected">{{ prod.support }}</p>
 					<p v-if="orderingSelected">{{ orderingSelected }}</p>
 				</td>
-				<td>
+				<td @click="modifProd($event, prod)" class="photo">
 					<img
+						class="photo"
 						v-if="prod.photo"
 						style="width:80px;"
 						:src="prod.photo"
 						alt="product photo"
+					/><input
+						v-if="prod.modif && !prod.delete"
+						class="create photo"
+						type="file"
+						name="image"
+						@change="onFileChange"
 					/>
 				</td>
 				<td v-if="prod.alert <= 0">Attention stock faible !</td>
 				<td v-if="prod.modif">
 					<button
+						v-if="prod.modif && !prod.delete"
 						style="background-color:greenyellow;"
 						class="modif"
 						type="button"
 						@click="validModif($event, prod)"
 					>
 						Valider les modifications
+					</button>
+					<button
+						v-if="prod.modif && !prod.delete"
+						style="background-color:red;color:white;"
+						class="modif"
+						type="button"
+						@click="wantDelete($event, prod)"
+					>
+						Sup
+					</button>
+					<button
+						v-if="prod.delete"
+						style="background-color:white;color:red;"
+						class="modif"
+						type="button"
+						@click="Delete($event, prod)"
+					>
+						Supprimer ce produit
 					</button>
 				</td>
 			</tr>
@@ -135,8 +162,8 @@
 					<input class="create numb" type="text" id="stocklimit" v-model="stockLimit" />
 				</td>
 				<td @click="displayOrdering">{{ ordering }}</td>
-				<td>
-					<input class="" type="file" name="image" @change="onFileChange" />
+				<td class="photo">
+					<input class="photo" type="file" name="image" @change="onFileChange" />
 				</td>
 				<td>
 					<button class="valCreate" type="button" @click="validateCreate">
@@ -203,7 +230,6 @@ export default {
 			produSelected: "",
 			orderingSelected: "",
 			index: "",
-			backgreen: "",
 		};
 	},
 	beforeCreate: function() {
@@ -247,6 +273,19 @@ export default {
 									delete: 0,
 									selectProdu: 0,
 									selectOrdering: 0,
+								});
+								// sort alpha order
+								this.products.sort(function(a, b) {
+									var productA = a.product.toUpperCase();
+									var productB = b.product.toUpperCase();
+
+									if (productA < productB) {
+										return -1;
+									}
+									if (productA > productB) {
+										return 1;
+									}
+									return 0;
 								});
 							});
 					});
@@ -376,29 +415,34 @@ export default {
 		validateCreate: function() {
 			// let img = document.getElementById("picture").files[0];
 			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
-			const formData = new FormData();
-			formData.append("product", this.name);
-			formData.append("producerId", this.producerId);
-			formData.append("price_kg", this.priceKg);
-			formData.append("unite_vente", this.qtyMini);
-			formData.append("price_unite_vente", this.PriceQtyMini);
-			formData.append("stock_init", this.stockInit);
-			formData.append("stock_updated", this.stockInit);
-			formData.append("alert_stock", this.stockLimit);
-			formData.append("ordering", this.orderingItem);
-			formData.append("image", this.image);
+			if (this.priceKg <= 0 && this.PriceQtyMini <= 0) {
+				this.infoProd =
+					"Merci de donner au moins un prix soit à 'Prix/kg' soit à 'Prix qté mini'.";
+			} else {
+				const formData = new FormData();
+				formData.append("product", this.name);
+				formData.append("producerId", this.producerId);
+				formData.append("price_kg", this.priceKg);
+				formData.append("unite_vente", this.qtyMini);
+				formData.append("price_unite_vente", this.PriceQtyMini);
+				formData.append("stock_init", this.stockInit);
+				formData.append("stock_updated", this.stockInit);
+				formData.append("alert_stock", this.stockLimit);
+				formData.append("ordering", this.orderingItem);
+				formData.append("image", this.image);
 
-			axios
-				.post(process.env.VUE_APP_API + "product/createproduct", formData)
-				.then(() => {
-					this.infoProd = "Produit créé !";
-					this.producerId = "";
-					this.orderingItem = "";
-				})
-				.catch((err) => {
-					this.infoProd = err;
-					console.log(this.image);
-				});
+				axios
+					.post(process.env.VUE_APP_API + "product/createproduct", formData)
+					.then(() => {
+						this.infoProd = "Produit créé !";
+						this.producerId = "";
+						this.orderingItem = "";
+					})
+					.catch((err) => {
+						this.infoProd = err;
+						console.log(this.image);
+					});
+			}
 		},
 
 		//* Want to modify a product
@@ -409,9 +453,6 @@ export default {
 			// 	item.modif = false;
 			// });
 			prod.modif = true;
-			this.prodId = prod.product;
-			this.producerId = prod.producerId; //! a retirer
-			this.ordering = prod.ordering;
 		},
 
 		//* Validation modifications
@@ -428,7 +469,7 @@ export default {
 			formData.append("stock_updated", prod.stock_init);
 			formData.append("alert_stock", prod.alert_stock);
 			formData.append("ordering", prod.ordering);
-			// formData.append("image", this.image);
+			formData.append("image", this.image);
 			axios
 				.put(process.env.VUE_APP_API + "product/modif/" + id, formData)
 				// headers: {
@@ -443,6 +484,31 @@ export default {
 						item.selectProdu = 0;
 					});
 					this.infoProd = "Vos modifications ont été prises en compte";
+				})
+				.catch((err) => {
+					this.infoProd = err;
+					console.log(err);
+				});
+		},
+
+		//* Want delete a product
+		wantDelete: function(event, prod) {
+			prod.delete = "red";
+			prod.selectProdu = 0;
+			prod.selectOrdering = 0;
+		},
+
+		//* Delete product
+		Delete: function(event, prod) {
+			const id = prod.id;
+			axios
+				.delete(process.env.VUE_APP_API + "product/delete/" + id)
+				// headers: {
+				// 	Authorization: `Bearer ${this.token}`,
+				// },
+
+				.then(() => {
+					this.infoProd = "Le produit a été supprimé.";
 				})
 				.catch((err) => {
 					this.infoProd = err;
@@ -473,6 +539,9 @@ input,
 .numb {
 	width: 80px;
 }
+.photo {
+	width: 120px;
+}
 table {
 	border-collapse: collapse;
 }
@@ -482,6 +551,10 @@ table {
 }
 #green {
 	background-color: greenyellow;
+}
+#red {
+	background-color: red;
+	color: white;
 }
 .nocolor {
 	background-color: white;
