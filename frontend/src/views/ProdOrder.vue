@@ -3,6 +3,25 @@
 		<h1>Produits vendus à la commande</h1>
 		<!-- A afficher si non connecté -->
 		<h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>
+		<!-- Présentation produits sur petites cartes -->
+		<div id="conteneur">
+			<div v-for="prod in products" :key="prod.product">
+				<div class="card">
+					<p class="product">{{ prod.product }}</p>
+					<p>{{ prod.producer }}</p>
+
+					<img
+						class="photo"
+						v-if="prod.photo"
+						style="width:100px;"
+						:src="prod.photo"
+						alt="product photo"
+					/>
+					<p>{{ prod.price_kg }}</p>
+					<p>{{ prod.unite_vente }}</p>
+				</div>
+			</div>
+		</div>
 
 		<table>
 			<tr>
@@ -11,6 +30,7 @@
 				<th>Prix/kg</th>
 				<th>Quantité minimum vente</th>
 				<th>Prix Quantité mini</th>
+				<th>Photo</th>
 				<!-- <th>Alerte stock</th> -->
 			</tr>
 			<tr v-for="prod in products" :key="prod.product">
@@ -19,6 +39,16 @@
 				<td>{{ prod.price_kg }} <span v-if="prod.price_kg"> €</span></td>
 				<td>{{ prod.unite_vente }}</td>
 				<td>{{ prod.price_unite_vente }} <span v-if="prod.price_unite_vente">€</span></td>
+				<td>
+					<img
+						class="photo"
+						v-if="prod.photo"
+						style="width:80px;"
+						:src="prod.photo"
+						alt="product photo"
+					/>
+				</td>
+
 				<td v-if="prod.alert <= 0">Attention stock faible !</td>
 			</tr>
 		</table>
@@ -56,6 +86,7 @@ export default {
 							price_kg: prod.data[i].price_kg,
 							unite_vente: prod.data[i].unite_vente,
 							price_unite_vente: prod.data[i].price_unite_vente,
+							photo: prod.data[i].photo,
 							alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
 						});
 					});
@@ -77,5 +108,17 @@ th {
 }
 table {
 	border-collapse: collapse;
+}
+#conteneur {
+	display: flex;
+}
+.card {
+	border: 2px solid green;
+	width: 200px;
+	height: 300px;
+	margin: 2px;
+}
+.product {
+	font-weight: bold;
 }
 </style>

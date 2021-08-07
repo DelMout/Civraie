@@ -4,6 +4,8 @@
 		<router-link to="/produits_vente_magasin">Produits à la vente</router-link> |
 		<router-link to="/produits_vente_commande">Produits à la commande</router-link> |
 		<router-link to="/tous_produits">* Liste Produits *</router-link> |
+		<router-link to="/producteurs">* Liste Producteurs *</router-link> |
+		<router-link to="/utilisateurs">* Liste Utilisateurs *</router-link> |
 	</div>
 	<router-view />
 </template>

@@ -122,6 +122,7 @@ exports.lastconn = (req, res) => {
 exports.getAllUsers = (req, res) => {
 	user.findAll({
 		order: [["last_connect", "ASC"]],
+		where: { isAdmin: 0 },
 	}).then((obj) => {
 		res.send(obj);
 	});

@@ -4,6 +4,8 @@ import Password from "../views/Password.vue";
 import ProdShop from "../views/ProdShop.vue";
 import ProdOrder from "../views/ProdOrder.vue";
 import Products from "../views/Products.vue";
+import Producers from "../views/Producers.vue";
+import Users from "../views/Users.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -45,6 +47,24 @@ const routes = [
 		component: Products,
 		meta: {
 			title: "Ferme La Civraie / Tous Produits",
+		},
+		//TODO Limiter l'accès au proprio
+	},
+	{
+		path: "/producteurs",
+		name: "Producers",
+		component: Producers,
+		meta: {
+			title: "Ferme La Civraie / Producteurs",
+		},
+		//TODO Limiter l'accès au proprio
+	},
+	{
+		path: "/utilisateurs",
+		name: "Users",
+		component: Users,
+		meta: {
+			title: "Ferme La Civraie / Utilisateurs",
 		},
 		//TODO Limiter l'accès au proprio
 	},
