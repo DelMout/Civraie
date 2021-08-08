@@ -6,7 +6,8 @@
 		<h3>
 			Passer votre commande avant le {{ dateCommande }} soir. Livraison le {{ dateLivraison }}
 		</h3>
-		<!-- Présentation produits sur petites cartes -->
+		<p>{{ infoOrder }}</p>
+		<!-- Table pour le panier de commande -->
 		<table v-if="total > 0">
 			<caption>
 				Votre commande
@@ -25,14 +26,21 @@
 			</tr>
 
 			<td colspan="4">
-				Prix total de la commande : <span>{{ numFr(total) }}</span>
+				Prix total de la commande : <span>{{ numFr(total) }} </span
+				><button class="addsub" type="button" @click="validOrder">
+					Valider la commande
+				</button>
 			</td>
 		</table>
 
+		<!-- Présentation produits sur petites cartes -->
 		<div id="conteneur">
 			<div v-for="prod in products" :key="prod.product">
 				<div class="card">
-					<p id="faible" v-if="prod.alert <= 0">Attention stock faible !</p>
+					<p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
+						Attention stock faible !
+					</p>
+					<p id="nulle" v-if="prod.stock_updated == 0">Plus de stock !</p>
 					<p class="product">{{ prod.product }}</p>
 					<p>{{ prod.producer }}</p>
 
@@ -60,6 +68,7 @@
 						>
 							-
 						</button>
+
 						<button
 							v-if="prod.qty < prod.stock_updated"
 							class="addsub"
@@ -88,6 +97,10 @@ export default {
 			length: "",
 			bought: [],
 			total: 0,
+			dateId: 5, //TODO Aller chercher la bonne info
+			userId: 5, //TODO Aller chercher la bonne info
+			infoOrder: "",
+			manqProd: "",
 		};
 	},
 	beforeCreate: function() {
@@ -144,13 +157,81 @@ export default {
 		//* Add product to the order
 		addQty: function(event, prod) {
 			prod.qty += 1;
-			this.total = parseInt(this.total) + parseInt(prod.price_unite_vente);
+			this.total = this.total + JSON.parse(prod.price_unite_vente);
 			console.log(this.total);
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
 			prod.qty -= 1;
-			this.total = parseInt(this.total) - parseInt(prod.price_unite_vente);
+			this.total = this.total - JSON.parse(prod.price_unite_vente);
+		},
+		//* Validation order
+		validOrder: function() {
+			this.manqProd = "";
+			for (let i = 0; i < this.length; i++) {
+				const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
+				if (this.products[i].qty > 0) {
+					if (decrem < 0) {
+						this.manqProd =
+							"Manque des produits. Merci de baisser votre demande sur les produits suivants." +
+							this.manqProd +
+							" Stock =" +
+							this.products[i].stock_updated +
+							" pour les " +
+							this.products[i].product +
+							".";
+						this.infoOrder = this.manqProd;
+					}
+				}
+			}
+			for (let i = 0; i < this.length; i++) {
+				const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
+				if (this.products[i].qty > 0) {
+					// si tous les stocks sont dispo
+					if (this.manqProd == "") {
+						// Ajout données à la table Order
+						axios
+							.post(
+								process.env.VUE_APP_API +
+									"order/createorder/" +
+									this.userId +
+									"/" +
+									this.dateId,
+								{
+									productId: this.products[i].id,
+									quantity: this.products[i].qty,
+									order_date: Date.now(),
+								}
+							)
+							.then(() => {
+								//Décrémenter qté à la table Products
+
+								axios
+									.put(
+										process.env.VUE_APP_API +
+											"product/modif/" +
+											this.products[i].id,
+										{
+											stock_updated: decrem,
+										}
+									)
+									.then(() => {
+										this.infoOrder =
+											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+									})
+									.catch((err) => {
+										this.infoOrder = err;
+										console.log(err);
+									});
+							})
+							.catch((err) => {
+								this.infoOrder = err;
+								console.log(err);
+							});
+					}
+				}
+			}
+			//TODO Envoi de mail confirmation
 		},
 	},
 };
@@ -189,9 +270,17 @@ caption {
 	font-weight: bold;
 	margin-bottom: 0;
 }
-#faible {
+#nulle {
 	background-color: red;
 	color: white;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+#faible {
+	background-color: orange;
+	color: black;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	margin-top: 0;

@@ -70,10 +70,7 @@ exports.modifProduct = (req, res) => {
 					const filename = rep.photo.split("/images/")[1];
 					fs.unlink(`images/${filename}`, () => {
 						product
-							.update(
-								{ ...req.body, stock_updated: req.body.stock_init },
-								{ where: { id: req.params.productid } }
-							)
+							.update({ ...req.body }, { where: { id: req.params.productid } })
 							.then(() => {
 								res.send("product and image file modified");
 							})
@@ -83,10 +80,7 @@ exports.modifProduct = (req, res) => {
 					});
 				} else {
 					product
-						.update(
-							{ ...req.body, stock_updated: req.body.stock_init },
-							{ where: { id: req.params.productid } }
-						)
+						.update({ ...req.body }, { where: { id: req.params.productid } })
 						.then(() => {
 							res.send("product modified and image file saved");
 						})
@@ -104,7 +98,6 @@ exports.modifProduct = (req, res) => {
 			.update(
 				{
 					...req.body,
-					stock_updated: req.body.stock_init,
 				},
 				{ where: { id: req.params.productid } }
 			)
@@ -116,20 +109,6 @@ exports.modifProduct = (req, res) => {
 				res.status(401).send(err.errors[0].validatorKey);
 			});
 	}
-
-	// product
-	// 	.update(
-	// 		{
-	// 			...req.body,
-	// 		},
-	// 		{ where: { id: req.params.productid } }
-	// 	)
-	// 	.then(() => {
-	// 		res.send("datas product modified");
-	// 	})
-	// 	.catch((err) => {
-	// 		res.status(401).send(err);
-	// 	});
 };
 
 //* Delete a product
