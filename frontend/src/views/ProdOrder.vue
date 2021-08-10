@@ -97,10 +97,11 @@ export default {
 			length: "",
 			bought: [],
 			total: 0,
-			dateId: 5, //TODO Aller chercher la bonne info
+			dateId: 1, //TODO Aller chercher la bonne info
 			userId: 5, //TODO Aller chercher la bonne info
 			infoOrder: "",
 			manqProd: "",
+			tablMail: "",
 		};
 	},
 	beforeCreate: function() {
@@ -184,11 +185,24 @@ export default {
 					}
 				}
 			}
+			this.tablMail = "";
 			for (let i = 0; i < this.length; i++) {
 				const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
 				if (this.products[i].qty > 0) {
-					// si tous les stocks sont dispo
+					// si stock dispo
 					if (this.manqProd == "") {
+						// Si aucun manquant sinon user refait commande
+
+						this.tablMail =
+							this.tablMail +
+							"<tr><td style='border: 1px solid black;'>" +
+							this.products[i].product +
+							"<td style='border: 1px solid black;'>" +
+							this.products[i].qty +
+							"<td style='border: 1px solid black;'>" +
+							this.products[i].unite_vente +
+							"<td style='border: 1px solid black;'>" +
+							this.numFr(this.products[i].qty * this.products[i].price_unite_vente);
 						// Ajout données à la table Order
 						axios
 							.post(
@@ -205,7 +219,6 @@ export default {
 							)
 							.then(() => {
 								//Décrémenter qté à la table Products
-
 								axios
 									.put(
 										process.env.VUE_APP_API +
@@ -216,8 +229,30 @@ export default {
 										}
 									)
 									.then(() => {
-										this.infoOrder =
-											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+										console.log("order enregistrée dans base de données.");
+										//TODO Envoi de mail confirmation
+										if (this.manqProd == "") {
+											axios
+												.post(
+													process.env.VUE_APP_API +
+														"order/emailconf/" +
+														this.userId +
+														"/" +
+														this.dateId +
+														"/" +
+														this.tablMail +
+														"/" +
+														this.numFr(this.total)
+												)
+												.then(() => {
+													this.infoOrder =
+														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+												})
+												.catch((err) => {
+													this.infoOrder = err;
+													console.log(err);
+												});
+										}
 									})
 									.catch((err) => {
 										this.infoOrder = err;
@@ -231,7 +266,6 @@ export default {
 					}
 				}
 			}
-			//TODO Envoi de mail confirmation
 		},
 	},
 };

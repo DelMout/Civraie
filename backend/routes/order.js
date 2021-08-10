@@ -20,6 +20,6 @@ router.get("/getorders/:dateid/user", orderCtrl.getOrdersByUser); //! retiré ad
 router.get("/getorders/:dateid/product", orderCtrl.getOrdersByProd); //! retiré admin
 
 // * Send email for order confirmation
-router.post("/emailconf/:userid/:dateid", orderCtrl.emailConfirm); //! Retiré auth
+router.post("/emailconf/:userid/:dateid/:contenu/:total", orderCtrl.emailConfirm); //! Retiré auth
 
 module.exports = router;

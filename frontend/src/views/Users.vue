@@ -60,7 +60,7 @@
 					/>
 				</td>
 
-				<td v-if="us.modif">
+				<td v-if="us.modif" id="validMod">
 					<button
 						v-if="us.modif && !us.delete"
 						style="background-color:greenyellow;"
@@ -213,6 +213,9 @@ input,
 }
 table {
 	border-collapse: collapse;
+}
+#validMod {
+	border: 0px solid;
 }
 .create,
 .valCreate {
