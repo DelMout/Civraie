@@ -48,3 +48,20 @@ exports.getDate = (req, res) => {
 		res.send(obj);
 	});
 };
+
+//* Find dateId from 2 weeks before today and so on
+// Find delivery date when today-15 < delivery date < end of table
+const twoWeeksBefore = new Date(new Date(today).getTime() - 15 * 24 * 60 * 60 * 1000); // today -15 days
+exports.suggest = (req, res) => {
+	date.findAll({
+		order: [["delivery_date", "ASC"]],
+		where: { delivery_date: { [Op.gt]: twoWeeksBefore } },
+	})
+		.then((obj) => {
+			// res.status(200).send(obj.delivery_date);
+			res.status(200).send(obj);
+		})
+		.catch((err) => {
+			res.status(401).send(err);
+		});
+};

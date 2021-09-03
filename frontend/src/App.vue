@@ -6,6 +6,7 @@
 		<router-link to="/tous_produits">* Liste Produits *</router-link> |
 		<router-link to="/producteurs">* Liste Producteurs *</router-link> |
 		<router-link to="/utilisateurs">* Liste Utilisateurs *</router-link> |
+		<router-link to="/commandes">* Commandes reçues *</router-link> |
 	</div>
 	<router-view />
 </template>

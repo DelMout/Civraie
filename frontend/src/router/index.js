@@ -6,6 +6,7 @@ import ProdOrder from "../views/ProdOrder.vue";
 import Products from "../views/Products.vue";
 import Producers from "../views/Producers.vue";
 import Users from "../views/Users.vue";
+import Orders from "../views/Orders.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -65,6 +66,15 @@ const routes = [
 		component: Users,
 		meta: {
 			title: "Ferme La Civraie / Utilisateurs",
+		},
+		//TODO Limiter l'accès au proprio
+	},
+	{
+		path: "/commandes",
+		name: "Orders",
+		component: Orders,
+		meta: {
+			title: "Ferme La Civraie / Commandes",
 		},
 		//TODO Limiter l'accès au proprio
 	},
