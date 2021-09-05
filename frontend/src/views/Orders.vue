@@ -7,98 +7,63 @@
 		<i>Les dates dans le passé proposées remontent seulement à 15 jours.</i>
 		<!-- Dropdown -->
 		<div>
-			<Dropdown :items="selectDate" />
-		</div>
-		<!-- Selon sélection de date limite commande, afficher date de livraison -->
-		<table v-if="total > 0">
-			<caption>
-				Votre commande
-			</caption>
-			<tr>
-				<th>Produit</th>
-				<th>Quantité</th>
-				<th>Unité</th>
-				<th>Prix</th>
-			</tr>
-			<tr v-for="prod in products" :key="prod.id">
-				<td v-if="prod.qty > 0">{{ prod.product }}</td>
-				<td v-if="prod.qty > 0">{{ prod.qty }} x</td>
-				<td v-if="prod.qty > 0">{{ prod.unite_vente }}</td>
-				<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unite_vente) }}</td>
-			</tr>
-
-			<td colspan="4">
-				Prix total de la commande : <span>{{ numFr(total) }} </span
-				><button class="addsub" type="button" @click="validOrder">
-					Valider la commande
-				</button>
-			</td>
-		</table>
-
-		<!-- Présentation produits sur petites cartes -->
-		<div id="conteneur">
-			<div v-for="prod in products" :key="prod.product">
-				<div class="card">
-					<p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
-						Attention stock faible !
-					</p>
-					<p id="nulle" v-if="prod.stock_updated == 0">Plus de stock !</p>
-					<p class="product">{{ prod.product }}</p>
-					<p>{{ prod.producer }}</p>
-
-					<img
-						class="photo"
-						v-if="prod.photo"
-						style="width:100px;"
-						:src="prod.photo"
-						alt="product photo"
-					/>
-					<p>
-						<span v-if="prod.price_kg > 0"> {{ numFr(prod.price_kg) }}/kg </span>
-
-						<span v-if="prod.price_kg <= 0">
-							{{ numFr(prod.price_unite_vente) }}/{{ prod.unite_vente }}
-						</span>
-					</p>
-					<p>Quantité mini :<br />{{ prod.unite_vente }}</p>
-					<p id="butAddSub">
-						<button
-							v-if="prod.qty > 0"
-							class="addsub"
-							type="button"
-							@click="subQty($event, prod)"
-						>
-							-
-						</button>
-
-						<button
-							v-if="prod.qty < prod.stock_updated"
-							class="addsub"
-							type="button"
-							@click="addQty($event, prod)"
-						>
-							+
-						</button>
-					</p>
-				</div>
+			<button @click="select">Sélectionner la date de livraison</button>
+			<p v-if="selected">Date de livraison sélectionnée : {{ selectedDate }}</p>
+			<div v-for="sel in selectDate" :key="sel.id">
+				<p class="dates" @click="dateSelected($event, sel)" v-if="displayList">
+					{{ dateFr(sel.delivery_date) }}
+				</p>
+				<!-- <a v-if="displayList" :href="item.id">{{ item.delivery_date }}</a> -->
 			</div>
+			<p v-if="selected">Date au plus tard pour la saisie des commandes : {{ latestDate }}</p>
 		</div>
+		<div>
+			<button @click="displayOrder">Afficher par</button>
+		</div>
+		<!-- Tableau des commandes reçues -->
+		<div>
+			<i>Affichage par client (plusieurs petits tableaux) ou par produit</i>
+			<!-- Table par client -->
+			<table>
+				<caption>
+					Commandes détaillées par client
+				</caption>
+				<tr>
+					<th colspan="3">Client n°3</th>
+				</tr>
+				<tr>
+					<th>Produits</th>
+					<th>Quantité</th>
+					<th>Unité</th>
+				</tr>
+			</table>
 
-		<p>Nombre produits = {{ length }}</p>
+			<!-- Table par produit -->
+			<table>
+				<caption>
+					Commandes totalisées par produit
+				</caption>
+				<tr>
+					<th>Produits</th>
+					<th>Quantité</th>
+					<th>Unité</th>
+				</tr>
+			</table>
+		</div>
 	</div>
 </template>
 <script>
 import axios from "axios";
-import Dropdown from "@/components/Dropdown";
+import moment from "moment";
 
 export default {
-	components: { Dropdown },
 	data() {
 		return {
-			dateCommande: "25/08/2021",
 			products: [],
 			selectDate: [],
 			length: "",
+			displayList: false,
+			idDate: "",
 			bought: [],
 			total: 0,
 			dateId: 1, //TODO Aller chercher la bonne info
@@ -112,27 +77,15 @@ export default {
 		this.selectDate = [];
 	},
 	created: function() {
+		this.selected = false;
 		//* All delivery dates commencing by 2 weeks before today and so on
 		axios.get(process.env.VUE_APP_API + "date/suggest").then((date) => {
 			this.length = date.data.length;
 			for (let i = 0; i < this.length; i++) {
-				// axios
-				// 	.get(
-				// 		process.env.VUE_APP_API + "date/suggest/" + prod.data[i].producerId
-				// 	)
-				// 	.then((producer) => {
 				this.selectDate.push({
 					id: date.data[i].id,
 					delivery_date: date.data[i].delivery_date,
 					latest_date: date.data[i].latest_date_order,
-					// producer: producer.data.entreprise,
-					// price_kg: prod.data[i].price_kg,
-					// unite_vente: prod.data[i].unite_vente,
-					// price_unite_vente: prod.data[i].price_unite_vente,
-					// photo: prod.data[i].photo,
-					// alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
-					// stock_updated: prod.data[i].stock_updated,
-					// qty: 0,
 				});
 				// sort alpha order
 				this.selectDate.sort(function(a, b) {
@@ -152,6 +105,27 @@ export default {
 		});
 	},
 	methods: {
+		//* Format French date
+		dateFr: function(date) {
+			moment.locale("fr");
+			return moment(date).format("DD/MM/YYYY");
+		},
+
+		//* Ask for displaying of delivery_date list
+		select: function() {
+			this.displayList = true;
+			this.selected = false;
+		},
+
+		//* When delivery_date selected
+		dateSelected: function(event, item) {
+			this.displayList = false;
+			this.selectedDate = this.dateFr(item.delivery_date);
+			this.latestDate = this.dateFr(item.latest_date);
+			this.idDate = item.id;
+			this.selected = true;
+		},
+
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -335,5 +309,8 @@ img {
 }
 #butAddSub {
 	margin-top: auto;
+}
+.dates {
+	cursor: pointer;
 }
 </style>
