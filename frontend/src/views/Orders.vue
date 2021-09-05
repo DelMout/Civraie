@@ -5,8 +5,11 @@
 			Sélectionner la date de livraison des commandes
 		</h3>
 		<i>Les dates dans le passé proposées remontent seulement à 15 jours.</i>
+		<!-- Dropdown -->
+		<div>
+			<Dropdown :items="selectDate" />
+		</div>
 		<!-- Selon sélection de date limite commande, afficher date de livraison -->
-		<p>Date de livraison sélectionnée : {{ dateLivraison }}</p>
 		<table v-if="total > 0">
 			<caption>
 				Votre commande
@@ -86,12 +89,13 @@
 </template>
 <script>
 import axios from "axios";
+import Dropdown from "@/components/Dropdown";
 
 export default {
+	components: { Dropdown },
 	data() {
 		return {
 			dateCommande: "25/08/2021",
-			dateLivraison: "30/08/2021",
 			products: [],
 			selectDate: [],
 			length: "",
@@ -120,6 +124,7 @@ export default {
 				this.selectDate.push({
 					id: date.data[i].id,
 					delivery_date: date.data[i].delivery_date,
+					latest_date: date.data[i].latest_date_order,
 					// producer: producer.data.entreprise,
 					// price_kg: prod.data[i].price_kg,
 					// unite_vente: prod.data[i].unite_vente,
