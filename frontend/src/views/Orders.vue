@@ -18,35 +18,57 @@
 			<p v-if="selected">Date au plus tard pour la saisie des commandes : {{ latestDate }}</p>
 		</div>
 		<div>
-			<button @click="displayOrder">Afficher par</button>
+			<button @click="displayByCustomer">Afficher par CLIENT</button>
+			<button @click="displayByProduct">Afficher par PRODUIT</button>
 		</div>
 		<!-- Tableau des commandes reçues -->
 		<div>
 			<i>Affichage par client (plusieurs petits tableaux) ou par produit</i>
 			<!-- Table par client -->
-			<table>
+			<table v-if="client">
 				<caption>
 					Commandes détaillées par client
 				</caption>
+				<!-- <tr>
+						<th colspan="2">Client</th>
+						<th>Date commande</th>
+					</tr>
+					<tr>
+						<td colspan="2">{{ ord.userName }} {{ ord.userFirstName }}</td>
+						<td>{{ dateFr(ord.order_date) }}</td>
+					</tr> -->
 				<tr>
-					<th colspan="3">Client n°3</th>
-				</tr>
-				<tr>
+					<th>Client</th>
+					<th>Date commande</th>
 					<th>Produits</th>
 					<th>Quantité</th>
 					<th>Unité</th>
+				</tr>
+				<tr v-for="ord in orders" :key="ord.userId">
+					<td :class="ord.color">{{ ord.userName }} {{ ord.userFirstName }}</td>
+					<td :class="ord.color">{{ dateFr(ord.order_date) }}</td>
+					<td :class="ord.color">{{ ord.product }}</td>
+					<td :class="ord.color">{{ ord.quantity }}</td>
+					<td :class="ord.color">{{ ord.unite_vente }}</td>
 				</tr>
 			</table>
 
 			<!-- Table par produit -->
-			<table>
+			<table v-if="produit">
 				<caption>
 					Commandes totalisées par produit
 				</caption>
 				<tr>
-					<th>Produits</th>
+					<th>Producteur</th>
+					<th>Produit</th>
 					<th>Quantité</th>
 					<th>Unité</th>
+				</tr>
+				<tr v-for="pro in qtyProd" :key="pro.producer">
+					<td :class="pro.color">{{ pro.producer }}</td>
+					<td :class="pro.color">{{ pro.prod }}</td>
+					<td :class="pro.color">{{ pro.qty }}</td>
+					<td :class="pro.color">{{ pro.unite }}</td>
 				</tr>
 			</table>
 		</div>
@@ -64,17 +86,22 @@ export default {
 			length: "",
 			displayList: false,
 			idDate: "",
-			bought: [],
+			orders: [],
+			qtyUsers: [],
+			qtyProd: [],
 			total: 0,
 			dateId: 1, //TODO Aller chercher la bonne info
 			userId: 5, //TODO Aller chercher la bonne info
 			infoOrder: "",
 			manqProd: "",
 			tablMail: "",
+			produit: false,
+			client: false,
 		};
 	},
 	beforeCreate: function() {
 		this.selectDate = [];
+		this.orders = [];
 	},
 	created: function() {
 		this.selected = false;
@@ -101,7 +128,6 @@ export default {
 					return 0;
 				});
 			}
-			console.log(this.selectDate);
 		});
 	},
 	methods: {
@@ -117,13 +143,191 @@ export default {
 			this.selected = false;
 		},
 
-		//* When delivery_date selected
+		//*Display orders by customer
 		dateSelected: function(event, item) {
+			// listOrders: function(event, item) {
+			this.orders = [];
+			this.qtyUsers = [];
+			this.qtyProd = [];
 			this.displayList = false;
 			this.selectedDate = this.dateFr(item.delivery_date);
 			this.latestDate = this.dateFr(item.latest_date);
 			this.idDate = item.id;
 			this.selected = true;
+			this.produit = false;
+			this.client = false; // Display table of orders by customer
+			// Build table Orders with dateId (from delivery date selected)
+			axios.get(process.env.VUE_APP_API + "order/getorders/" + this.idDate).then((order) => {
+				this.length = order.data.length;
+				for (let i = 0; i < this.length; i++) {
+					// Find name of userId
+					axios
+						.get(process.env.VUE_APP_API + "user/getuser/" + order.data[i].userId)
+						.then((user) => {
+							// Find name of product and unité_vente of productId
+							axios
+								.get(
+									process.env.VUE_APP_API +
+										"product/datas/" +
+										order.data[i].productId
+								)
+								.then((product) => {
+									this.orders.push({
+										userId: order.data[i].userId,
+										userName: user.data.nom.toUpperCase(),
+										userFirstName: user.data.prenom,
+										product: product.data.product,
+										unite_vente: product.data.unite_vente,
+										quantity: order.data[i].quantity,
+										order_date: order.data[i].order_date,
+										color: "line_pair",
+									});
+									// sort alpha order
+									this.orders.sort(function(a, b) {
+										var orderA = a.userId;
+										var orderB = b.userId;
+
+										if (orderA < orderB) {
+											return -1;
+										}
+										if (orderA > orderB) {
+											return 1;
+										}
+										return 0;
+									});
+									// List of userId
+									if (this.qtyUsers.indexOf(order.data[i].userId) < 0) {
+										this.qtyUsers.push(order.data[i].userId);
+									}
+
+									// sort alpha order
+									this.qtyUsers.sort(function(a, b) {
+										var userA = a;
+										var userB = b;
+
+										if (userA < userB) {
+											return -1;
+										}
+										if (userA > userB) {
+											return 1;
+										}
+										return 0;
+									});
+
+									//List of total by product
+									axios
+										.get(
+											process.env.VUE_APP_API +
+												"producer/getproducer/" +
+												product.data.producerId
+										)
+										.then((producer) => {
+											if (
+												this.qtyProd.findIndex(
+													(produ) => produ.prod === product.data.product
+												) < 0
+											) {
+												this.qtyProd.push({
+													prod: product.data.product,
+													unite: product.data.unite_vente,
+													qty: 0,
+													producer: producer.data.entreprise,
+													color: "line_pair",
+												});
+
+												console.log("qtyProd");
+												console.log(this.qtyProd);
+											}
+										});
+								});
+						});
+				}
+			});
+		},
+
+		//* Altern backcolor on lines n table for each customer
+		alterColor: function() {
+			// //! Boucle sur nombre de qty Users et appliquer sur color !
+			for (let j = 1; j < this.qtyUsers.length; j = j + 2) {
+				console.log(this.orders);
+				console.log(this.qtyUsers[j]);
+				console.log("orders =");
+				for (let k = 0; k < this.orders.length; k++) {
+					console.log(this.orders[k].userId);
+					if (this.orders[k].userId === this.qtyUsers[j]) {
+						this.orders[k].color = "line_impair";
+					}
+				}
+			}
+		},
+
+		//* Display of orders by customer
+		displayByCustomer: function() {
+			this.produit = false;
+			this.client = true;
+			this.alterColor();
+		},
+
+		//* Display of orders by product
+		displayByProduct: function() {
+			console.log("coucou");
+			this.produit = true;
+			this.client = false;
+			console.log(this.qtyProd);
+
+			this.qtyProd.forEach((qProd) => {
+				let q = 0;
+				this.orders.forEach((ord) => {
+					if (qProd.prod === ord.product) {
+						q = q + ord.quantity;
+					}
+				});
+				console.log(qProd.prod + " = " + q);
+				qProd.qty = q;
+			});
+			// Sort by producer
+			this.qtyProd.sort(function(a, b) {
+				var procerA = a.producer;
+				var procerB = b.producer;
+
+				if (procerA < procerB) {
+					return -1;
+				}
+				if (procerA > procerB) {
+					return 1;
+				}
+				return 0;
+			});
+			// Alternate color lines
+			console.log("longur = " + this.qtyProd.length);
+			for (let v = 1; v < this.qtyProd.length; v++) {
+				if (this.qtyProd[v].producer != this.qtyProd[v - 1].producer) {
+					if (this.qtyProd[v - 1].color === "line_pair") {
+						this.qtyProd[v].color = "line_impair";
+					} else {
+						this.qtyProd[v].color = "line_pair";
+					}
+				} else {
+					this.qtyProd[v].color = this.qtyProd[v - 1].color;
+				}
+			}
+
+			console.log("resultat");
+			console.log(this.qtyProd);
+			// this.qtyProd.forEach((element) => console.log(element.prod));
+			// sort alpha order
+			// this.orders.sort(function(a, b) {
+			// 	var orderA = a.product;
+			// 	var orderB = b.product;
+
+			// 	if (orderA < orderB) {
+			// 		return -1;
+			// 	}
+			// 	if (orderA > orderB) {
+			// 		return 1;
+			// 	}
+			// 	return 0;
+			// });
 		},
 
 		//* Number format
@@ -261,7 +465,22 @@ th {
 table,
 caption {
 	border-collapse: collapse;
-	background-color: greenyellow;
+}
+caption {
+	background-color: green;
+	color: white;
+	font-weight: bolder;
+	padding: 1rem 1rem 1rem 1rem;
+}
+th {
+	background-color: green;
+	color: white;
+}
+.line_pair {
+	background-color: yellowgreen;
+}
+.line_impair {
+	background-color: rgb(113, 155, 30);
 }
 
 #conteneur {
