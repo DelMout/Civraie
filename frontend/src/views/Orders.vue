@@ -21,6 +21,22 @@
 			<button @click="displayByCustomer">Afficher par CLIENT</button>
 			<button @click="displayByProduct">Afficher par PRODUIT</button>
 		</div>
+		<div>
+			<button @click="downloadClient">Télécharger Excel / CLIENT</button>
+		</div>
+		<div>
+			<button @click="downloadProduit">Télécharger Excel / PRODUIT</button>
+		</div>
+
+		<!-- <div>
+			<a :href="linkOpenExcel"
+				><button @click="exportExcel">Télécharger fichier Excel</button></a
+			>
+			<a href="http://localhost:3001/api/order/exportexcel/10"
+				><button >Télécharger fichier Excel</button></a
+			> -->
+		<!-- <button @click="exportExcel">Télécharger fichier Excel</button> -->
+		<!-- </div> -->
 		<!-- Tableau des commandes reçues -->
 		<div>
 			<i>Affichage par client (plusieurs petits tableaux) ou par produit</i>
@@ -77,6 +93,7 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import XlsExport from "xlsexport";
 
 export default {
 	data() {
@@ -97,6 +114,12 @@ export default {
 			tablMail: "",
 			produit: false,
 			client: false,
+			linkOpenExcel: "",
+			json: {
+				dataSource: [{ name: "delphine", phone: "5555", email: "huh@ihji" }],
+				head: ["name", "phone", "email"],
+				fileName: "json.xlsx",
+			},
 		};
 	},
 	beforeCreate: function() {
@@ -177,9 +200,11 @@ export default {
 										userName: user.data.nom.toUpperCase(),
 										userFirstName: user.data.prenom,
 										product: product.data.product,
+										producerId: product.data.producerId,
 										unite_vente: product.data.unite_vente,
 										quantity: order.data[i].quantity,
 										order_date: order.data[i].order_date,
+										delivery_date: this.selectedDate,
 										color: "line_pair",
 									});
 									// sort alpha order
@@ -314,20 +339,6 @@ export default {
 
 			console.log("resultat");
 			console.log(this.qtyProd);
-			// this.qtyProd.forEach((element) => console.log(element.prod));
-			// sort alpha order
-			// this.orders.sort(function(a, b) {
-			// 	var orderA = a.product;
-			// 	var orderB = b.product;
-
-			// 	if (orderA < orderB) {
-			// 		return -1;
-			// 	}
-			// 	if (orderA > orderB) {
-			// 		return 1;
-			// 	}
-			// 	return 0;
-			// });
 		},
 
 		//* Number format
@@ -447,6 +458,17 @@ export default {
 					}
 				}
 			}
+		},
+
+		//* Downloading Excel By Customer
+		downloadClient: function() {
+			var xls = new XlsExport(this.orders, "Par_Client");
+			xls.exportToXLS("commandes_Client_" + this.selectedDate + ".xls");
+		},
+		//* Downloading Excel By Product
+		downloadProduit: function() {
+			var xls = new XlsExport(this.qtyProd, "Par_Produit");
+			xls.exportToXLS("commandes_Produit_" + this.selectedDate + ".xls");
 		},
 	},
 };
