@@ -7,6 +7,22 @@
 			Passer votre commande avant le {{ dateCommande }} soir. Livraison le {{ dateLivraison }}
 		</h3>
 		<p>{{ infoOrder }}</p>
+		<!-- Display categories products -->
+		<div>
+			<!-- V-for -->
+
+			<div id="categories">
+				<div class="category_card">
+					<p><mark>LÉGUMES</mark></p>
+				</div>
+				<div class="category_card">
+					<p>POMMES</p>
+				</div>
+				<div class="category_card">
+					<p>LAPIN</p>
+				</div>
+			</div>
+		</div>
 		<!-- Table pour le panier de commande -->
 		<table v-if="total > 0">
 			<caption>
@@ -332,5 +348,30 @@ img {
 }
 #butAddSub {
 	margin-top: auto;
+}
+#categories {
+	display: flex;
+	justify-content: center;
+}
+.category_card {
+	padding: 0rem 0.9rem 0rem 0.9rem;
+	margin: 0 1rem 0 1rem;
+	border: 3px solid green;
+	border-radius: 10px;
+	box-shadow: 5px 5px 5px grey;
+	width: 10rem;
+	font-weight: bolder;
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+		url("../assets/pomme.jpg");
+	background-size: 60%;
+	color: rgb(85, 85, 85);
+	font-size: 1.5rem;
+
+	/* text-shadow: 2px 2px 2px rgb(4, 88, 4); */
+}
+.category_card mark {
+	/* background-color: rgba(255, 255, 255, 0.6); */
+	color: green;
+	font-size: 1.5rem;
 }
 </style>

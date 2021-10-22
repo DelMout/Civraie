@@ -94,47 +94,82 @@ export default {
 
 		//* Login
 		login: function() {
+			const formData = new FormData();
+			formData.append("pseudo", this.$data.pseudo);
+			formData.append("interet", this.$data.interet);
+			formData.append("frequence", this.$data.frequence);
+			formData.append("jour", this.$data.jour);
+			formData.append("heure", this.$data.heure);
+			formData.append("participants", this.$data.participants);
+			formData.append("jeux", this.$data.jeux);
+			formData.append("nouveau", this.$data.nouveau);
+			formData.append("suggestions", this.$data.suggestions);
+			formData.append("commentaires", this.$data.commentaires);
 			axios
-				.post(process.env.VUE_APP_API + "user/login", {
-					email: this.email,
-					password: this.password,
-				})
+				.post(
+					"http://localhost:3001/api/sondage/savesondage",
+					formData
+					// {
+					// pseudo: this.pseudo,
+					// interet: this.interet,
+					// frequence: this.frequence,
+					// jour: this.jour,
+					// heure: this.heure,
+					// participants: this.participants,
+					// jeux: this.jeux,
+					// nouveau: this.nouveau,
+					// suggestions: this.suggestions,
+					// commentaires: this.commentaires,
+					// }
+				)
 				.then(() => {
-					// Find firstname and name of user
-					axios
-						.get(process.env.VUE_APP_API + "user/firstname/" + this.email)
-						.then((user) => {
-							this.prenom = user.data.prenom;
-							this.nom = user.data.nom;
-							this.admin = user.data.isAdmin;
-
-							// MAJ last_connect + jeton
-							axios
-								.put(process.env.VUE_APP_API + "user/login/" + this.email)
-								.then(() => {
-									//TODO Info à transmettre dans Vuex
-									// this.info =
-									// 	"Bonjour " +
-									// 	this.prenom +
-									// 	" " +
-									// 	this.nom +
-									// 	", vous êtes connecté(e).";
-									this.logged = true;
-									this.creation = false;
-									this.forgot = false;
-									if (this.admin === 0) {
-										this.$router.push("/produits_vente_commande");
-									}
-									if (this.admin === 1) {
-										this.$router.push("/tous_produits");
-									}
-								})
-
-								.catch(() => {
-									this.info = "Adresse email ou mot de passe erroné.";
-								});
-						});
+					console.log("OK");
+				})
+				.catch((err) => {
+					console.log(err);
 				});
+
+			// axios
+			// 	.post(process.env.VUE_APP_API + "user/login", {
+			// 		email: this.email,
+			// 		password: this.password,
+			// 	})
+			// 	.then(() => {
+			// 		// Find firstname and name of user
+			// 		axios
+			// 			.get(process.env.VUE_APP_API + "user/firstname/" + this.email)
+			// 			.then((user) => {
+			// 				this.prenom = user.data.prenom;
+			// 				this.nom = user.data.nom;
+			// 				this.admin = user.data.isAdmin;
+
+			// 				// MAJ last_connect + jeton
+			// 				axios
+			// 					.put(process.env.VUE_APP_API + "user/login/" + this.email)
+			// 					.then(() => {
+			// 						//TODO Info à transmettre dans Vuex
+			// 						// this.info =
+			// 						// 	"Bonjour " +
+			// 						// 	this.prenom +
+			// 						// 	" " +
+			// 						// 	this.nom +
+			// 						// 	", vous êtes connecté(e).";
+			// 						this.logged = true;
+			// 						this.creation = false;
+			// 						this.forgot = false;
+			// 						if (this.admin === 0) {
+			// 							this.$router.push("/produits_vente_commande");
+			// 						}
+			// 						if (this.admin === 1) {
+			// 							this.$router.push("/tous_produits");
+			// 						}
+			// 					})
+
+			// 					.catch(() => {
+			// 						this.info = "Adresse email ou mot de passe erroné.";
+			// 					});
+			// 			});
+			// 	});
 		},
 
 		//* Password forgotten
