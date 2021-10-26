@@ -1,25 +1,58 @@
 <template>
 	<div>
-		<h1>Produits vendus à la commande</h1>
+		<h3>Produits vendus à la commande</h3>
 		<!-- A afficher si non connecté -->
-		<h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>
+		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>
 		<h3>
 			Passer votre commande avant le {{ dateCommande }} soir. Livraison le {{ dateLivraison }}
-		</h3>
+		</h3> -->
 		<p>{{ infoOrder }}</p>
 		<!-- Display categories products -->
 		<div>
 			<!-- V-for -->
 
 			<div id="categories">
-				<div class="category_card">
-					<p><mark>LÉGUMES</mark></p>
+				<div class="category_card chevre">
+					<p>PRODUITS LAITIERS</p>
 				</div>
-				<div class="category_card">
-					<p>POMMES</p>
+				<div @click="selectCat($event)" class="category_card legumes">
+					<p>LÉGUMES</p>
 				</div>
-				<div class="category_card">
-					<p>LAPIN</p>
+				<div class="category_card pommes">
+					<p>FRUITS</p>
+				</div>
+				<div class="category_card volaille">
+					<p>VOLAILLES</p>
+				</div>
+				<div class="category_card vache">
+					<p>VIANDE BOVINE</p>
+				</div>
+				<div class="category_card cochon">
+					<p>VIANDE PORCINE</p>
+				</div>
+				<div class="category_card lapin">
+					<p>LAPINS</p>
+				</div>
+				<div class="category_card sucre">
+					<p>PRODUITS SUCRÉS</p>
+				</div>
+				<div class="category_card sale">
+					<p>PRODUITS SALÉS</p>
+				</div>
+				<div class="category_card oeuf">
+					<p>ŒUFS</p>
+				</div>
+				<div class="category_card huile">
+					<p>HUILES</p>
+				</div>
+				<div class="category_card vin">
+					<p>BOISSONS</p>
+				</div>
+				<div class="category_card panier">
+					<p>PANIERS GARNIS</p>
+				</div>
+				<div class="category_card magasin">
+					<p>DIVERS</p>
 				</div>
 			</div>
 		</div>
@@ -50,7 +83,7 @@
 		</table>
 
 		<!-- Présentation produits sur petites cartes -->
-		<div id="conteneur">
+		<div id="conteneur" v-if="card_products">
 			<div v-for="prod in products" :key="prod.product">
 				<div class="card">
 					<p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
@@ -118,6 +151,7 @@ export default {
 			infoOrder: "",
 			manqProd: "",
 			tablMail: "",
+			card_products: false,
 		};
 	},
 	beforeCreate: function() {
@@ -171,6 +205,12 @@ export default {
 				num
 			);
 		},
+		//* Display products according to the category selected
+		selectCat: function(event) {
+			this.card_products = true;
+			console.log(event.target.value);
+		},
+
 		//* Add product to the order
 		addQty: function(event, prod) {
 			prod.qty += 1;
@@ -287,6 +327,9 @@ export default {
 };
 </script>
 <style scoped>
+h3 {
+	margin-top: 0;
+}
 td,
 th {
 	border: 1px solid white;
@@ -352,26 +395,107 @@ img {
 #categories {
 	display: flex;
 	justify-content: center;
+	flex-wrap: wrap;
 }
 .category_card {
+	display: flex;
 	padding: 0rem 0.9rem 0rem 0.9rem;
 	margin: 0 1rem 0 1rem;
-	border: 3px solid green;
+	/* border: 3px solid green; */
 	border-radius: 10px;
-	box-shadow: 5px 5px 5px grey;
-	width: 10rem;
+	box-shadow: 5px 5px 5px rgb(85, 85, 85);
+	width: 6.5rem;
+	height: 3.5rem;
 	font-weight: bolder;
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
-		url("../assets/pomme.jpg");
-	background-size: 60%;
-	color: rgb(85, 85, 85);
-	font-size: 1.5rem;
 
+	color: rgb(85, 85, 85);
+	/* color: rgb(85, 85, 85); */
+	font-size: 1.2rem;
+	/* -webkit-text-stroke: 1.5px white; */
 	/* text-shadow: 2px 2px 2px rgb(4, 88, 4); */
+	text-shadow: 2px 3px 3px white;
+	font-family: Tahoma, sans-serif;
+	cursor: pointer;
 }
-.category_card mark {
-	/* background-color: rgba(255, 255, 255, 0.6); */
-	color: green;
-	font-size: 1.5rem;
+.category_card:hover {
+	-webkit-transform: scale(1.25); /* Safari et Chrome */
+	-moz-transform: scale(1.25); /* Firefox */
+	-ms-transform: scale(1.25); /* Internet Explorer 9 */
+	transform: scale(1.25);
+	transition: transform ease-in;
+}
+.category_card p {
+	margin: auto;
+}
+.pommes {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/pomme.jpg");
+	background-size: 100%;
+}
+.legumes {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/legume2.jpg");
+	background-size: 100%;
+	border: 4px solid rgb(85, 85, 85);
+}
+.lapin {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/lapin.jpg");
+	background-size: 100%;
+}
+.oeuf {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/oeufs2.jpg");
+	background-size: 100%;
+}
+.chevre {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/fromage1.jpg");
+	background-size: 100%;
+}
+.volaille {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/poules.jpg");
+	background-size: 100%;
+}
+.vache {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/vache.jpg");
+	background-size: 100%;
+}
+.cochon {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/cochons.jpg");
+	background-size: 100%;
+}
+.sucre {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/confit.jpg");
+	background-size: 100%;
+}
+.sale {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/pasta.jpg");
+	background-size: 100%;
+}
+.huile {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/huile.jpg");
+	background-size: 100%;
+}
+.vin {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/vins.jpg");
+	background-size: 100%;
+}
+.panier {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+		url("../assets/panier_garni.jpg");
+	background-size: 120%;
+}
+.magasin {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7)),
+		url("../assets/rayon_magasin.jpg");
+	background-size: 100%;
 }
 </style>
