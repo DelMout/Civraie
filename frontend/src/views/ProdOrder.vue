@@ -11,28 +11,30 @@
 		<div>
 			<!-- V-for -->
 
-			<div id="categories">
-				<div class="category_card chevre">
+			<div class="categories">
+				<div class="category_card lait">
 					<p>PRODUITS LAITIERS</p>
 				</div>
 				<div @click="selectCat($event)" class="category_card legumes">
 					<p>LÉGUMES</p>
 				</div>
-				<div class="category_card pommes">
+				<div class="category_card fruit">
 					<p>FRUITS</p>
 				</div>
 				<div class="category_card volaille">
 					<p>VOLAILLES</p>
 				</div>
-				<div class="category_card vache">
+				<div class="category_card bovine">
 					<p>VIANDE BOVINE</p>
 				</div>
-				<div class="category_card cochon">
+				<div class="category_card porcine">
 					<p>VIANDE PORCINE</p>
 				</div>
 				<div class="category_card lapin">
 					<p>LAPINS</p>
 				</div>
+			</div>
+			<div class="categories deuxie">
 				<div class="category_card sucre">
 					<p>PRODUITS SUCRÉS</p>
 				</div>
@@ -45,13 +47,13 @@
 				<div class="category_card huile">
 					<p>HUILES</p>
 				</div>
-				<div class="category_card vin">
+				<div class="category_card boisson">
 					<p>BOISSONS</p>
 				</div>
-				<div class="category_card panier">
+				<div class="category_card garni">
 					<p>PANIERS GARNIS</p>
 				</div>
-				<div class="category_card magasin">
+				<div class="category_card divers">
 					<p>DIVERS</p>
 				</div>
 			</div>
@@ -143,6 +145,7 @@ export default {
 			dateCommande: "25/08/2021",
 			dateLivraison: "30/08/2021",
 			products: [],
+			categories: [],
 			length: "",
 			bought: [],
 			total: 0,
@@ -156,47 +159,61 @@ export default {
 	},
 	beforeCreate: function() {
 		this.products = [];
+		this.categories = [];
 	},
 	created: function() {
-		//* All products with ordering (2)
-		axios.get(process.env.VUE_APP_API + "product/2").then((prod) => {
-			// console.log(products);
-			this.length = prod.data.length;
-			for (let i = 0; i < this.length; i++) {
-				axios
-					.get(
-						process.env.VUE_APP_API + "producer/getproducer/" + prod.data[i].producerId
-					)
-					.then((producer) => {
-						this.products.push({
-							id: prod.data[i].id,
-							product: prod.data[i].product,
-							producer: producer.data.entreprise,
-							price_kg: prod.data[i].price_kg,
-							unite_vente: prod.data[i].unite_vente,
-							price_unite_vente: prod.data[i].price_unite_vente,
-							photo: prod.data[i].photo,
-							alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
-							stock_updated: prod.data[i].stock_updated,
-							qty: 0,
-						});
-						// sort alpha order
-						this.products.sort(function(a, b) {
-							var productA = a.product.toUpperCase();
-							var productB = b.product.toUpperCase();
-
-							if (productA < productB) {
-								return -1;
-							}
-							if (productA > productB) {
-								return 1;
-							}
-							return 0;
-						});
-					});
+		//* All categories
+		axios.get(process.env.VUE_APP_API + "category/getcategories").then((catego) => {
+			console.log(catego.data.length);
+			for (let c = 0; c < catego.data.length; c++) {
+				this.categories.push({
+					id: catego.data[c].id,
+					catagory: catego.data[c].category,
+				});
 			}
-			console.log(this.products);
-		});
+			console.log(this.categories);
+		}),
+			//* All products with ordering (2)
+			axios.get(process.env.VUE_APP_API + "product/2").then((prod) => {
+				// console.log(products);
+				this.length = prod.data.length;
+				for (let i = 0; i < this.length; i++) {
+					axios
+						.get(
+							process.env.VUE_APP_API +
+								"producer/getproducer/" +
+								prod.data[i].producerId
+						)
+						.then((producer) => {
+							this.products.push({
+								id: prod.data[i].id,
+								product: prod.data[i].product,
+								producer: producer.data.entreprise,
+								price_kg: prod.data[i].price_kg,
+								unite_vente: prod.data[i].unite_vente,
+								price_unite_vente: prod.data[i].price_unite_vente,
+								photo: prod.data[i].photo,
+								alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
+								stock_updated: prod.data[i].stock_updated,
+								qty: 0,
+							});
+							// sort alpha order
+							this.products.sort(function(a, b) {
+								var productA = a.product.toUpperCase();
+								var productB = b.product.toUpperCase();
+
+								if (productA < productB) {
+									return -1;
+								}
+								if (productA > productB) {
+									return 1;
+								}
+								return 0;
+							});
+						});
+				}
+				console.log(this.products);
+			});
 	},
 	methods: {
 		//* Number format
@@ -392,10 +409,13 @@ img {
 #butAddSub {
 	margin-top: auto;
 }
-#categories {
+.categories {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
+}
+.deuxie {
+	margin-top: 1rem;
 }
 .category_card {
 	display: flex;
@@ -417,6 +437,7 @@ img {
 	font-family: Tahoma, sans-serif;
 	cursor: pointer;
 }
+
 .category_card:hover {
 	-webkit-transform: scale(1.25); /* Safari et Chrome */
 	-moz-transform: scale(1.25); /* Firefox */
@@ -427,7 +448,7 @@ img {
 .category_card p {
 	margin: auto;
 }
-.pommes {
+.fruit {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/pomme.jpg");
 	background-size: 100%;
@@ -436,7 +457,7 @@ img {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/legume2.jpg");
 	background-size: 100%;
-	border: 4px solid rgb(85, 85, 85);
+	/* border: 4px solid rgb(85, 85, 85); */
 }
 .lapin {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
@@ -448,7 +469,7 @@ img {
 		url("../assets/oeufs2.jpg");
 	background-size: 100%;
 }
-.chevre {
+.lait {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/fromage1.jpg");
 	background-size: 100%;
@@ -458,18 +479,18 @@ img {
 		url("../assets/poules.jpg");
 	background-size: 100%;
 }
-.vache {
+.bovine {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/vache.jpg");
 	background-size: 100%;
 }
-.cochon {
+.porcine {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/cochons.jpg");
 	background-size: 100%;
 }
 .sucre {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
 		url("../assets/confit.jpg");
 	background-size: 100%;
 }
@@ -483,19 +504,28 @@ img {
 		url("../assets/huile.jpg");
 	background-size: 100%;
 }
-.vin {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+.boisson {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
 		url("../assets/vins.jpg");
 	background-size: 100%;
 }
-.panier {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+.garni {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
 		url("../assets/panier_garni.jpg");
 	background-size: 120%;
 }
-.magasin {
+.divers {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7)),
 		url("../assets/rayon_magasin.jpg");
 	background-size: 100%;
+}
+
+/* MEDIA QUERIES */
+@media only screen and (max-width: 1500px) {
+	.category_card {
+		width: 5rem;
+		height: 2.5rem;
+		font-size: 0.9rem;
+	}
 }
 </style>

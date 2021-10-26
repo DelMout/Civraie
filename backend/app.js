@@ -10,6 +10,7 @@ const sharp = require("sharp"); // Reduction image
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 const producerRoutes = require("./routes/producer");
+const categoryRoutes = require("./routes/category");
 const orderRoutes = require("./routes/order");
 const dateRoutes = require("./routes/date");
 const infoRoutes = require("./routes/information");
@@ -18,11 +19,12 @@ const infoRoutes = require("./routes/information");
 const { user } = require("./models");
 const { product } = require("./models");
 const { producer } = require("./models");
+const { category } = require("./models");
 const { order } = require("./models");
 const { date } = require("./models");
 const { information } = require("./models");
 
-//association tables user/order et product/order et date/user
+//association tables user/order et product/order et date/order
 order.belongsTo(user);
 module.exports = { user, order };
 order.belongsTo(product);
@@ -30,13 +32,11 @@ module.exports = { product, order };
 order.belongsTo(date);
 module.exports = { date, order };
 
-//association tables producer/product
+//association tables producer/product et category/product
 product.belongsTo(producer);
 module.exports = { producer, product };
-
-//association tables date/order
-order.belongsTo(date);
-module.exports = { date, order };
+product.belongsTo(category);
+module.exports = { category, product };
 
 app.use(cors()); // Security CORS
 app.use(bodyParser.json());
@@ -52,6 +52,9 @@ app.use("/api/product", productRoutes);
 
 // * Producer
 app.use("/api/producer", producerRoutes);
+
+// * Category
+app.use("/api/category", categoryRoutes);
 
 // * Order
 app.use("/api/order", orderRoutes);
