@@ -1,5 +1,6 @@
 const { product } = require("../models");
 const fs = require("fs"); // handle files
+const { Op } = require("sequelize");
 
 //* Create a new product
 exports.createProduct = (req, res) => {
@@ -40,6 +41,23 @@ exports.getProductsOrdering = (req, res) => {
 		.findAll({
 			order: [["product", "ASC"]],
 			where: { ordering: req.params.ordering },
+		})
+		.then((obj) => {
+			res.send(obj);
+		});
+};
+
+// * Get  products according to ordering=1 and 2 AND category
+exports.getProductsCategory = (req, res) => {
+	product
+		.findAll({
+			order: [["product", "ASC"]],
+			where: {
+				[Op.and]: [
+					{ [Op.or]: [{ ordering: 1 }, { ordering: 2 }] },
+					{ categoryId: req.params.category },
+				],
+			},
 		})
 		.then((obj) => {
 			res.send(obj);

@@ -16,6 +16,9 @@ router.get("/", productCtrl.getAllProducts); //! Retiré admin
 // * See products according to ordering
 router.get("/:ordering", productCtrl.getProductsOrdering); //! retiré auth
 
+// * See products according to ordering=1 and 2 AND category
+router.get("/category/:category", productCtrl.getProductsCategory); //! retiré auth
+
 // * See datas of product
 router.get("/datas/:productid", productCtrl.getDatasProduct); //! Retiré auth
 

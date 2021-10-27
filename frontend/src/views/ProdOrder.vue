@@ -12,49 +12,10 @@
 			<!-- V-for -->
 
 			<div class="categories">
-				<div class="category_card lait">
-					<p>PRODUITS LAITIERS</p>
-				</div>
-				<div @click="selectCat($event)" class="category_card legumes">
-					<p>LÉGUMES</p>
-				</div>
-				<div class="category_card fruit">
-					<p>FRUITS</p>
-				</div>
-				<div class="category_card volaille">
-					<p>VOLAILLES</p>
-				</div>
-				<div class="category_card bovine">
-					<p>VIANDE BOVINE</p>
-				</div>
-				<div class="category_card porcine">
-					<p>VIANDE PORCINE</p>
-				</div>
-				<div class="category_card lapin">
-					<p>LAPINS</p>
-				</div>
-			</div>
-			<div class="categories deuxie">
-				<div class="category_card sucre">
-					<p>PRODUITS SUCRÉS</p>
-				</div>
-				<div class="category_card sale">
-					<p>PRODUITS SALÉS</p>
-				</div>
-				<div class="category_card oeuf">
-					<p>ŒUFS</p>
-				</div>
-				<div class="category_card huile">
-					<p>HUILES</p>
-				</div>
-				<div class="category_card boisson">
-					<p>BOISSONS</p>
-				</div>
-				<div class="category_card garni">
-					<p>PANIERS GARNIS</p>
-				</div>
-				<div class="category_card divers">
-					<p>DIVERS</p>
+				<div v-for="cate in categories" :key="cate.id">
+					<div :id="cate.class" class="category_card " @click="selectCat($event, cate)">
+						<p>{{ cate.category }}</p>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -88,10 +49,10 @@
 		<div id="conteneur" v-if="card_products">
 			<div v-for="prod in products" :key="prod.product">
 				<div class="card">
-					<p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
+					<!-- <p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
 						Attention stock faible !
-					</p>
-					<p id="nulle" v-if="prod.stock_updated == 0">Plus de stock !</p>
+					</p> -->
+					<!-- <p id="nulle" v-if="prod.stock_updated == 0">Plus de stock !</p> -->
 					<p class="product">{{ prod.product }}</p>
 					<p>{{ prod.producer }}</p>
 
@@ -109,28 +70,20 @@
 							{{ numFr(prod.price_unite_vente) }}/{{ prod.unite_vente }}
 						</span>
 					</p>
-					<p>Quantité mini :<br />{{ prod.unite_vente }}</p>
+					<!-- <p>Quantité mini :<br />{{ prod.unite_vente }}</p> -->
 					<p id="butAddSub">
-						<button
-							v-if="prod.qty > 0"
-							class="addsub"
-							type="button"
-							@click="subQty($event, prod)"
-						>
+						<button class="addsub" type="button" @click="subQty($event, prod)">
 							-
 						</button>
 
-						<button
-							v-if="prod.qty < prod.stock_updated"
-							class="addsub"
-							type="button"
-							@click="addQty($event, prod)"
-						>
+						<button class="addsub" type="button" @click="addQty($event, prod)">
 							+
 						</button>
 					</p>
 				</div>
 			</div>
+
+			<p v-if="noProduct">Pas de produits en vente actuellement dans cette catégorie.</p>
 		</div>
 
 		<p>Nombre produits = {{ length }}</p>
@@ -155,6 +108,8 @@ export default {
 			manqProd: "",
 			tablMail: "",
 			card_products: false,
+			cateSelected: "",
+			noProduct: false,
 		};
 	},
 	beforeCreate: function() {
@@ -168,52 +123,12 @@ export default {
 			for (let c = 0; c < catego.data.length; c++) {
 				this.categories.push({
 					id: catego.data[c].id,
-					catagory: catego.data[c].category,
+					category: catego.data[c].category.toUpperCase(),
+					class: catego.data[c].class,
 				});
 			}
 			console.log(this.categories);
-		}),
-			//* All products with ordering (2)
-			axios.get(process.env.VUE_APP_API + "product/2").then((prod) => {
-				// console.log(products);
-				this.length = prod.data.length;
-				for (let i = 0; i < this.length; i++) {
-					axios
-						.get(
-							process.env.VUE_APP_API +
-								"producer/getproducer/" +
-								prod.data[i].producerId
-						)
-						.then((producer) => {
-							this.products.push({
-								id: prod.data[i].id,
-								product: prod.data[i].product,
-								producer: producer.data.entreprise,
-								price_kg: prod.data[i].price_kg,
-								unite_vente: prod.data[i].unite_vente,
-								price_unite_vente: prod.data[i].price_unite_vente,
-								photo: prod.data[i].photo,
-								alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
-								stock_updated: prod.data[i].stock_updated,
-								qty: 0,
-							});
-							// sort alpha order
-							this.products.sort(function(a, b) {
-								var productA = a.product.toUpperCase();
-								var productB = b.product.toUpperCase();
-
-								if (productA < productB) {
-									return -1;
-								}
-								if (productA > productB) {
-									return 1;
-								}
-								return 0;
-							});
-						});
-				}
-				console.log(this.products);
-			});
+		});
 	},
 	methods: {
 		//* Number format
@@ -223,9 +138,57 @@ export default {
 			);
 		},
 		//* Display products according to the category selected
-		selectCat: function(event) {
+		selectCat: function(event, cate) {
+			this.products = [];
+			this.noProduct = false;
 			this.card_products = true;
-			console.log(event.target.value);
+			console.log(cate.id);
+			this.cateSelected = cate.id;
+
+			axios
+				.get(process.env.VUE_APP_API + "product/category/" + this.cateSelected)
+				.then((prod) => {
+					this.length = prod.data.length;
+					for (let i = 0; i < this.length; i++) {
+						axios
+							.get(
+								process.env.VUE_APP_API +
+									"producer/getproducer/" +
+									prod.data[i].producerId
+							)
+							.then((producer) => {
+								this.products.push({
+									id: prod.data[i].id,
+									product: prod.data[i].product,
+									producer: producer.data.entreprise,
+									price_kg: prod.data[i].price_kg,
+									unite_vente: prod.data[i].unite_vente,
+									price_unite_vente: prod.data[i].price_unite_vente,
+									photo: prod.data[i].photo,
+									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
+									stock_updated: prod.data[i].stock_updated,
+									qty: 0,
+								});
+								// sort alpha order
+								this.products.sort(function(a, b) {
+									var productA = a.product.toUpperCase();
+									var productB = b.product.toUpperCase();
+
+									if (productA < productB) {
+										return -1;
+									}
+									if (productA > productB) {
+										return 1;
+									}
+									return 0;
+								});
+							});
+					}
+					console.log(this.products);
+					if (this.length === 0) {
+						this.noProduct = true;
+					}
+				});
 		},
 
 		//* Add product to the order
@@ -365,7 +328,14 @@ caption {
 
 #conteneur {
 	display: flex;
+	/* justify-content: center; */
 	flex-wrap: wrap;
+	/* align-content: space-between; */
+	align-content: flex-start;
+	margin: auto;
+	padding-right: auto;
+	padding-left: auto;
+	width: 107rem;
 }
 .card {
 	border: 3px solid green;
@@ -413,14 +383,15 @@ img {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
+	align-content: space-between;
+	width: 82rem;
+	margin: auto;
 }
-.deuxie {
-	margin-top: 1rem;
-}
+
 .category_card {
 	display: flex;
 	padding: 0rem 0.9rem 0rem 0.9rem;
-	margin: 0 1rem 0 1rem;
+	margin: 0 1rem 1rem 1rem;
 	/* border: 3px solid green; */
 	border-radius: 10px;
 	box-shadow: 5px 5px 5px rgb(85, 85, 85);
@@ -448,73 +419,73 @@ img {
 .category_card p {
 	margin: auto;
 }
-.fruit {
+#fruit {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/pomme.jpg");
 	background-size: 100%;
 }
-.legumes {
+#legume {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/legume2.jpg");
 	background-size: 100%;
 	/* border: 4px solid rgb(85, 85, 85); */
 }
-.lapin {
+#lapin {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/lapin.jpg");
 	background-size: 100%;
 }
-.oeuf {
+#oeuf {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/oeufs2.jpg");
 	background-size: 100%;
 }
-.lait {
+#lait {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/fromage1.jpg");
 	background-size: 100%;
 }
-.volaille {
+#volaille {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/poules.jpg");
 	background-size: 100%;
 }
-.bovine {
+#bovine {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/vache.jpg");
 	background-size: 100%;
 }
-.porcine {
+#porcine {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/cochons.jpg");
 	background-size: 100%;
 }
-.sucre {
+#sucre {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
 		url("../assets/confit.jpg");
 	background-size: 100%;
 }
-.sale {
+#sale {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/pasta.jpg");
 	background-size: 100%;
 }
-.huile {
+#huile {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
 		url("../assets/huile.jpg");
 	background-size: 100%;
 }
-.boisson {
+#boisson {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
 		url("../assets/vins.jpg");
 	background-size: 100%;
 }
-.garni {
+#garni {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
 		url("../assets/panier_garni.jpg");
 	background-size: 120%;
 }
-.divers {
+#divers {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7)),
 		url("../assets/rayon_magasin.jpg");
 	background-size: 100%;
@@ -526,6 +497,12 @@ img {
 		width: 5rem;
 		height: 2.5rem;
 		font-size: 0.9rem;
+	}
+	.categories {
+		width: 70rem;
+	}
+	#conteneur {
+		width: 80rem;
 	}
 }
 </style>
