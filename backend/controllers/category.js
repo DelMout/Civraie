@@ -10,3 +10,14 @@ exports.getCategories = (req, res) => {
 			res.send(obj);
 		});
 };
+
+// * Get all categories
+exports.getCategory = (req, res) => {
+	category
+		.findOne({
+			where: { id: req.params.categoryId },
+		})
+		.then((obj) => {
+			res.send(obj);
+		});
+};

@@ -13,12 +13,13 @@
 			<tr>
 				<th>Produit</th>
 				<th>Producteur</th>
+				<th>Catégorie</th>
 				<th class="numb">Prix/kg</th>
 				<th>Quantité minimum vente</th>
 				<th class="numb">Prix Quantité mini</th>
-				<th class="numb">Stock initial</th>
+				<!-- <th class="numb">Stock initial</th>
 				<th class="numb">Stock après conso</th>
-				<th class="numb">Stock limite</th>
+				<th class="numb">Stock limite</th> -->
 				<th>Support vente</th>
 				<th class="photo">Photo</th>
 				<!-- <th>Alerte stock</th> -->
@@ -40,6 +41,14 @@
 				>
 					<p v-if="!produSelected">{{ prod.producer }}</p>
 					<p v-if="produSelected">{{ produSelected }}</p>
+				</td>
+				<td
+					v-if="chooseCommande || prod.ordering == 2"
+					@click="displayCategoriesModif($event, prod)"
+					:id="prod.selectCate"
+				>
+					<p v-if="!cateSelected">{{ prod.category }}</p>
+					<p v-if="cateSelected">{{ cateSelected }}</p>
 				</td>
 				<td
 					v-if="chooseCommande || prod.ordering == 2"
@@ -80,7 +89,7 @@
 						v-model="prod.price_unite_vente"
 					/>
 				</td>
-				<td
+				<!-- <td
 					v-if="chooseCommande || prod.ordering == 2"
 					class="numb"
 					@click="modifProd($event, prod)"
@@ -92,8 +101,8 @@
 						type="text"
 						v-model="prod.stock_init"
 					/>
-				</td>
-				<td v-if="chooseCommande || prod.ordering == 2" class="numb">
+				</td> -->
+				<!-- <td v-if="chooseCommande || prod.ordering == 2" class="numb">
 					{{ prod.stock_updated }}
 				</td>
 				<td
@@ -108,7 +117,7 @@
 						type="text"
 						v-model="prod.alert_stock"
 					/>
-				</td>
+				</td> -->
 
 				<td
 					v-if="chooseCommande || prod.ordering == 2"
@@ -137,9 +146,9 @@
 						@change="onFileChange"
 					/>
 				</td>
-				<td v-if="prod.alert <= 0 && (chooseCommande || prod.ordering == 2)">
+				<!-- <td v-if="prod.alert <= 0 && (chooseCommande || prod.ordering == 2)">
 					Attention stock faible !
-				</td>
+				</td> -->
 				<td v-if="prod.modif">
 					<button
 						v-if="prod.modif && !prod.delete"
@@ -176,6 +185,9 @@
 				<td @click="displayProducers">
 					{{ prodcToSelect }}
 				</td>
+				<td @click="displayCategories">
+					{{ cateToSelect }}
+				</td>
 
 				<td class="numb">
 					<input class="create numb" type="text" id="price_kg" v-model="priceKg" />
@@ -191,13 +203,13 @@
 						v-model="PriceQtyMini"
 					/>
 				</td>
-				<td class="numb">
+				<!-- <td class="numb">
 					<input class="create numb" type="text" id="stockinit" v-model="stockInit" />
 				</td>
-				<td class="nocolor numb">{{ stockInit }}</td>
-				<td class="numb">
+				<td class="nocolor numb">{{ stockInit }}</td> -->
+				<!-- <td class="numb">
 					<input class="create numb" type="text" id="stocklimit" v-model="stockLimit" />
-				</td>
+				</td> -->
 				<td @click="displayOrdering">{{ ordering }}</td>
 				<td class="photo">
 					<input class="photo" type="file" name="image" @change="onFileChange" />
@@ -232,6 +244,17 @@
 			</table>
 		</div>
 
+		<!-- Table of categories -->
+		<div v-if="displayC">
+			<table v-for="cate in categories" :key="cate.id">
+				<tr @click="selectCategory($event, cate)">
+					{{
+						cate.category
+					}}
+				</tr>
+			</table>
+		</div>
+
 		<p>Nombre produits = {{ length }}</p>
 	</div>
 </template>
@@ -245,6 +268,7 @@ export default {
 			products: [],
 			length: "",
 			lengthPc: "",
+			lengthCate: "",
 			name: "Nom du produit",
 			priceKg: "Prix/kg",
 			qtyMini: "Qté mini vente",
@@ -256,9 +280,11 @@ export default {
 			image: null, // file received brut
 			displayP: false, // Display Producers
 			displayO: false, //Display Ordering
+			displayC: false, //Display Categories
 			producers: [],
 			producerId: "",
 			orderinginfo: [],
+			categories: [],
 			orderingItem: "",
 			ordering: "Support vente (liste)",
 			prodcToSelect: "Producteur (liste)",
@@ -292,40 +318,54 @@ export default {
 									"information/supportvente/" +
 									prod.data[i].ordering
 							)
+							//! Aller chercher la liste categories
 							.then((ordering) => {
-								this.products.push({
-									id: prod.data[i].id,
-									product: prod.data[i].product,
-									producerId: prod.data[i].producerId,
-									producer: producer.data.entreprise,
-									price_kg: prod.data[i].price_kg,
-									unite_vente: prod.data[i].unite_vente,
-									price_unite_vente: prod.data[i].price_unite_vente,
-									stock_init: prod.data[i].stock_init,
-									stock_updated: prod.data[i].stock_updated,
-									alert_stock: prod.data[i].alert_stock,
-									photo: prod.data[i].photo,
-									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
-									ordering: prod.data[i].ordering,
-									support: ordering.data,
-									modif: 0,
-									delete: 0,
-									selectProdu: 0,
-									selectOrdering: 0,
-								});
-								// sort alpha order
-								this.products.sort(function(a, b) {
-									var productA = a.product.toUpperCase();
-									var productB = b.product.toUpperCase();
+								axios
+									.get(
+										process.env.VUE_APP_API +
+											"category/getcategory/" +
+											prod.data[i].categoryId
+									)
+									.then((cate) => {
+										this.products.push({
+											id: prod.data[i].id,
+											product: prod.data[i].product,
+											producerId: prod.data[i].producerId,
+											producer: producer.data.entreprise,
+											price_kg: prod.data[i].price_kg,
+											unite_vente: prod.data[i].unite_vente,
+											price_unite_vente: prod.data[i].price_unite_vente,
+											stock_init: prod.data[i].stock_init,
+											stock_updated: prod.data[i].stock_updated,
+											alert_stock: prod.data[i].alert_stock,
+											photo: prod.data[i].photo,
+											alert:
+												prod.data[i].stock_updated -
+												prod.data[i].alert_stock,
+											ordering: prod.data[i].ordering,
+											categoryId: prod.data[i].categoryId,
+											category: cate.data.category,
+											support: ordering.data,
+											modif: 0,
+											delete: 0,
+											selectProdu: 0,
+											selectOrdering: 0,
+											selectCate: 0,
+										});
+										// sort alpha order
+										this.products.sort(function(a, b) {
+											var productA = a.product.toUpperCase();
+											var productB = b.product.toUpperCase();
 
-									if (productA < productB) {
-										return -1;
-									}
-									if (productA > productB) {
-										return 1;
-									}
-									return 0;
-								});
+											if (productA < productB) {
+												return -1;
+											}
+											if (productA > productB) {
+												return 1;
+											}
+											return 0;
+										});
+									});
 							});
 					});
 			}
@@ -359,6 +399,7 @@ export default {
 			this.producers = [];
 			this.displayP = true;
 			this.displayO = false;
+			this.displayC = false;
 			prod.modif = true;
 			this.modif = true;
 			this.index = this.products.findIndex((x) => x.product === prod.product);
@@ -374,6 +415,50 @@ export default {
 					});
 				}
 				console.log(prodc);
+			});
+		},
+
+		//! * Display all categories (when creation product)
+		displayCategories: function() {
+			this.displayC = true;
+			//* All producers
+			axios.get(process.env.VUE_APP_API + "category/getcategories").then((cate) => {
+				this.lengthCate = cate.data.length;
+				for (let i = 0; i < this.lengthCate; i++) {
+					this.categories.push({
+						category: cate.data[i].category,
+						id: cate.data[i].id,
+					});
+				}
+			});
+		},
+
+		//! * Display all categories (when modif product)
+		displayCategoriesModif: function(event, prod) {
+			this.products.forEach(function(item) {
+				item.selectProdu = 0;
+				item.selectOrdering = 0;
+				item.selectCate = 0;
+			});
+			prod.selectProdu = "green"; // color background when cell of producer selected
+			this.producers = [];
+			this.displayP = false;
+			this.displayO = false;
+			this.displayC = true;
+			prod.modif = true;
+			this.modif = true;
+			this.index = this.products.findIndex((x) => x.product === prod.product);
+			console.log("index= " + this.index);
+			this.prodId = prod.product;
+			//* All categories
+			axios.get(process.env.VUE_APP_API + "category/getcategories").then((cate) => {
+				this.lengthCate = cate.data.length;
+				for (let i = 0; i < this.lengthCate; i++) {
+					this.categories.push({
+						category: cate.data[i].category,
+						id: cate.data[i].id,
+					});
+				}
 			});
 		},
 
@@ -403,6 +488,7 @@ export default {
 			this.orderinginfo = [];
 			this.displayO = true;
 			this.displayP = false;
+			this.displayC = false;
 			prod.modif = true;
 			this.modif = true;
 			this.index = this.products.findIndex((x) => x.product === prod.product);

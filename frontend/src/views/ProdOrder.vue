@@ -48,13 +48,13 @@
 		<!-- Présentation produits sur petites cartes -->
 		<div id="conteneur" v-if="card_products">
 			<div v-for="prod in products" :key="prod.product">
-				<div class="card">
+				<div class="card" :style="prod.selected">
 					<!-- <p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
 						Attention stock faible !
 					</p> -->
 					<!-- <p id="nulle" v-if="prod.stock_updated == 0">Plus de stock !</p> -->
 					<p class="product">{{ prod.product }}</p>
-					<p>{{ prod.producer }}</p>
+					<!-- <p>{{ prod.producer }}</p> -->
 
 					<img
 						class="photo"
@@ -110,6 +110,7 @@ export default {
 			card_products: false,
 			cateSelected: "",
 			noProduct: false,
+			style: "",
 		};
 	},
 	beforeCreate: function() {
@@ -167,6 +168,7 @@ export default {
 									photo: prod.data[i].photo,
 									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
 									stock_updated: prod.data[i].stock_updated,
+									selected: "",
 									qty: 0,
 								});
 								// sort alpha order
@@ -196,11 +198,15 @@ export default {
 			prod.qty += 1;
 			this.total = this.total + JSON.parse(prod.price_unite_vente);
 			console.log(this.total);
+			prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
 			prod.qty -= 1;
 			this.total = this.total - JSON.parse(prod.price_unite_vente);
+			if (prod.qty < 1) {
+				prod.selected = "";
+			}
 		},
 		//* Validation order
 		validOrder: function() {
@@ -340,17 +346,18 @@ caption {
 .card {
 	border: 3px solid green;
 	box-shadow: 5px 5px 5px grey;
-	width: 200px;
-	height: 350px;
+	width: 10rem;
+	height: 15rem;
 	margin: 4px;
 	display: flex;
 	flex-direction: column;
 }
 .product {
 	font-weight: bold;
+	font-size: 0.8rem;
 	margin-bottom: 0;
 }
-#nulle {
+/* #nulle {
 	background-color: red;
 	color: white;
 	padding-top: 2px;
@@ -365,7 +372,7 @@ caption {
 	padding-bottom: 2px;
 	margin-top: 0;
 	margin-bottom: 0;
-}
+} */
 img {
 	margin: auto;
 }
@@ -502,7 +509,7 @@ img {
 		width: 70rem;
 	}
 	#conteneur {
-		width: 80rem;
+		width: 81rem;
 	}
 }
 </style>
