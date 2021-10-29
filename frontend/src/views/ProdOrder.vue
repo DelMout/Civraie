@@ -91,6 +91,9 @@
 </template>
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
+
+// import moment from "moment";
 
 export default {
 	data() {
@@ -113,6 +116,12 @@ export default {
 			style: "",
 		};
 	},
+	computed: {
+		// gapou() {
+		// 	return this.$store.getters.gapDays;
+		// },
+		...mapGetters(["gapDays", "DayNow"]),
+	},
 	beforeCreate: function() {
 		this.products = [];
 		this.categories = [];
@@ -120,7 +129,6 @@ export default {
 	created: function() {
 		//* All categories
 		axios.get(process.env.VUE_APP_API + "category/getcategories").then((catego) => {
-			console.log(catego.data.length);
 			for (let c = 0; c < catego.data.length; c++) {
 				this.categories.push({
 					id: catego.data[c].id,
@@ -128,9 +136,20 @@ export default {
 					class: catego.data[c].class,
 				});
 			}
-			console.log(this.categories);
+			let datou = new Date();
+			console.log(datou);
+			// console.log(moment(datou).format("Mois Jour Annee"));
+			// let today = new Date(moment(datou).format("Mois Jour Annee"));
+			// console.log(today);
+			let dayNum = 0;
+			console.log("day Num = " + dayNum);
+			console.log(new Date().getDay() + 1);
+			console.log(new Date(datou.setDate(datou.getDate() + 3)));
+			let gap = this.$store.getters.gapDays;
+			console.log(gap);
 		});
 	},
+
 	methods: {
 		//* Number format
 		numFr: function(num) {

@@ -179,6 +179,16 @@
 					</button>
 				</td>
 			</tr>
+			<tr>
+				<th>Produit</th>
+				<th>Producteur</th>
+				<th>Catégorie</th>
+				<th class="numb">Prix/kg</th>
+				<th>Quantité minimum vente</th>
+				<th class="numb">Prix Quantité mini</th>
+				<th>Support vente</th>
+				<th class="photo">Photo</th>
+			</tr>
 			<!-- Row for creating new product -->
 			<tr class="create">
 				<td><input class="create" type="text" id="name" v-model="name" /></td>
@@ -269,12 +279,12 @@ export default {
 			length: "",
 			lengthPc: "",
 			lengthCate: "",
-			name: "Nom du produit",
-			priceKg: "Prix/kg",
-			qtyMini: "Qté mini vente",
-			PriceQtyMini: "Prix qté mini",
-			stockInit: "Stock initial",
-			stockLimit: "Stock limite",
+			name: "",
+			priceKg: "",
+			qtyMini: "",
+			PriceQtyMini: "",
+			stockInit: "",
+			stockLimit: "",
 			priceKgM: "",
 			photo: "", // total name paste in database
 			image: null, // file received brut
@@ -285,9 +295,11 @@ export default {
 			producerId: "",
 			orderinginfo: [],
 			categories: [],
+			categoryId: "",
 			orderingItem: "",
-			ordering: "Support vente (liste)",
-			prodcToSelect: "Producteur (liste)",
+			ordering: "",
+			prodcToSelect: "",
+			categorySelected: "",
 			prodId: "",
 			modif: false,
 			produSelected: "",
@@ -375,6 +387,9 @@ export default {
 	methods: {
 		//* Display all producers (when creation product)
 		displayProducers: function() {
+			this.producers = [];
+			this.orderinginfo = [];
+			this.categories = [];
 			this.displayP = true;
 			//* All producers
 			axios.get(process.env.VUE_APP_API + "producer").then((prodc) => {
@@ -394,6 +409,7 @@ export default {
 			this.products.forEach(function(item) {
 				item.selectProdu = 0;
 				item.selectOrdering = 0;
+				item.selectCate = 0;
 			});
 			prod.selectProdu = "green"; // color background when cell of producer selected
 			this.producers = [];
@@ -418,8 +434,11 @@ export default {
 			});
 		},
 
-		//! * Display all categories (when creation product)
+		//* Display all categories (when creation product)
 		displayCategories: function() {
+			this.producers = [];
+			this.orderinginfo = [];
+			this.categories = [];
 			this.displayC = true;
 			//* All producers
 			axios.get(process.env.VUE_APP_API + "category/getcategories").then((cate) => {
@@ -433,15 +452,15 @@ export default {
 			});
 		},
 
-		//! * Display all categories (when modif product)
+		//* Display all categories (when modif product)
 		displayCategoriesModif: function(event, prod) {
 			this.products.forEach(function(item) {
 				item.selectProdu = 0;
 				item.selectOrdering = 0;
 				item.selectCate = 0;
 			});
-			prod.selectProdu = "green"; // color background when cell of producer selected
-			this.producers = [];
+			prod.selectCate = "green"; // color background when cell of producer selected
+			this.categories = [];
 			this.displayP = false;
 			this.displayO = false;
 			this.displayC = true;
@@ -464,6 +483,9 @@ export default {
 
 		//* Display all orderings (when creation)
 		displayOrdering: function() {
+			this.producers = [];
+			this.orderinginfo = [];
+			this.categories = [];
 			this.displayO = true;
 			//* All orderings
 			axios.get(process.env.VUE_APP_API + "information/supportvente").then((ord) => {
@@ -483,6 +505,7 @@ export default {
 			this.products.forEach(function(item) {
 				item.selectOrdering = 0;
 				item.selectProdu = 0;
+				item.selectCate = 0;
 			});
 			prod.selectOrdering = "green"; // color background when cell of producer selected
 			this.orderinginfo = [];
@@ -531,6 +554,19 @@ export default {
 				this.products[this.index].ordering = this.orderingItem; //id
 			}
 		},
+
+		//* Category selected
+		selectCategory: function(event, cate) {
+			this.categorySelected = cate.category;
+			this.categoryId = cate.id;
+			this.displayC = false;
+			this.categories = [];
+			if (this.modif) {
+				this.products[this.index].category = this.categorySelected;
+				this.products[this.index].categoryId = this.categoryId;
+			}
+		},
+
 		//* Select a photo
 		onFileChange: function(event) {
 			this.image = event.target.files[0];
