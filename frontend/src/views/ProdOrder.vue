@@ -91,9 +91,9 @@
 </template>
 <script>
 import axios from "axios";
-import { mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
-// import moment from "moment";
+import moment from "moment";
 
 export default {
 	data() {
@@ -117,10 +117,8 @@ export default {
 		};
 	},
 	computed: {
-		// gapou() {
-		// 	return this.$store.getters.gapDays;
-		// },
-		...mapGetters(["gapDays", "DayNow"]),
+		...mapGetters(["gapDays", "DayNow", "dateNow", "deliveryDate"]),
+		...mapState(["incrementDays"]),
 	},
 	beforeCreate: function() {
 		this.products = [];
@@ -136,21 +134,22 @@ export default {
 					class: catego.data[c].class,
 				});
 			}
-			let datou = new Date();
-			console.log(datou);
-			// console.log(moment(datou).format("Mois Jour Annee"));
-			// let today = new Date(moment(datou).format("Mois Jour Annee"));
-			// console.log(today);
-			let dayNum = 0;
-			console.log("day Num = " + dayNum);
-			console.log(new Date().getDay() + 1);
-			console.log(new Date(datou.setDate(datou.getDate() + 3)));
+
 			let gap = this.$store.getters.gapDays;
-			console.log(gap);
+			console.log("gapDays = " + gap);
+			this.$store.dispatch("nextDeliveryDay");
+			const increm = this.$store.state.incrementDays;
+			console.log("incremDays = " + increm);
+			moment.locale("fr");
+			// console.log(moment(this.$store.getters.dateNow).format("DD MMMM YYYY"));
+			console.log(this.$store.getters.dateNow);
+			let deliveryDate = this.$store.getters.deliveryDate;
+			console.log("deliveryDate = " + deliveryDate);
 		});
 	},
 
 	methods: {
+		...mapActions(["nextDeliveryDay"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
