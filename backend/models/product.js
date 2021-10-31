@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
 					notEmpty: true,
 				},
 			},
+			cloturedayId: {
+				type: DataTypes.TINYINT,
+				defaultValue: 0,
+			},
 			price_kg: {
 				type: DataTypes.DECIMAL,
 				allowNull: true,
@@ -30,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			stock_init: {
 				type: DataTypes.INTEGER,
-				allowNull: false,
+				allowNull: true,
 				require,
 				validate: {
 					notEmpty: true,
@@ -38,17 +42,21 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			stock_updated: {
 				type: DataTypes.INTEGER,
-				allowNull: false,
+				allowNull: true,
 			},
 			alert_stock: {
 				type: DataTypes.INTEGER,
-				allowNull: false,
+				allowNull: true,
 				require,
 				validate: {
 					notEmpty: true,
 				},
 			},
 			ordering: {
+				type: DataTypes.TINYINT,
+				defaultValue: 0,
+			},
+			active: {
 				type: DataTypes.TINYINT,
 				defaultValue: 0,
 			},

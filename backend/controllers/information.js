@@ -11,11 +11,11 @@ exports.supportVente = (req, res) => {
 		});
 };
 
-// * Get all ordering (title=Ordering)
-exports.allSupportsVente = (req, res) => {
+// * Get all ordering/Weekday (title=Ordering/weekday)
+exports.allInformations = (req, res) => {
 	information
 		.findAll({
-			where: { title: "Ordering" },
+			where: { title: req.params.title },
 		})
 		.then((obj) => {
 			res.send(obj);

@@ -14,6 +14,7 @@
 				<th>Produit</th>
 				<th>Producteur</th>
 				<th>Catégorie</th>
+				<th>Jour clôture</th>
 				<th class="numb">Prix/kg</th>
 				<th>Quantité minimum vente</th>
 				<th class="numb">Prix Quantité mini</th>
@@ -47,8 +48,17 @@
 					@click="displayCategoriesModif($event, prod)"
 					:id="prod.selectCate"
 				>
-					<p v-if="!cateSelected">{{ prod.category }}</p>
-					<p v-if="cateSelected">{{ cateSelected }}</p>
+					<p v-if="!categorySelected">{{ prod.category }}</p>
+					<p v-if="categorySelected">{{ categorySelected }}</p>
+				</td>
+				<td
+					v-if="chooseCommande || prod.ordering == 2"
+					@click="displayCloturedayModif($event, prod)"
+					:id="prod.selectCloture"
+				>
+					<p v-if="!clotureSelected">{{ cloturedays[prod.cloturedayId].cloture_day }}</p>
+					<!-- <p v-if="!clotureSelected">{{ prod.cloturedayId }}</p> -->
+					<p v-if="clotureSelected">{{ clotureSelected }}</p>
 				</td>
 				<td
 					v-if="chooseCommande || prod.ordering == 2"
@@ -183,6 +193,7 @@
 				<th>Produit</th>
 				<th>Producteur</th>
 				<th>Catégorie</th>
+				<th>Jour clôture</th>
 				<th class="numb">Prix/kg</th>
 				<th>Quantité minimum vente</th>
 				<th class="numb">Prix Quantité mini</th>
@@ -197,6 +208,9 @@
 				</td>
 				<td @click="displayCategories">
 					{{ cateToSelect }}
+				</td>
+				<td @click="displayCloturedays">
+					{{ clotureToSelect }}
 				</td>
 
 				<td class="numb">
@@ -265,6 +279,17 @@
 			</table>
 		</div>
 
+		<!-- Table of cloture_days -->
+		<div v-if="displayCl">
+			<table v-for="clotu in cloturedays" :key="clotu.id">
+				<tr @click="selectClotureday($event, clotu)">
+					{{
+						clotu.cloture_day
+					}}
+				</tr>
+			</table>
+		</div>
+
 		<p>Nombre produits = {{ length }}</p>
 	</div>
 </template>
@@ -291,19 +316,32 @@ export default {
 			displayP: false, // Display Producers
 			displayO: false, //Display Ordering
 			displayC: false, //Display Categories
+			displayCl: false, //Display Cloture_day
 			producers: [],
 			producerId: "",
 			orderinginfo: [],
 			categories: [],
+			cloturedays: [
+				{ id: 0, cloture_day: "Dimanche" },
+				{ id: 1, cloture_day: "Lundi" },
+				{ id: 2, cloture_day: "Mardi" },
+				{ id: 3, cloture_day: "Mercredi" },
+				{ id: 4, cloture_day: "Jeudi" },
+				{ id: 5, cloture_day: "Vendredi" },
+				{ id: 6, cloture_day: "Samedi" },
+			],
 			categoryId: "",
 			orderingItem: "",
 			ordering: "",
 			prodcToSelect: "",
+			cateToSelect: "",
+			clotureToSelect: "",
 			categorySelected: "",
 			prodId: "",
 			modif: false,
 			produSelected: "",
 			orderingSelected: "",
+			clotureSelected: "",
 			index: "",
 			chooseCommande: true,
 			SeeAlaCommande: "Afficher seulement les produits à la commande",
@@ -314,6 +352,7 @@ export default {
 		this.producers = [];
 	},
 	created: function() {
+		console.log("Now = " + this.$store.getters.dayNow);
 		//* All products
 		axios.get(process.env.VUE_APP_API + "product").then((prod) => {
 			// console.log(products);
@@ -330,7 +369,6 @@ export default {
 									"information/supportvente/" +
 									prod.data[i].ordering
 							)
-							//! Aller chercher la liste categories
 							.then((ordering) => {
 								axios
 									.get(
@@ -357,12 +395,14 @@ export default {
 											ordering: prod.data[i].ordering,
 											categoryId: prod.data[i].categoryId,
 											category: cate.data.category,
+											cloturedayId: prod.data[i].cloturedayId,
 											support: ordering.data,
 											modif: 0,
 											delete: 0,
 											selectProdu: 0,
 											selectOrdering: 0,
 											selectCate: 0,
+											selectCloture: 0,
 										});
 										// sort alpha order
 										this.products.sort(function(a, b) {
@@ -410,12 +450,14 @@ export default {
 				item.selectProdu = 0;
 				item.selectOrdering = 0;
 				item.selectCate = 0;
+				item.selectCloture = 0;
 			});
 			prod.selectProdu = "green"; // color background when cell of producer selected
 			this.producers = [];
 			this.displayP = true;
 			this.displayO = false;
 			this.displayC = false;
+			this.displayCl = false;
 			prod.modif = true;
 			this.modif = true;
 			this.index = this.products.findIndex((x) => x.product === prod.product);
@@ -458,12 +500,14 @@ export default {
 				item.selectProdu = 0;
 				item.selectOrdering = 0;
 				item.selectCate = 0;
+				item.selectCloture = 0;
 			});
 			prod.selectCate = "green"; // color background when cell of producer selected
 			this.categories = [];
 			this.displayP = false;
 			this.displayO = false;
 			this.displayC = true;
+			this.displayCl = false;
 			prod.modif = true;
 			this.modif = true;
 			this.index = this.products.findIndex((x) => x.product === prod.product);
@@ -488,7 +532,7 @@ export default {
 			this.categories = [];
 			this.displayO = true;
 			//* All orderings
-			axios.get(process.env.VUE_APP_API + "information/supportvente").then((ord) => {
+			axios.get(process.env.VUE_APP_API + "information/getall/Ordering").then((ord) => {
 				this.lengthPc = ord.data.length;
 				for (let i = 0; i < this.lengthPc; i++) {
 					this.orderinginfo.push({
@@ -498,6 +542,52 @@ export default {
 				}
 				console.log(ord);
 			});
+		},
+
+		//* Display all cloture_days (when modif product)
+		displayCloturedayModif: function(event, prod) {
+			this.products.forEach(function(item) {
+				item.selectProdu = 0;
+				item.selectOrdering = 0;
+				item.selectCate = 0;
+				item.selectCloture = 0;
+			});
+			prod.selectCloture = "green"; // color background when cell of producer selected
+			// this.cloturedays = [];
+			this.displayP = false;
+			this.displayO = false;
+			this.displayC = false;
+			this.displayCl = true;
+			prod.modif = true;
+			this.modif = true;
+			this.index = this.products.findIndex((x) => x.product === prod.product);
+			console.log("index= " + this.index);
+			this.prodId = prod.product;
+			//* All cloturedays
+			// axios.get(process.env.VUE_APP_API + "information/getall/Weekday").then((clotu) => {
+			// 	for (let i = 0; i < clotu.data.length; i++) {
+			// 		this.cloturedays.push({
+			// 			day: clotu.data[i].content,
+			// 		});
+			// 	}
+			// });
+		},
+
+		//* Display all cloture_days (when creation)
+		displayCloturedays: function() {
+			this.producers = [];
+			this.orderinginfo = [];
+			this.categories = [];
+			// this.cloturedays = [];
+			this.displayCl = true;
+			//* All cloturedays
+			// axios.get(process.env.VUE_APP_API + "information/getall/Weekday").then((clo) => {
+			// 	for (let i = 0; i < clo.data.length; i++) {
+			// 		this.cloturedays.push({
+			// 			day: clo.data[i].content,
+			// 		});
+			// 	}
+			// });
 		},
 
 		//* Display all orderings (when modif)
@@ -517,7 +607,7 @@ export default {
 			this.index = this.products.findIndex((x) => x.product === prod.product);
 			this.prodId = prod.product;
 			//* All orderings
-			axios.get(process.env.VUE_APP_API + "information/supportvente").then((ord) => {
+			axios.get(process.env.VUE_APP_API + "information/getall/Ordering").then((ord) => {
 				this.lengthPc = ord.data.length;
 				for (let i = 0; i < this.lengthPc; i++) {
 					this.orderinginfo.push({
@@ -557,13 +647,24 @@ export default {
 
 		//* Category selected
 		selectCategory: function(event, cate) {
-			this.categorySelected = cate.category;
+			this.cateToSelect = cate.category;
 			this.categoryId = cate.id;
 			this.displayC = false;
 			this.categories = [];
 			if (this.modif) {
-				this.products[this.index].category = this.categorySelected;
+				this.products[this.index].category = this.cateToSelect;
 				this.products[this.index].categoryId = this.categoryId;
+			}
+		},
+
+		//* Cloture_day selected
+		selectClotureday: function(event, clotu) {
+			this.clotureToSelect = clotu.id;
+			console.log(clotu.cloture_day);
+			this.displayCl = false;
+			// this.cloturedays = [];
+			if (this.modif) {
+				this.products[this.index].cloturedayId = this.clotureToSelect;
 			}
 		},
 
@@ -576,6 +677,26 @@ export default {
 		validateCreate: function() {
 			// let img = document.getElementById("picture").files[0];
 			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
+			console.log(
+				this.name +
+					" - " +
+					this.producerId +
+					" - " +
+					this.categoryId +
+					" - " +
+					this.clotureToSelect +
+					" - " +
+					this.priceKg +
+					" - " +
+					this.qtyMini +
+					" - " +
+					this.PriceQtyMini +
+					" - " +
+					this.orderingItem +
+					" - " +
+					this.image +
+					" - "
+			);
 			if (this.priceKg <= 0 && this.PriceQtyMini <= 0) {
 				this.infoProd =
 					"Merci de donner au moins un prix soit à 'Prix/kg' soit à 'Prix qté mini'.";
@@ -583,12 +704,11 @@ export default {
 				const formData = new FormData();
 				formData.append("product", this.name);
 				formData.append("producerId", this.producerId);
+				formData.append("categoryId", this.categoryId);
+				formData.append("cloture_day", this.clotureToSelect);
 				formData.append("price_kg", this.priceKg);
 				formData.append("unite_vente", this.qtyMini);
 				formData.append("price_unite_vente", this.PriceQtyMini);
-				formData.append("stock_init", this.stockInit);
-				formData.append("stock_updated", this.stockInit);
-				formData.append("alert_stock", this.stockLimit);
 				formData.append("ordering", this.orderingItem);
 				formData.append("image", this.image);
 
@@ -623,6 +743,8 @@ export default {
 			const formData = new FormData();
 			formData.append("product", prod.product);
 			formData.append("producerId", prod.producerId);
+			formData.append("categoryId", prod.categoryId);
+			formData.append("cloturedayId", prod.cloturedayId);
 			formData.append("price_kg", prod.price_kg);
 			formData.append("unite_vente", prod.unite_vente);
 			formData.append("price_unite_vente", prod.price_unite_vente);
@@ -640,9 +762,14 @@ export default {
 				.then(() => {
 					prod.modif = false;
 					this.produSelected = "";
+					this.orderingSelected = "";
+					this.categorySelected = "";
+					this.clotureSelected = "";
 					this.products.forEach(function(item) {
 						item.selectOrdering = 0;
 						item.selectProdu = 0;
+						item.selectCate = 0;
+						item.selectCloture = 0;
 					});
 					this.infoProd = "Vos modifications ont été prises en compte";
 				})

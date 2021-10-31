@@ -55,13 +55,15 @@ id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 product VARCHAR(255) NOT NULL,
 producerId SMALLINT UNSIGNED NOT NULL,
 categoryId SMALLINT UNSIGNED NOT NULL,
+cloturedayId SMALLINT UNSIGNED NOT NULL,
 price_kg DECIMAL(5,2),
 unite_vente VARCHAR(255) NOT NULL,
 price_unite_vente DECIMAL(5,2),
-stock_init INT NOT NULL,
+stock_init INT ,
 stock_updated INT,
-alert_stock INT NOT NULL,
+alert_stock INT ,
 ordering TINYINT, 
+active TINYINT DEFAULT 0,
 photo VARCHAR(255),
 CONSTRAINT fk_producerId_product FOREIGN KEY (producerId) REFERENCES producers(id)
 ON DELETE CASCADE
@@ -69,6 +71,7 @@ ON UPDATE CASCADE,
 CONSTRAINT fk_categoryId_product FOREIGN KEY (categoryId) REFERENCES categories(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
+
 )
 ENGINE=INNODB;
 
@@ -94,7 +97,7 @@ ENGINE=INNODB;
 
 CREATE TABLE informations
 (
-item VARCHAR(255) NOT NULL PRIMARY KEY,
+item VARCHAR(255) NOT NULL ,
 title VARCHAR(255),
 content VARCHAR(255) NOT NULL,
 )

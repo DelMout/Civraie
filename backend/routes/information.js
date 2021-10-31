@@ -10,7 +10,8 @@ const admin = require("../middleware/isAdmin"); // Request authentification for 
 // * See content from  item
 router.get("/supportvente/:item", infoCtrl.supportVente); //! Retiré admin
 
-// * See all ordering (title=Ordering)
-router.get("/supportvente", infoCtrl.allSupportsVente); //! Retiré admin
+// * See all ordering OR Weekday (title=Ordering/Weekday)
+router.get("/getall/:title", infoCtrl.allInformations); //! Retiré admin
+// router.get("/supportvente/:title", infoCtrl.allSupportsVente); //! Retiré admin
 
 module.exports = router;

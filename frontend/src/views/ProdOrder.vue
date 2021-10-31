@@ -1,6 +1,9 @@
 <template>
 	<div>
 		<h3>Produits vendus à la commande</h3>
+		<p>
+			Prochain livraison produits au magasin : <b> {{ deliveryDate }}</b>
+		</p>
 		<!-- A afficher si non connecté -->
 		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>
 		<h3>
@@ -63,12 +66,17 @@
 						:src="prod.photo"
 						alt="product photo"
 					/>
+
 					<p>
 						<span v-if="prod.price_kg > 0"> {{ numFr(prod.price_kg) }}/kg </span>
 
 						<span v-if="prod.price_kg <= 0">
 							{{ numFr(prod.price_unite_vente) }}/{{ prod.unite_vente }}
 						</span>
+					</p>
+					<p>
+						<!-- {{ prod.cloturedayId }} -->
+						{{ cloturedays[prod.cloturedayId].cloture_day }}
 					</p>
 					<!-- <p>Quantité mini :<br />{{ prod.unite_vente }}</p> -->
 					<p id="butAddSub">
@@ -91,9 +99,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapState, mapGetters, mapActions } from "vuex";
-
-import moment from "moment";
+import { mapGetters } from "vuex";
 
 export default {
 	data() {
@@ -104,6 +110,15 @@ export default {
 			categories: [],
 			length: "",
 			bought: [],
+			cloturedays: [
+				{ id: 0, cloture_day: "Dimanche" },
+				{ id: 1, cloture_day: "Lundi" },
+				{ id: 2, cloture_day: "Mardi" },
+				{ id: 3, cloture_day: "Mercredi" },
+				{ id: 4, cloture_day: "Jeudi" },
+				{ id: 5, cloture_day: "Vendredi" },
+				{ id: 6, cloture_day: "Samedi" },
+			],
 			total: 0,
 			dateId: 10, //TODO Aller chercher la bonne info
 			userId: 7, //TODO Aller chercher la bonne info
@@ -117,14 +132,21 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(["gapDays", "DayNow", "dateNow", "deliveryDate"]),
-		...mapState(["incrementDays"]),
+		...mapGetters(["deliveryDate", "dayNow"]),
 	},
 	beforeCreate: function() {
 		this.products = [];
 		this.categories = [];
 	},
 	created: function() {
+		// Check if product is not evalable for saling according cloture_day
+		let now = this.$store.getters.dayNow;
+		console.log("now = " + now);
+		if (now > 0 && now < 6) {
+			// Neither Sunday nor Saturday & Actif
+			console.log("no dimanche, ni samedi");
+		}
+
 		//* All categories
 		axios.get(process.env.VUE_APP_API + "category/getcategories").then((catego) => {
 			for (let c = 0; c < catego.data.length; c++) {
@@ -134,22 +156,11 @@ export default {
 					class: catego.data[c].class,
 				});
 			}
-
-			let gap = this.$store.getters.gapDays;
-			console.log("gapDays = " + gap);
-			this.$store.dispatch("nextDeliveryDay");
-			const increm = this.$store.state.incrementDays;
-			console.log("incremDays = " + increm);
-			moment.locale("fr");
-			// console.log(moment(this.$store.getters.dateNow).format("DD MMMM YYYY"));
-			console.log(this.$store.getters.dateNow);
-			let deliveryDate = this.$store.getters.deliveryDate;
-			console.log("deliveryDate = " + deliveryDate);
 		});
 	},
 
 	methods: {
-		...mapActions(["nextDeliveryDay"]),
+		// ...mapActions(["nextDeliveryDay"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -180,6 +191,7 @@ export default {
 									id: prod.data[i].id,
 									product: prod.data[i].product,
 									producer: producer.data.entreprise,
+									cloturedayId: prod.data[i].cloturedayId,
 									price_kg: prod.data[i].price_kg,
 									unite_vente: prod.data[i].unite_vente,
 									price_unite_vente: prod.data[i].price_unite_vente,

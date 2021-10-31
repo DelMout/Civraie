@@ -37,13 +37,21 @@ export default createStore({
 		},
 		gapDays(state, getters) {
 			// gap with the next friday
-			return 5 - getters.dayNow;
+			if (5 - getters.dayNow == -1) {
+				return 6;
+			} else {
+				if (5 - getters.dayNow == 0) {
+					return 7;
+				} else {
+					return 5 - getters.dayNow;
+				}
+			}
 		},
 		deliveryDate(state, getters) {
 			let res = new Date(getters.dateNow);
-			res.setDate(res.getDate() + 6);
+			res.setDate(res.getDate() + getters.gapDays);
 			moment.locale("fr");
-			return "Vendredi " + moment(res).format("DD MMMM YYYY");
+			return "Vendredi " + moment(res).format("D MMMM YYYY");
 		},
 		// decoded(state) {
 		// 	return jwt_decode(state.token);
@@ -51,18 +59,5 @@ export default createStore({
 		// dateExp(state, getters) {
 		// 	return new Date(getters.decoded.exp * 1000);
 		// },
-	},
-	actions: {
-		nextDeliveryDay(context) {
-			if (this.getters.gapDays == -1) {
-				context.commit("setIncrementDays", 6);
-			} else {
-				if (this.getters.gapDays == 0) {
-					context.commit("setIncrementDays", 7);
-				} else {
-					context.commit("setIncrementDays", this.getters.gapDays);
-				}
-			}
-		},
 	},
 });
