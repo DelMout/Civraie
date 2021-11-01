@@ -23,6 +23,7 @@
 				<th class="numb">Stock limite</th> -->
 				<th>Support vente</th>
 				<th class="photo">Photo</th>
+				<th class="numb">Actif</th>
 				<!-- <th>Alerte stock</th> -->
 			</tr>
 			<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
@@ -156,13 +157,29 @@
 						@change="onFileChange"
 					/>
 				</td>
+				<td class="numb" v-if="chooseCommande || prod.ordering == 2">
+					<button
+						v-if="prod.active > 0"
+						class="active on"
+						type="button"
+						value="prod.active"
+						@click="activeInactive($event, prod)"
+					></button>
+					<button
+						v-if="prod.active === 0"
+						class="active off"
+						type="button"
+						value="prod.active"
+						@click="activeInactive($event, prod)"
+					></button>
+				</td>
 				<!-- <td v-if="prod.alert <= 0 && (chooseCommande || prod.ordering == 2)">
 					Attention stock faible !
 				</td> -->
 				<td v-if="prod.modif">
 					<button
 						v-if="prod.modif && !prod.delete"
-						style="background-color:greenyellow;"
+						id="validModif"
 						class="modif"
 						type="button"
 						@click="validModif($event, prod)"
@@ -171,8 +188,7 @@
 					</button>
 					<button
 						v-if="prod.modif && !prod.delete"
-						style="background-color:red;color:white;"
-						class="modif"
+						class="modif wantDelete"
 						type="button"
 						@click="wantDelete($event, prod)"
 					>
@@ -180,8 +196,7 @@
 					</button>
 					<button
 						v-if="prod.delete"
-						style="background-color:white;color:red;"
-						class="modif"
+						class="modif wantDelete"
 						type="button"
 						@click="Delete($event, prod)"
 					>
@@ -199,6 +214,7 @@
 				<th class="numb">Prix Quantité mini</th>
 				<th>Support vente</th>
 				<th class="photo">Photo</th>
+				<th class="numb">Actif</th>
 			</tr>
 			<!-- Row for creating new product -->
 			<tr class="create">
@@ -237,6 +253,9 @@
 				<td @click="displayOrdering">{{ ordering }}</td>
 				<td class="photo">
 					<input class="photo" type="file" name="image" @change="onFileChange" />
+				</td>
+				<td class="numb" v-if="chooseCommande || prod.ordering == 2">
+					<input class="active" type="radio" value="prod.active" />
 				</td>
 				<td>
 					<button class="valCreate" type="button" @click="validateCreate">
@@ -397,6 +416,7 @@ export default {
 											category: cate.data.category,
 											cloturedayId: prod.data[i].cloturedayId,
 											support: ordering.data,
+											active: prod.data[i].active,
 											modif: 0,
 											delete: 0,
 											selectProdu: 0,
@@ -814,6 +834,34 @@ export default {
 				this.SeeAlaCommande = "Afficher seulement les produits à la commande";
 			}
 		},
+
+		//* Active or inactive the product
+		activeInactive: function(event, prod) {
+			if (prod.active === 1) {
+				axios
+					.put(process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/0")
+
+					.then(() => {
+						prod.active = 0;
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			} else {
+				if (prod.active === 0) {
+					axios
+						.put(process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/1")
+
+						.then(() => {
+							prod.active = 1;
+							console.log("OK !");
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}
+			}
+		},
 	},
 };
 </script>
@@ -844,12 +892,19 @@ input,
 table {
 	border-collapse: collapse;
 }
+#validModif {
+	background-color: rgb(252, 190, 76);
+}
+.wantDelete {
+	background-color: red;
+	color: white;
+}
 .create,
 .valCreate {
-	background-color: greenyellow;
+	background-color: rgb(252, 190, 76);
 }
 #green {
-	background-color: greenyellow;
+	background-color: rgb(252, 190, 76);
 }
 #red {
 	background-color: red;
@@ -857,5 +912,17 @@ table {
 }
 .nocolor {
 	background-color: white;
+}
+.active {
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 50%;
+	margin-left: 0;
+}
+.on {
+	background-color: greenyellow;
+}
+.off {
+	background-color: grey;
 }
 </style>

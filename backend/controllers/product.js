@@ -158,3 +158,21 @@ exports.deleteProduct = (req, res) => {
 			res.send(err);
 		});
 };
+
+//! * Change "active" of a product
+exports.changeActive = (req, res) => {
+	product
+		.update(
+			{
+				active: req.params.active,
+			},
+			{ where: { id: req.params.productid } }
+		)
+		.then(() => {
+			res.send("active modified !");
+		})
+		.catch((err) => {
+			// res.status(401).send(err);
+			res.status(401).send(err.errors[0].validatorKey);
+		});
+};

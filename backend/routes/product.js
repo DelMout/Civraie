@@ -25,6 +25,9 @@ router.get("/datas/:productid", productCtrl.getDatasProduct); //! Retiré auth
 // * Modify a product
 router.put("/modif/:productid", multer, productCtrl.modifProduct); //! retiré admin
 
+// * Change "active" of a product
+router.put("/changeactive/:productid/:active", productCtrl.changeActive); //! retiré admin
+
 // * Delete a product
 router.delete("/delete/:productid", multer, productCtrl.deleteProduct); //! retiré admin
 
