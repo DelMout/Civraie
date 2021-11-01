@@ -162,14 +162,12 @@
 						v-if="prod.active > 0"
 						class="active on"
 						type="button"
-						value="prod.active"
 						@click="activeInactive($event, prod)"
 					></button>
 					<button
 						v-if="prod.active === 0"
 						class="active off"
 						type="button"
-						value="prod.active"
 						@click="activeInactive($event, prod)"
 					></button>
 				</td>
@@ -254,8 +252,19 @@
 				<td class="photo">
 					<input class="photo" type="file" name="image" @change="onFileChange" />
 				</td>
-				<td class="numb" v-if="chooseCommande || prod.ordering == 2">
-					<input class="active" type="radio" value="prod.active" />
+				<td class="numb">
+					<button
+						v-if="active > 0"
+						class="active on"
+						type="button"
+						@click="createActive()"
+					></button>
+					<button
+						v-if="active === 0"
+						class="active off"
+						type="button"
+						@click="createActive()"
+					></button>
 				</td>
 				<td>
 					<button class="valCreate" type="button" @click="validateCreate">
@@ -351,10 +360,12 @@ export default {
 			],
 			categoryId: "",
 			orderingItem: "",
+			active: 0,
 			ordering: "",
 			prodcToSelect: "",
 			cateToSelect: "",
 			clotureToSelect: "",
+			clotureId: "",
 			categorySelected: "",
 			prodId: "",
 			modif: false,
@@ -641,50 +652,56 @@ export default {
 
 		//* Producer selected
 		selectProdc: function(event, prodc) {
-			this.prodcToSelect = prodc.entreprise;
 			this.producerId = prodc.id;
 			this.displayP = false;
 			this.producers = [];
 			if (this.modif) {
-				this.products[this.index].producer = this.prodcToSelect;
+				this.products[this.index].producer = prodc.entreprise;
 				this.products[this.index].producerId = this.producerId;
+			} else {
+				this.prodcToSelect = prodc.entreprise;
 			}
 		},
 
 		//* Ordering selected
 		selectOrdering: function(event, ord) {
-			this.ordering = ord.ordering;
 			this.orderingItem = ord.item;
 			this.displayO = false;
 			this.orderinginfo = [];
 			console.log("ordering=" + this.ordering);
 			console.log("orderingItem=" + this.orderingItem);
 			if (this.modif) {
-				this.products[this.index].support = this.ordering;
+				this.products[this.index].support = ord.ordering;
 				this.products[this.index].ordering = this.orderingItem; //id
+			} else {
+				this.ordering = ord.ordering;
 			}
 		},
 
 		//* Category selected
 		selectCategory: function(event, cate) {
-			this.cateToSelect = cate.category;
 			this.categoryId = cate.id;
 			this.displayC = false;
 			this.categories = [];
 			if (this.modif) {
-				this.products[this.index].category = this.cateToSelect;
+				this.products[this.index].category = cate.category;
 				this.products[this.index].categoryId = this.categoryId;
+			} else {
+				this.cateToSelect = cate.category;
 			}
 		},
 
 		//* Cloture_day selected
 		selectClotureday: function(event, clotu) {
-			this.clotureToSelect = clotu.id;
-			console.log(clotu.cloture_day);
+			// this.clotureToSelect = clotu.id;
+			this.clotureId = clotu.id;
+			console.log(clotu.id);
 			this.displayCl = false;
 			// this.cloturedays = [];
 			if (this.modif) {
-				this.products[this.index].cloturedayId = this.clotureToSelect;
+				this.products[this.index].cloturedayId = this.clotureId;
+			} else {
+				this.clotureToSelect = clotu.cloture_day;
 			}
 		},
 
@@ -725,12 +742,13 @@ export default {
 				formData.append("product", this.name);
 				formData.append("producerId", this.producerId);
 				formData.append("categoryId", this.categoryId);
-				formData.append("cloture_day", this.clotureToSelect);
+				formData.append("cloturedayId", this.clotureId);
 				formData.append("price_kg", this.priceKg);
 				formData.append("unite_vente", this.qtyMini);
 				formData.append("price_unite_vente", this.PriceQtyMini);
 				formData.append("ordering", this.orderingItem);
 				formData.append("image", this.image);
+				formData.append("active", this.active);
 
 				axios
 					.post(process.env.VUE_APP_API + "product/createproduct", formData)
@@ -768,9 +786,9 @@ export default {
 			formData.append("price_kg", prod.price_kg);
 			formData.append("unite_vente", prod.unite_vente);
 			formData.append("price_unite_vente", prod.price_unite_vente);
-			formData.append("stock_init", prod.stock_init);
-			formData.append("stock_updated", prod.stock_init);
-			formData.append("alert_stock", prod.alert_stock);
+			// formData.append("stock_init", prod.stock_init);
+			// formData.append("stock_updated", prod.stock_init);
+			// formData.append("alert_stock", prod.alert_stock);
 			formData.append("ordering", prod.ordering);
 			formData.append("image", this.image);
 			axios
@@ -835,7 +853,7 @@ export default {
 			}
 		},
 
-		//* Active or inactive the product
+		//* Active or inactive the product (in list of products)
 		activeInactive: function(event, prod) {
 			if (prod.active === 1) {
 				axios
@@ -859,6 +877,17 @@ export default {
 						.catch((err) => {
 							console.log(err);
 						});
+				}
+			}
+		},
+
+		//* Active or inactive the product (in creation of new product)
+		createActive: function() {
+			if (this.active === 1) {
+				this.active = 0;
+			} else {
+				if (this.active === 0) {
+					this.active = 1;
 				}
 			}
 		},

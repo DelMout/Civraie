@@ -123,8 +123,8 @@ exports.modifProduct = (req, res) => {
 				res.send("product modified !");
 			})
 			.catch((err) => {
-				// res.status(401).send(err);
-				res.status(401).send(err.errors[0].validatorKey);
+				res.status(401).send(err);
+				// res.status(401).send(err.errors[0].validatorKey);
 			});
 	}
 };

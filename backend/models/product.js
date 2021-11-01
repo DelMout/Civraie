@@ -35,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
 			stock_init: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
-				require,
-				validate: {
-					notEmpty: true,
-				},
 			},
 			stock_updated: {
 				type: DataTypes.INTEGER,
@@ -47,10 +43,6 @@ module.exports = (sequelize, DataTypes) => {
 			alert_stock: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
-				require,
-				validate: {
-					notEmpty: true,
-				},
 			},
 			ordering: {
 				type: DataTypes.TINYINT,
