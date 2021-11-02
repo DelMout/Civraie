@@ -160,7 +160,7 @@ export default {
 
 	methods: {
 		// ...mapActions(["nextDeliveryDay"]),
-		...mapMutations(["setProducts"]),
+		...mapMutations(["setProducts", "setTotal"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -231,6 +231,7 @@ export default {
 			prod.qty += 1;
 			this.total = this.total + JSON.parse(prod.price_unite_vente);
 			console.log(this.total);
+			this.$store.commit("setTotal", this.total);
 			prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order

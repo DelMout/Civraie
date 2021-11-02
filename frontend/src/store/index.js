@@ -8,6 +8,7 @@ export default createStore({
 		isAdmin: 0,
 		deliveryDate: null,
 		products: [],
+		total: 0,
 	},
 	mutations: {
 		setUserId(state, userId) {
@@ -24,6 +25,9 @@ export default createStore({
 		},
 		setProducts(state, products) {
 			state.products = products;
+		},
+		setTotal(state, total) {
+			state.total = total;
 		},
 	},
 	getters: {

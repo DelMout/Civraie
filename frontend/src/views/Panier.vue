@@ -6,8 +6,8 @@
 				Votre panier est actuellement vide.
 			</p>
 		</div>
-		<div>
-			<h6>Votre commande pour une livraison le {{ deliveryDate }}.</h6>
+		<div id="commande" v-if="total > 0">
+			<h5>Votre commande pour une livraison le {{ deliveryDate }}.</h5>
 
 			<table>
 				<caption>
@@ -23,17 +23,17 @@
 					<td v-if="prod.qty > 0">{{ prod.product }}</td>
 					<td v-if="prod.qty > 0">{{ prod.qty }} x</td>
 					<td v-if="prod.qty > 0">{{ prod.unite_vente }}</td>
-					<td v-if="prod.qty > 0">{{ prod.qty * prod.price_unite_vente }}</td>
-					<!-- <td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unite_vente) }}</td> -->
+					<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unite_vente) }}</td>
 				</tr>
-
-				<!-- <td colspan="4">
-					Prix total de la commande : <span>{{ numFr(total) }} </span
-					><button class="addsub" type="button" @click="validOrder">
-						Valider la commande
-					</button>
-				</td> -->
+				<!-- <td>Total = {{ total }}</td> -->
+				<td colspan="4">
+					Prix total de la commande : <span>{{ numFr(total) }} </span>
+				</td>
 			</table>
+
+			<button class="addsub" type="button" @click="validOrder">
+				Valider la commande
+			</button>
 		</div>
 	</div>
 </template>
@@ -43,7 +43,7 @@ import { mapState, mapGetters } from "vuex";
 export default {
 	data() {
 		return {
-			total: 0,
+			total: this.$store.state.total,
 			products: this.$store.state.products,
 		};
 	},
@@ -55,5 +55,43 @@ export default {
 		console.log("hey !!");
 		console.log(this.products);
 	},
+	methods: {
+		//* Number format
+		numFr: function(num) {
+			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
+				num
+			);
+		},
+	},
 };
 </script>
+<style scoped>
+#commande {
+	display: flex;
+	flex-direction: column;
+}
+td,
+th {
+	border: 1px solid white;
+	width: 200px;
+	height: 40px;
+}
+th {
+	width: 200px;
+	height: 40px;
+}
+table,
+caption {
+	border-collapse: collapse;
+	background-color: greenyellow;
+	margin: auto;
+}
+button {
+	background-color: green;
+	color: white;
+	font-size: 16px;
+	font-weight: bold;
+	padding: 1px 6px 1px 6px;
+	margin: auto;
+}
+</style>
