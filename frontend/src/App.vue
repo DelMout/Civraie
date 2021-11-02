@@ -7,6 +7,7 @@
 		<router-link to="/producteurs">* Liste Producteurs *</router-link> |
 		<router-link to="/utilisateurs">* Liste Utilisateurs *</router-link> |
 		<router-link to="/commandes">* Commandes reçues *</router-link> |
+		<router-link to="/panier">Mon Panier</router-link> |
 	</div>
 	<router-view />
 </template>

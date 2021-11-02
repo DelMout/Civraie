@@ -99,7 +99,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapGetters } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 
 export default {
 	data() {
@@ -133,6 +133,7 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate", "dayNow"]),
+		...mapState(["products"]),
 	},
 	beforeCreate: function() {
 		this.products = [];
@@ -142,10 +143,8 @@ export default {
 		// Check if product is not evalable for saling according cloture_day
 		let now = this.$store.getters.dayNow;
 		console.log("now = " + now);
-		if (now > 0 && now < 6) {
-			// Neither Sunday nor Saturday & Actif
-			console.log("no dimanche, ni samedi");
-		}
+		this.$store.commit("setProducts", this.products);
+		console.log(this.$store.state.products);
 
 		//* All categories
 		axios.get(process.env.VUE_APP_API + "category/getcategories").then((catego) => {
@@ -161,6 +160,7 @@ export default {
 
 	methods: {
 		// ...mapActions(["nextDeliveryDay"]),
+		...mapMutations(["setProducts"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -217,6 +217,9 @@ export default {
 							});
 					}
 					console.log(this.products);
+					console.log("blavla");
+					this.$store.commit("setProducts", this.products);
+					console.log(this.$store.state.products);
 					if (this.length === 0) {
 						this.noProduct = true;
 					}

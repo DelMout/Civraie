@@ -7,6 +7,7 @@ import Products from "../views/Products.vue";
 import Producers from "../views/Producers.vue";
 import Users from "../views/Users.vue";
 import Orders from "../views/Orders.vue";
+import Panier from "../views/Panier.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -32,6 +33,14 @@ const routes = [
 		component: ProdShop,
 		meta: {
 			title: "Ferme La Civraie / Produits magasin",
+		},
+	},
+	{
+		path: "/panier",
+		name: "Panier",
+		component: Panier,
+		meta: {
+			title: "Ferme La Civraie / Mon Panier",
 		},
 	},
 	{

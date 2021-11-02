@@ -7,7 +7,7 @@ export default createStore({
 		// token:null,
 		isAdmin: 0,
 		deliveryDate: null,
-		incrementDays: null,
+		products: [],
 	},
 	mutations: {
 		setUserId(state, userId) {
@@ -22,8 +22,8 @@ export default createStore({
 		setDeliveryDate(state, deliveryDate) {
 			state.deliveryDate = deliveryDate;
 		},
-		setIncrementDays(state, inc) {
-			state.incrementDays = inc;
+		setProducts(state, products) {
+			state.products = products;
 		},
 	},
 	getters: {
