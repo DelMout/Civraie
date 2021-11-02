@@ -47,7 +47,7 @@ exports.getProductsOrdering = (req, res) => {
 		});
 };
 
-// * Get  products according to ordering=1 and 2 AND category
+// * Get  products according to ordering=1 and 2 AND category AND active=1
 exports.getProductsCategory = (req, res) => {
 	product
 		.findAll({
@@ -56,6 +56,7 @@ exports.getProductsCategory = (req, res) => {
 				[Op.and]: [
 					{ [Op.or]: [{ ordering: 1 }, { ordering: 2 }] },
 					{ categoryId: req.params.category },
+					{ active: 1 },
 				],
 			},
 		})
@@ -159,7 +160,7 @@ exports.deleteProduct = (req, res) => {
 		});
 };
 
-//! * Change "active" of a product
+// * Change "active" of a product
 exports.changeActive = (req, res) => {
 	product
 		.update(
@@ -174,5 +175,39 @@ exports.changeActive = (req, res) => {
 		.catch((err) => {
 			// res.status(401).send(err);
 			res.status(401).send(err.errors[0].validatorKey);
+		});
+};
+
+//! * Check if product must become inactive (after clotureday)
+exports.checkActive = (req, res) => {
+	product
+		.findAll({
+			where: { active: 1 },
+		})
+		.then((prod) => {
+			const weekday = new Date().getDay();
+			if (weekday < 6 && weekday > 0) {
+				// excepted Sunday & Saturday
+				for (let i = 0; i < prod.length; i++) {
+					if (weekday > prod[i].cloturedayId) {
+						product
+							.update(
+								{
+									active: 0,
+								},
+								{ where: { id: prod[i].id } }
+							)
+							.then(() => {
+								res.send("product inactived !");
+							})
+							.catch((err) => {
+								res.status(401).send(err);
+							});
+					}
+				}
+			}
+		})
+		.catch((err) => {
+			res.status(401).send(err);
 		});
 };
