@@ -109,7 +109,7 @@ export default {
 			products: [],
 			categories: [],
 			length: "",
-			bought: [],
+			order: [],
 			cloturedays: [
 				{ id: 0, cloture_day: "Dimanche" },
 				{ id: 1, cloture_day: "Lundi" },
@@ -129,6 +129,7 @@ export default {
 			cateSelected: "",
 			noProduct: false,
 			style: "",
+			inOrder: false,
 		};
 	},
 	computed: {
@@ -228,15 +229,45 @@ export default {
 
 		//* Add product to the order
 		addQty: function(event, prod) {
+			this.inOrder = false;
 			prod.qty += 1;
+			if (this.order.length === 0) {
+				// If order empty
+				this.order.push({
+					productId: prod.id,
+					product: prod.product,
+					quantity: prod.qty,
+					unity: prod.unite_vente,
+				});
+			} else {
+				for (let m = 0; m < this.order.length; m++) {
+					if (this.order[m].productId === prod.id) {
+						this.order[m].quantity = prod.qty;
+						this.inOrder = true;
+					}
+				}
+				if (!this.inOrder) {
+					this.order.push({
+						productId: prod.id,
+						product: prod.product,
+						quantity: prod.qty,
+						unity: prod.unite_vente,
+					});
+				}
+			}
+
 			this.total = this.total + JSON.parse(prod.price_unite_vente);
 			console.log(this.total);
+			console.log(this.order.length);
+			console.log(this.order);
 			this.$store.commit("setTotal", this.total);
 			prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
 			prod.qty -= 1;
+			//! FAire la même chose que add avec this.order => copier dans Vuex  LocalStorage
+			//! Mettre à zéro this.order lors de la connection du user.
 			this.total = this.total - JSON.parse(prod.price_unite_vente);
 			if (prod.qty < 1) {
 				prod.selected = "";
