@@ -18,12 +18,14 @@
 					<th>Quantité</th>
 					<th>Unité</th>
 					<th>Prix</th>
+					<th>Modification</th>
 				</tr>
-				<tr v-for="prod in products" :key="prod.id">
-					<td v-if="prod.qty > 0">{{ prod.product }}</td>
-					<td v-if="prod.qty > 0">{{ prod.qty }} x</td>
-					<td v-if="prod.qty > 0">{{ prod.unite_vente }}</td>
-					<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unite_vente) }}</td>
+				<tr v-for="prod in order" :key="prod.id">
+					<td>{{ prod.product }}</td>
+					<td>{{ prod.quantity }}</td>
+					<td>{{ prod.unity }}</td>
+					<td>{{ numFr(prod.quantity * prod.price_unity) }}</td>
+					<td>- + supp</td>
 				</tr>
 				<!-- <td>Total = {{ total }}</td> -->
 				<td colspan="4">
@@ -45,15 +47,16 @@ export default {
 		return {
 			total: this.$store.state.total,
 			products: this.$store.state.products,
+			order: this.$store.state.order, //JSON.parse(localStorage.getItem("order")),
 		};
 	},
 	computed: {
 		...mapGetters(["deliveryDate"]),
-		...mapState(["products"]),
+		...mapState(["products", "order"]),
 	},
 	created: function() {
 		console.log("hey !!");
-		console.log(this.products);
+		console.log(this.order);
 	},
 	methods: {
 		//* Number format

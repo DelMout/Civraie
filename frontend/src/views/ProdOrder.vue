@@ -134,7 +134,7 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate", "dayNow"]),
-		...mapState(["products"]),
+		...mapState(["products", "order", "total"]),
 	},
 	beforeCreate: function() {
 		this.products = [];
@@ -161,7 +161,7 @@ export default {
 
 	methods: {
 		// ...mapActions(["nextDeliveryDay"]),
-		...mapMutations(["setProducts", "setTotal"]),
+		...mapMutations(["setProducts", "setOrder", "setTotal"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -230,48 +230,69 @@ export default {
 		//* Add product to the order
 		addQty: function(event, prod) {
 			this.inOrder = false;
-			prod.qty += 1;
-			if (this.order.length === 0) {
+			// prod.qty += 1;
+			if (this.$store.state.order.length === 0) {
 				// If order empty
-				this.order.push({
+				this.$store.state.total = 0;
+				this.$store.state.order.push({
 					productId: prod.id,
 					product: prod.product,
-					quantity: prod.qty,
+					quantity: 1,
 					unity: prod.unite_vente,
+					price_unity: prod.price_unite_vente,
 				});
 			} else {
-				for (let m = 0; m < this.order.length; m++) {
-					if (this.order[m].productId === prod.id) {
-						this.order[m].quantity = prod.qty;
+				for (let m = 0; m < this.$store.state.order.length; m++) {
+					if (this.$store.state.order[m].productId === prod.id) {
+						this.$store.state.order[m].quantity += 1;
 						this.inOrder = true;
 					}
 				}
 				if (!this.inOrder) {
-					this.order.push({
+					this.$store.state.order.push({
 						productId: prod.id,
 						product: prod.product,
-						quantity: prod.qty,
+						quantity: 1,
 						unity: prod.unite_vente,
+						price_unity: prod.price_unite_vente,
 					});
 				}
 			}
-
-			this.total = this.total + JSON.parse(prod.price_unite_vente);
-			console.log(this.total);
-			console.log(this.order.length);
-			console.log(this.order);
-			this.$store.commit("setTotal", this.total);
+			this.$store.state.total = this.$store.state.total + JSON.parse(prod.price_unite_vente);
+			console.log(this.$store.state.total);
+			console.log(this.$store.state.order.length);
+			console.log(this.$store.state.order);
+			// this.$store.commit("setOrder", this.order);
+			// this.$store.commit("setTotal", this.total);
 			prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
-			prod.qty -= 1;
 			//! FAire la même chose que add avec this.order => copier dans Vuex  LocalStorage
 			//! Mettre à zéro this.order lors de la connection du user.
-			this.total = this.total - JSON.parse(prod.price_unite_vente);
-			if (prod.qty < 1) {
-				prod.selected = "";
+			for (let m = 0; m < this.$store.state.order.length; m++) {
+				if (this.$store.state.order[m].productId === prod.id) {
+					if (this.$store.state.order[m].quantity === 1) {
+						//delete this product in this.order
+						this.$store.state.order.splice(m, 1);
+						// prod.selected = "";
+						this.$store.state.total =
+							this.$store.state.total - JSON.parse(prod.price_unite_vente);
+					} else {
+						this.$store.state.order[m].quantity -= 1;
+						this.$store.state.total =
+							this.$store.state.total - JSON.parse(prod.price_unite_vente);
+						// this.$store.commit("setTotal", this.total);
+					}
+				}
 			}
+
+			// if (prod.qty < 1) {
+			// 	prod.selected = "";
+			// }
+
+			console.log(this.$store.state.order);
+			console.log(this.$store.state.total);
 		},
 		//* Validation order
 		validOrder: function() {
