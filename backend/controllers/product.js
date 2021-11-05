@@ -40,6 +40,18 @@ exports.getProductsOrdering = (req, res) => {
 	product
 		.findAll({
 			order: [["product", "ASC"]],
+			where: { active: 1 },
+		})
+		.then((obj) => {
+			res.send(obj);
+		});
+};
+
+// * Get all products actived
+exports.getProductsActived = (req, res) => {
+	product
+		.findAll({
+			order: [["product", "ASC"]],
 			where: { ordering: req.params.ordering },
 		})
 		.then((obj) => {

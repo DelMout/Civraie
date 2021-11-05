@@ -33,7 +33,7 @@
 				<th>Unité</th>
 				<th>Prix</th>
 			</tr>
-			<tr v-for="prod in products" :key="prod.id">
+			<tr v-for="prod in displayProd" :key="prod.id">
 				<td v-if="prod.qty > 0">{{ prod.product }}</td>
 				<td v-if="prod.qty > 0">{{ prod.qty }} x</td>
 				<td v-if="prod.qty > 0">{{ prod.unite_vente }}</td>
@@ -50,7 +50,7 @@
 
 		<!-- Présentation produits sur petites cartes -->
 		<div id="conteneur" v-if="card_products">
-			<div v-for="prod in products" :key="prod.product">
+			<div v-for="prod in displayProd" :key="prod.product">
 				<div class="card" :style="prod.selected">
 					<!-- <p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
 						Attention stock faible !
@@ -107,6 +107,7 @@ export default {
 			dateCommande: "25/08/2021",
 			dateLivraison: "30/08/2021",
 			products: [],
+			displayProd: [],
 			categories: [],
 			length: "",
 			order: [],
@@ -138,6 +139,7 @@ export default {
 	},
 	beforeCreate: function() {
 		this.products = [];
+		this.displayProd = [];
 		this.categories = [];
 	},
 	created: function() {
@@ -161,7 +163,7 @@ export default {
 
 	methods: {
 		// ...mapActions(["nextDeliveryDay"]),
-		...mapMutations(["setProducts", "setOrder", "setTotal"]),
+		...mapMutations(["setProducts"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -170,7 +172,7 @@ export default {
 		},
 		//* Display products according to the category selected
 		selectCat: function(event, cate) {
-			this.products = [];
+			this.displayProd = [];
 			this.noProduct = false;
 			this.card_products = true;
 			console.log(cate.id);
@@ -188,7 +190,7 @@ export default {
 									prod.data[i].producerId
 							)
 							.then((producer) => {
-								this.products.push({
+								this.displayProd.push({
 									id: prod.data[i].id,
 									product: prod.data[i].product,
 									producer: producer.data.entreprise,
@@ -203,7 +205,7 @@ export default {
 									qty: 0,
 								});
 								// sort alpha order
-								this.products.sort(function(a, b) {
+								this.displayProd.sort(function(a, b) {
 									var productA = a.product.toUpperCase();
 									var productB = b.product.toUpperCase();
 
@@ -217,10 +219,10 @@ export default {
 								});
 							});
 					}
-					console.log(this.products);
+					console.log(this.displayProd);
 					console.log("blavla");
-					this.$store.commit("setProducts", this.products);
-					console.log(this.$store.state.products);
+					// this.$store.commit("setProducts", this.products);
+					// console.log(this.$store.state.products);
 					if (this.length === 0) {
 						this.noProduct = true;
 					}
@@ -241,10 +243,15 @@ export default {
 					unity: prod.unite_vente,
 					price_unity: prod.price_unite_vente,
 				});
+				localStorage.setItem(prod.id, 1);
 			} else {
 				for (let m = 0; m < this.$store.state.order.length; m++) {
 					if (this.$store.state.order[m].productId === prod.id) {
 						this.$store.state.order[m].quantity += 1;
+						localStorage.setItem(
+							prod.id,
+							JSON.parse(localStorage.getItem(prod.id)) + 1
+						);
 						this.inOrder = true;
 					}
 				}
@@ -256,19 +263,17 @@ export default {
 						unity: prod.unite_vente,
 						price_unity: prod.price_unite_vente,
 					});
+					localStorage.setItem(prod.id, 1);
 				}
 			}
 			this.$store.state.total = this.$store.state.total + JSON.parse(prod.price_unite_vente);
 			console.log(this.$store.state.total);
 			console.log(this.$store.state.order.length);
 			console.log(this.$store.state.order);
-			// this.$store.commit("setOrder", this.order);
-			// this.$store.commit("setTotal", this.total);
 			prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
-			//! FAire la même chose que add avec this.order => copier dans Vuex  LocalStorage
 			//! Mettre à zéro this.order lors de la connection du user.
 			for (let m = 0; m < this.$store.state.order.length; m++) {
 				if (this.$store.state.order[m].productId === prod.id) {
@@ -276,13 +281,17 @@ export default {
 						//delete this product in this.order
 						this.$store.state.order.splice(m, 1);
 						// prod.selected = "";
+						localStorage.removeItem(prod.id);
 						this.$store.state.total =
 							this.$store.state.total - JSON.parse(prod.price_unite_vente);
 					} else {
 						this.$store.state.order[m].quantity -= 1;
+						localStorage.setItem(
+							prod.id,
+							JSON.parse(localStorage.getItem(prod.id)) - 1
+						);
 						this.$store.state.total =
 							this.$store.state.total - JSON.parse(prod.price_unite_vente);
-						// this.$store.commit("setTotal", this.total);
 					}
 				}
 			}
@@ -295,106 +304,106 @@ export default {
 			console.log(this.$store.state.total);
 		},
 		//* Validation order
-		validOrder: function() {
-			this.manqProd = "";
-			for (let i = 0; i < this.length; i++) {
-				const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
-				if (this.products[i].qty > 0) {
-					if (decrem < 0) {
-						this.manqProd =
-							"Manque des produits. Merci de baisser votre demande sur les produits suivants." +
-							this.manqProd +
-							" Stock =" +
-							this.products[i].stock_updated +
-							" pour les " +
-							this.products[i].product +
-							".";
-						this.infoOrder = this.manqProd;
-					}
-				}
-			}
-			this.tablMail = "";
-			for (let i = 0; i < this.length; i++) {
-				const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
-				if (this.products[i].qty > 0) {
-					// si stock dispo
-					if (this.manqProd == "") {
-						// Si aucun manquant sinon user refait commande
+		// validOrder: function() {
+		// 	this.manqProd = "";
+		// 	for (let i = 0; i < this.length; i++) {
+		// 		const decrem = parseInt(this.displayProd[i].stock_updated - this.displayProd[i].qty);
+		// 		if (this.products[i].qty > 0) {
+		// 			if (decrem < 0) {
+		// 				this.manqProd =
+		// 					"Manque des produits. Merci de baisser votre demande sur les produits suivants." +
+		// 					this.manqProd +
+		// 					" Stock =" +
+		// 					this.products[i].stock_updated +
+		// 					" pour les " +
+		// 					this.products[i].product +
+		// 					".";
+		// 				this.infoOrder = this.manqProd;
+		// 			}
+		// 		}
+		// 	}
+		// 	this.tablMail = "";
+		// 	for (let i = 0; i < this.length; i++) {
+		// 		const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
+		// 		if (this.products[i].qty > 0) {
+		// 			// si stock dispo
+		// 			if (this.manqProd == "") {
+		// 				// Si aucun manquant sinon user refait commande
 
-						this.tablMail =
-							this.tablMail +
-							"<tr><td style='border: 1px solid black;'>" +
-							this.products[i].product +
-							"<td style='border: 1px solid black;'>" +
-							this.products[i].qty +
-							"<td style='border: 1px solid black;'>" +
-							this.products[i].unite_vente +
-							"<td style='border: 1px solid black;'>" +
-							this.numFr(this.products[i].qty * this.products[i].price_unite_vente);
-						// Ajout données à la table Order
-						axios
-							.post(
-								process.env.VUE_APP_API +
-									"order/createorder/" +
-									this.userId +
-									"/" +
-									this.dateId,
-								{
-									productId: this.products[i].id,
-									quantity: this.products[i].qty,
-									order_date: Date.now(),
-								}
-							)
-							.then(() => {
-								//Décrémenter qté à la table Products
-								axios
-									.put(
-										process.env.VUE_APP_API +
-											"product/modif/" +
-											this.products[i].id,
-										{
-											stock_updated: decrem,
-										}
-									)
-									.then(() => {
-										console.log("order enregistrée dans base de données.");
-										//TODO Envoi de mail confirmation
-										if (this.manqProd == "") {
-											axios
-												.post(
-													process.env.VUE_APP_API +
-														"order/emailconf/" +
-														this.userId +
-														"/" +
-														this.dateId +
-														"/" +
-														this.tablMail +
-														"/" +
-														this.numFr(this.total)
-												)
-												.then(() => {
-													this.infoOrder =
-														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-												})
-												.catch((err) => {
-													this.infoOrder = err;
-													console.log(err);
-												});
-										}
-									})
-									.catch((err) => {
-										this.infoOrder = err;
-										console.log(err);
-									});
-							})
-							.catch((err) => {
-								this.infoOrder = err;
-								console.log(err);
-							});
-					}
-				}
-			}
-		},
+		// 				this.tablMail =
+		// 					this.tablMail +
+		// 					"<tr><td style='border: 1px solid black;'>" +
+		// 					this.products[i].product +
+		// 					"<td style='border: 1px solid black;'>" +
+		// 					this.products[i].qty +
+		// 					"<td style='border: 1px solid black;'>" +
+		// 					this.products[i].unite_vente +
+		// 					"<td style='border: 1px solid black;'>" +
+		// 					this.numFr(this.products[i].qty * this.products[i].price_unite_vente);
+		// 				// Ajout données à la table Order
+		// 				axios
+		// 					.post(
+		// 						process.env.VUE_APP_API +
+		// 							"order/createorder/" +
+		// 							this.userId +
+		// 							"/" +
+		// 							this.dateId,
+		// 						{
+		// 							productId: this.products[i].id,
+		// 							quantity: this.products[i].qty,
+		// 							order_date: Date.now(),
+		// 						}
+		// 					)
+		// 					.then(() => {
+		// 						//Décrémenter qté à la table Products
+		// 						axios
+		// 							.put(
+		// 								process.env.VUE_APP_API +
+		// 									"product/modif/" +
+		// 									this.products[i].id,
+		// 								{
+		// 									stock_updated: decrem,
+		// 								}
+		// 							)
+		// 							.then(() => {
+		// 								console.log("order enregistrée dans base de données.");
+		// 								//TODO Envoi de mail confirmation
+		// 								if (this.manqProd == "") {
+		// 									axios
+		// 										.post(
+		// 											process.env.VUE_APP_API +
+		// 												"order/emailconf/" +
+		// 												this.userId +
+		// 												"/" +
+		// 												this.dateId +
+		// 												"/" +
+		// 												this.tablMail +
+		// 												"/" +
+		// 												this.numFr(this.total)
+		// 										)
+		// 										.then(() => {
+		// 											this.infoOrder =
+		// 												"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+		// 										})
+		// 										.catch((err) => {
+		// 											this.infoOrder = err;
+		// 											console.log(err);
+		// 										});
+		// 								}
+		// 							})
+		// 							.catch((err) => {
+		// 								this.infoOrder = err;
+		// 								console.log(err);
+		// 							});
+		// 					})
+		// 					.catch((err) => {
+		// 						this.infoOrder = err;
+		// 						console.log(err);
+		// 					});
+		// 			}
+		// 		}
+		// 	}
+		// },
 	},
 };
 </script>

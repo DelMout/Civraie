@@ -67,6 +67,7 @@ export default {
 		this.creation = false;
 		this.forgot = false;
 		this.logged = false;
+		localStorage.clear(); //! A modifier qd user en fonction !
 		//Update Active=0 for products with cloture_day in the past
 		axios.put(process.env.VUE_APP_API + "product/checkactive/putinactive");
 	},

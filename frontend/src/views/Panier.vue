@@ -17,20 +17,25 @@
 					<th>Produit</th>
 					<th>Quantité</th>
 					<th>Unité</th>
+					<th>Prix/unité</th>
 					<th>Prix</th>
 					<th>Modification</th>
 				</tr>
-				<tr v-for="prod in order" :key="prod.id">
-					<td>{{ prod.product }}</td>
-					<td>{{ prod.quantity }}</td>
-					<td>{{ prod.unity }}</td>
-					<td>{{ numFr(prod.quantity * prod.price_unity) }}</td>
-					<td>- + supp</td>
+				<tr v-for="prod in products" :key="prod.id">
+					<td v-if="prod.qty > 0">{{ prod.product }}</td>
+					<td v-if="prod.qty > 0">{{ prod.qty }}</td>
+					<td v-if="prod.qty > 0">{{ prod.unity }}</td>
+					<td v-if="prod.qty > 0">{{ numFr(prod.price_unity) }}</td>
+					<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unity) }}</td>
+					<td v-if="prod.qty > 0">- + supp</td>
 				</tr>
 				<!-- <td>Total = {{ total }}</td> -->
-				<td colspan="4">
-					Prix total de la commande : <span>{{ numFr(total) }} </span>
-				</td>
+				<tr>
+					<td colspan="4">
+						Prix total de la commande :
+					</td>
+					<td id="total">{{ numFr(total) }}</td>
+				</tr>
 			</table>
 
 			<button class="addsub" type="button" @click="validOrder">
@@ -40,23 +45,37 @@
 	</div>
 </template>
 <script>
+import axios from "axios";
 import { mapState, mapGetters } from "vuex";
 
 export default {
 	data() {
 		return {
 			total: this.$store.state.total,
-			products: this.$store.state.products,
+			products: [],
 			order: this.$store.state.order, //JSON.parse(localStorage.getItem("order")),
 		};
 	},
 	computed: {
 		...mapGetters(["deliveryDate"]),
-		...mapState(["products", "order"]),
+		...mapState(["order"]),
 	},
 	created: function() {
 		console.log("hey !!");
 		console.log(this.order);
+		//*Select all products actived
+		axios.get(process.env.VUE_APP_API + "product/actived").then((prod) => {
+			for (let c = 0; c < prod.data.length; c++) {
+				this.products.push({
+					id: prod.data[c].id,
+					product: prod.data[c].product,
+					price_kg: prod.data[c].price_kg,
+					unity: prod.data[c].unite_vente,
+					price_unity: prod.data[c].price_unite_vente,
+					qty: localStorage.getItem(prod.data[c].id),
+				});
+			}
+		});
 	},
 	methods: {
 		//* Number format
@@ -96,5 +115,8 @@ button {
 	font-weight: bold;
 	padding: 1px 6px 1px 6px;
 	margin: auto;
+}
+#total {
+	font-weight: bold;
 }
 </style>

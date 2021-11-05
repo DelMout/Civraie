@@ -14,7 +14,10 @@ router.post("/createproduct", multer, productCtrl.createProduct); //! Retiré ad
 router.get("/", productCtrl.getAllProducts); //! Retiré admin
 
 // * See products according to ordering
-router.get("/:ordering", productCtrl.getProductsOrdering); //! retiré auth
+router.get("/:ordering", productCtrl.getProductsOrdering); //! accès without authorisation
+
+// * See all products actived
+router.get("/actived", productCtrl.getProductsActived); //! retiré auth
 
 // * See products according to ordering=1 and 2 AND category AND active=1
 router.get("/category/:category", productCtrl.getProductsCategory); //! retiré auth
