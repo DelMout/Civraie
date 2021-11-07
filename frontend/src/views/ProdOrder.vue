@@ -410,7 +410,7 @@ export default {
 		// 							)
 		// 							.then(() => {
 		// 								console.log("order enregistrée dans base de données.");
-		// 								//TODO Envoi de mail confirmation
+		// // 								//TODO Envoi de mail confirmation
 		// 								if (this.manqProd == "") {
 		// 									axios
 		// 										.post(

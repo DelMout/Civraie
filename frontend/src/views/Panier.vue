@@ -1,9 +1,14 @@
 <template>
 	<div>
 		<!-- Table pour le panier de commande -->
+		<div v-if="total === null">
+			<p>
+				{{ info }}
+			</p>
+		</div>
 		<div v-if="total === 0">
 			<p>
-				Votre panier est actuellement vide.
+				{{ info }}
 			</p>
 		</div>
 		<div id="commande" v-if="total > 0">
@@ -53,8 +58,8 @@ export default {
 		return {
 			total: JSON.parse(localStorage.getItem("Total")),
 			products: [],
-			order: this.$store.state.order, //JSON.parse(localStorage.getItem("order")),
-			dateId: 10,
+			tablMail: "",
+			info: "Votre panier est actuellement vide.",
 		};
 	},
 	computed: {
@@ -66,7 +71,6 @@ export default {
 		console.log(this.$store.state.userId);
 		//*Select all products actived
 		axios.get(process.env.VUE_APP_API + "product/actived").then((prod) => {
-			// this.length = prod.data.length;
 			for (let c = 0; c < prod.data.length; c++) {
 				this.products.push({
 					id: prod.data[c].id,
@@ -89,20 +93,27 @@ export default {
 
 		//* Validation order
 		validOrder: function() {
-			console.log("valid");
-			// console.log(this.products);
-			console.log(this.dateId);
-			console.log(this.products[0].product);
+			// Save in database
 			axios.get(process.env.VUE_APP_API + "product/actived").then((prod) => {
 				for (let i = 0; i < prod.data.length; i++) {
 					if (this.products[i].qty > 0) {
+						this.tablMail =
+							this.tablMail +
+							"<tr><td style='border: 1px solid black;'>" +
+							this.products[i].product +
+							"<td style='border: 1px solid black;'>" +
+							this.products[i].qty +
+							"<td style='border: 1px solid black;'>" +
+							this.products[i].unity +
+							"<td style='border: 1px solid black;'>" +
+							this.numFr(this.products[i].qty * this.products[i].price_unity);
 						axios
 							.post(
 								process.env.VUE_APP_API +
 									"order/createorder/" +
-									this.$store.state.userId +
+									this.userId +
 									"/" +
-									this.dateId,
+									this.deliveryDate,
 								{
 									productId: this.products[i].id,
 									quantity: this.products[i].qty,
@@ -111,6 +122,33 @@ export default {
 							)
 							.then(() => {
 								console.log("order saved !");
+								//send email confirmation
+								axios
+									.post(
+										process.env.VUE_APP_API +
+											"order/emailconf/" +
+											this.userId +
+											"/" +
+											this.deliveryDate +
+											"/" +
+											this.tablMail +
+											"/" +
+											this.numFr(this.total)
+									)
+									.then(() => {
+										this.products = [];
+										localStorage.clear();
+										this.total = 0;
+										this.info =
+											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+										console.log(
+											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation."
+										);
+									})
+									.catch((err) => {
+										// this.infoOrder = err;
+										console.log(err);
+									});
 							})
 							.catch((err) => {
 								console.log(err);
@@ -118,123 +156,6 @@ export default {
 					}
 				}
 			});
-
-			// axios({
-			// 	method: "post",
-			// 	url: process.env.VUE_APP_API + "order/createorder/" + 5 + "/" + 10,
-			// 	data: {
-			// 		productId: item.id,
-			// 		quantity: item.qty,
-			// 		order_date: Date.now(),
-			// 	},
-			// 	headers: {},
-			// })
-			// 	.then(() => {
-			// 		console.log("order saved !");
-			// 	})
-			// 	.catch((err) => {
-			// 		console.log(err);
-			// 	});
-			// this.manqProd = "";
-			// for (let i = 0; i < this.length; i++) {
-			// 	const decrem = parseInt(
-			// 		this.displayProd[i].stock_updated - this.displayProd[i].qty
-			// 	);
-			// 	if (this.products[i].qty > 0) {
-			// 		if (decrem < 0) {
-			// 			this.manqProd =
-			// 				"Manque des produits. Merci de baisser votre demande sur les produits suivants." +
-			// 				this.manqProd +
-			// 				" Stock =" +
-			// 				this.products[i].stock_updated +
-			// 				" pour les " +
-			// 				this.products[i].product +
-			// 				".";
-			// 			this.infoOrder = this.manqProd;
-			// 		}
-			// 	}
-			// }
-			// this.tablMail = "";
-			// for (let i = 0; i < this.length; i++) {
-			// 	const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
-			// 	if (this.products[i].qty > 0) {
-			// 		// si stock dispo
-			// 		if (this.manqProd == "") {
-			// 			// Si aucun manquant sinon user refait commande
-
-			// 			this.tablMail =
-			// 				this.tablMail +
-			// 				"<tr><td style='border: 1px solid black;'>" +
-			// 				this.products[i].product +
-			// 				"<td style='border: 1px solid black;'>" +
-			// 				this.products[i].qty +
-			// 				"<td style='border: 1px solid black;'>" +
-			// 				this.products[i].unite_vente +
-			// 				"<td style='border: 1px solid black;'>" +
-			// 				this.numFr(this.products[i].qty * this.products[i].price_unite_vente);
-			// 			// Ajout données à la table Order
-			// 			axios
-			// 				.post(
-			// 					process.env.VUE_APP_API +
-			// 						"order/createorder/" +
-			// 						this.userId +
-			// 						"/" +
-			// 						this.dateId,
-			// 					{
-			// 						productId: this.products[i].id,
-			// 						quantity: this.products[i].qty,
-			// 						order_date: Date.now(),
-			// 					}
-			// 				)
-			// 				.then(() => {
-			// 					//Décrémenter qté à la table Products
-			// 					axios
-			// 						.put(
-			// 							process.env.VUE_APP_API +
-			// 								"product/modif/" +
-			// 								this.products[i].id,
-			// 							{
-			// 								stock_updated: decrem,
-			// 							}
-			// 						)
-			// 						.then(() => {
-			// 							console.log("order enregistrée dans base de données.");
-			// 							//TODO Envoi de mail confirmation
-			// 							if (this.manqProd == "") {
-			// 								axios
-			// 									.post(
-			// 										process.env.VUE_APP_API +
-			// 											"order/emailconf/" +
-			// 											this.userId +
-			// 											"/" +
-			// 											this.dateId +
-			// 											"/" +
-			// 											this.tablMail +
-			// 											"/" +
-			// 											this.numFr(this.total)
-			// 									)
-			// 									.then(() => {
-			// 										this.infoOrder =
-			// 											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-			// 									})
-			// 									.catch((err) => {
-			// 										this.infoOrder = err;
-			// 										console.log(err);
-			// 									});
-			// 							}
-			// 						})
-			// 						.catch((err) => {
-			// 							this.infoOrder = err;
-			// 							console.log(err);
-			// 						});
-			// 				})
-			// 				.catch((err) => {
-			// 					this.infoOrder = err;
-			// 					console.log(err);
-			// 				});
-			// 		}
-			// 	}
-			// }
 		},
 	},
 };

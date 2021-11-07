@@ -1,22 +1,11 @@
 <template>
 	<div>
-		<h1>Commandes envoyées par les utilisateurs</h1>
 		<h3>
-			Sélectionner la date de livraison des commandes
+			Commandes reçues pour livraison :<br />
+			{{ deliveryDate }}
 		</h3>
-		<i>Les dates dans le passé proposées remontent seulement à 15 jours.</i>
 		<!-- Dropdown -->
-		<div>
-			<button @click="select">Sélectionner la date de livraison</button>
-			<p v-if="selected">Date de livraison sélectionnée : {{ selectedDate }}</p>
-			<div v-for="sel in selectDate" :key="sel.id">
-				<p class="dates" @click="dateSelected($event, sel)" v-if="displayList">
-					{{ dateFr(sel.delivery_date) }}
-				</p>
-				<!-- <a v-if="displayList" :href="item.id">{{ item.delivery_date }}</a> -->
-			</div>
-			<p v-if="selected">Date au plus tard pour la saisie des commandes : {{ latestDate }}</p>
-		</div>
+		<div></div>
 		<div>
 			<button @click="displayByCustomer">Afficher par CLIENT</button>
 			<button @click="displayByProduct">Afficher par PRODUIT</button>
@@ -82,9 +71,9 @@
 				</tr>
 				<tr v-for="pro in qtyProd" :key="pro.producer">
 					<td :class="pro.color">{{ pro.producer }}</td>
-					<td :class="pro.color">{{ pro.prod }}</td>
-					<td :class="pro.color">{{ pro.qty }}</td>
-					<td :class="pro.color">{{ pro.unite }}</td>
+					<td :class="pro.color">{{ pro.product }}</td>
+					<td :class="pro.color">{{ pro.quantity }}</td>
+					<td :class="pro.color">{{ pro.unity }}</td>
 				</tr>
 			</table>
 		</div>
@@ -93,13 +82,13 @@
 <script>
 import axios from "axios";
 import moment from "moment";
-import XlsExport from "xlsexport";
+// import XlsExport from "xlsexport";
+import { mapGetters } from "vuex";
 
 export default {
 	data() {
 		return {
 			products: [],
-			selectDate: [],
 			length: "",
 			displayList: false,
 			idDate: "",
@@ -120,70 +109,20 @@ export default {
 				head: ["name", "phone", "email"],
 				fileName: "json.xlsx",
 			},
+			inQtyProd: false,
 		};
 	},
 	beforeCreate: function() {
-		this.selectDate = [];
 		this.orders = [];
 	},
 	created: function() {
-		this.selected = false;
-		//* All delivery dates commencing by 2 weeks before today and so on
-		axios.get(process.env.VUE_APP_API + "date/suggest").then((date) => {
-			this.length = date.data.length;
-			for (let i = 0; i < this.length; i++) {
-				this.selectDate.push({
-					id: date.data[i].id,
-					delivery_date: date.data[i].delivery_date,
-					latest_date: date.data[i].latest_date_order,
-				});
-				// sort alpha order
-				this.selectDate.sort(function(a, b) {
-					var dateA = a.delivery_date.toUpperCase();
-					var dateB = b.delivery_date.toUpperCase();
-
-					if (dateA < dateB) {
-						return -1;
-					}
-					if (dateA > dateB) {
-						return 1;
-					}
-					return 0;
-				});
-			}
-		});
-	},
-	methods: {
-		//* Format French date
-		dateFr: function(date) {
-			moment.locale("fr");
-			return moment(date).format("DD/MM/YYYY");
-		},
-
-		//* Ask for displaying of delivery_date list
-		select: function() {
-			this.displayList = true;
-			this.selected = false;
-		},
-
-		//*Display orders by customer
-		dateSelected: function(event, item) {
-			// listOrders: function(event, item) {
-			this.orders = [];
-			this.qtyUsers = [];
-			this.qtyProd = [];
-			this.displayList = false;
-			this.selectedDate = this.dateFr(item.delivery_date);
-			this.latestDate = this.dateFr(item.latest_date);
-			this.idDate = item.id;
-			this.selected = true;
-			this.produit = false;
-			this.client = false; // Display table of orders by customer
-			// Build table Orders with dateId (from delivery date selected)
-			axios.get(process.env.VUE_APP_API + "order/getorders/" + this.idDate).then((order) => {
-				this.length = order.data.length;
-				for (let i = 0; i < this.length; i++) {
-					// Find name of userId
+		console.log("coucou");
+		//* Display orders
+		this.client = true;
+		axios
+			.get(process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate)
+			.then((order) => {
+				for (let i = 0; i < order.data.length; i++) {
 					axios
 						.get(process.env.VUE_APP_API + "user/getuser/" + order.data[i].userId)
 						.then((user) => {
@@ -204,7 +143,6 @@ export default {
 										unite_vente: product.data.unite_vente,
 										quantity: order.data[i].quantity,
 										order_date: order.data[i].order_date,
-										delivery_date: this.selectedDate,
 										color: "line_pair",
 									});
 									// sort alpha order
@@ -238,39 +176,26 @@ export default {
 										}
 										return 0;
 									});
-
-									//List of total by product
-									axios
-										.get(
-											process.env.VUE_APP_API +
-												"producer/getproducer/" +
-												product.data.producerId
-										)
-										.then((producer) => {
-											if (
-												this.qtyProd.findIndex(
-													(produ) => produ.prod === product.data.product
-												) < 0
-											) {
-												this.qtyProd.push({
-													prod: product.data.product,
-													unite: product.data.unite_vente,
-													qty: 0,
-													producer: producer.data.entreprise,
-													color: "line_pair",
-												});
-
-												console.log("qtyProd");
-												console.log(this.qtyProd);
-											}
-										});
 								});
 						});
 				}
+			})
+			.catch((err) => {
+				console.log(err);
 			});
+	},
+
+	computed: {
+		...mapGetters(["deliveryDate"]),
+	},
+	methods: {
+		//* Format French date
+		dateFr: function(date) {
+			moment.locale("fr");
+			return moment(date).format("DD/MM/YYYY");
 		},
 
-		//* Altern backcolor on lines n table for each customer
+		//* Altern backcolor on lines in table for each customer
 		alterColor: function() {
 			// //! Boucle sur nombre de qty Users et appliquer sur color !
 			for (let j = 1; j < this.qtyUsers.length; j = j + 2) {
@@ -296,49 +221,87 @@ export default {
 		//* Display of orders by product
 		displayByProduct: function() {
 			console.log("coucou");
+			this.qtyProd = [];
 			this.produit = true;
 			this.client = false;
-			console.log(this.qtyProd);
+			axios
+				.get(process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate)
+				.then((order) => {
+					for (let i = 0; i < order.data.length; i++) {
+						this.inQtyProd = false;
 
-			this.qtyProd.forEach((qProd) => {
-				let q = 0;
-				this.orders.forEach((ord) => {
-					if (qProd.prod === ord.product) {
-						q = q + ord.quantity;
+						axios
+							.get(
+								process.env.VUE_APP_API + "product/datas/" + order.data[i].productId
+							)
+							.then((product) => {
+								// Find name of product and unité_vente of productId
+								axios
+									.get(
+										process.env.VUE_APP_API +
+											"producer/getproducer/" +
+											product.data.producerId
+									)
+									.then((producer) => {
+										for (let q = 0; q < this.qtyProd.length; q++) {
+											if (product.data.product === this.qtyProd[q].product) {
+												this.qtyProd[q].quantity =
+													this.qtyProd[q].quantity +
+													order.data[i].quantity;
+												this.inQtyProd = true;
+											}
+										}
+										if (!this.inQtyProd) {
+											this.qtyProd.push({
+												producer: producer.data.entreprise,
+												product: product.data.product,
+												quantity: order.data[i].quantity,
+												unity: product.data.unite_vente,
+												color: "line_pair",
+											});
+										}
+
+										// sort alpha order
+										this.qtyProd.sort(function(a, b) {
+											var prodA = a.producer;
+											var prodB = b.producer;
+
+											if (prodA < prodB) {
+												return -1;
+											}
+											if (prodA > prodB) {
+												return 1;
+											}
+											return 0;
+										});
+										for (let j = 1; j < this.qtyProd.length; j = j + 2) {
+											this.qtyProd[j].color = "line_impair";
+										}
+									});
+							});
 					}
+				})
+				.catch((err) => {
+					console.log(err);
 				});
-				console.log(qProd.prod + " = " + q);
-				qProd.qty = q;
-			});
-			// Sort by producer
-			this.qtyProd.sort(function(a, b) {
-				var procerA = a.producer;
-				var procerB = b.producer;
-
-				if (procerA < procerB) {
-					return -1;
-				}
-				if (procerA > procerB) {
-					return 1;
-				}
-				return 0;
-			});
-			// Alternate color lines
-			console.log("longur = " + this.qtyProd.length);
-			for (let v = 1; v < this.qtyProd.length; v++) {
-				if (this.qtyProd[v].producer != this.qtyProd[v - 1].producer) {
-					if (this.qtyProd[v - 1].color === "line_pair") {
-						this.qtyProd[v].color = "line_impair";
-					} else {
-						this.qtyProd[v].color = "line_pair";
-					}
-				} else {
-					this.qtyProd[v].color = this.qtyProd[v - 1].color;
-				}
-			}
-
-			console.log("resultat");
 			console.log(this.qtyProd);
+
+			// // Alternate color lines
+			// console.log("longur = " + this.qtyProd.length);
+			// for (let v = 1; v < this.qtyProd.length; v++) {
+			// 	if (this.qtyProd[v].producer != this.qtyProd[v - 1].producer) {
+			// 		if (this.qtyProd[v - 1].color === "line_pair") {
+			// 			this.qtyProd[v].color = "line_impair";
+			// 		} else {
+			// 			this.qtyProd[v].color = "line_pair";
+			// 		}
+			// 	} else {
+			// 		this.qtyProd[v].color = this.qtyProd[v - 1].color;
+			// 	}
+			// }
+
+			// console.log("resultat");
+			// console.log(this.qtyProd);
 		},
 
 		//* Number format
@@ -347,129 +310,17 @@ export default {
 				num
 			);
 		},
-		//* Add product to the order
-		addQty: function(event, prod) {
-			prod.qty += 1;
-			this.total = this.total + JSON.parse(prod.price_unite_vente);
-			console.log(this.total);
-		},
-		//* Substract product to the order
-		subQty: function(event, prod) {
-			prod.qty -= 1;
-			this.total = this.total - JSON.parse(prod.price_unite_vente);
-		},
-		//* Validation order
-		validOrder: function() {
-			this.manqProd = "";
-			for (let i = 0; i < this.length; i++) {
-				const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
-				if (this.products[i].qty > 0) {
-					if (decrem < 0) {
-						this.manqProd =
-							"Manque des produits. Merci de baisser votre demande sur les produits suivants." +
-							this.manqProd +
-							" Stock =" +
-							this.products[i].stock_updated +
-							" pour les " +
-							this.products[i].product +
-							".";
-						this.infoOrder = this.manqProd;
-					}
-				}
-			}
-			this.tablMail = "";
-			for (let i = 0; i < this.length; i++) {
-				const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
-				if (this.products[i].qty > 0) {
-					// si stock dispo
-					if (this.manqProd == "") {
-						// Si aucun manquant sinon user refait commande
-
-						this.tablMail =
-							this.tablMail +
-							"<tr><td style='border: 1px solid black;'>" +
-							this.products[i].product +
-							"<td style='border: 1px solid black;'>" +
-							this.products[i].qty +
-							"<td style='border: 1px solid black;'>" +
-							this.products[i].unite_vente +
-							"<td style='border: 1px solid black;'>" +
-							this.numFr(this.products[i].qty * this.products[i].price_unite_vente);
-						// Ajout données à la table Order
-						axios
-							.post(
-								process.env.VUE_APP_API +
-									"order/createorder/" +
-									this.userId +
-									"/" +
-									this.dateId,
-								{
-									productId: this.products[i].id,
-									quantity: this.products[i].qty,
-									order_date: Date.now(),
-								}
-							)
-							.then(() => {
-								//Décrémenter qté à la table Products
-								axios
-									.put(
-										process.env.VUE_APP_API +
-											"product/modif/" +
-											this.products[i].id,
-										{
-											stock_updated: decrem,
-										}
-									)
-									.then(() => {
-										console.log("order enregistrée dans base de données.");
-										//TODO Envoi de mail confirmation
-										if (this.manqProd == "") {
-											axios
-												.post(
-													process.env.VUE_APP_API +
-														"order/emailconf/" +
-														this.userId +
-														"/" +
-														this.dateId +
-														"/" +
-														this.tablMail +
-														"/" +
-														this.numFr(this.total)
-												)
-												.then(() => {
-													this.infoOrder =
-														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-												})
-												.catch((err) => {
-													this.infoOrder = err;
-													console.log(err);
-												});
-										}
-									})
-									.catch((err) => {
-										this.infoOrder = err;
-										console.log(err);
-									});
-							})
-							.catch((err) => {
-								this.infoOrder = err;
-								console.log(err);
-							});
-					}
-				}
-			}
-		},
 
 		//* Downloading Excel By Customer
-		downloadClient: function() {
-			var xls = new XlsExport(this.orders, "Par_Client");
-			xls.exportToXLS("commandes_Client_" + this.selectedDate + ".xls");
-		},
-		//* Downloading Excel By Product
-		downloadProduit: function() {
-			var xls = new XlsExport(this.qtyProd, "Par_Produit");
-			xls.exportToXLS("commandes_Produit_" + this.selectedDate + ".xls");
-		},
+		// downloadClient: function() {
+		// 	var xls = new XlsExport(this.orders, "Par_Client");
+		// 	xls.exportToXLS("commandes_Client_" + this.selectedDate + ".xls");
+		// },
+		// //* Downloading Excel By Product
+		// downloadProduit: function() {
+		// 	var xls = new XlsExport(this.qtyProd, "Par_Produit");
+		// 	xls.exportToXLS("commandes_Produit_" + this.selectedDate + ".xls");
+		// },
 	},
 };
 </script>

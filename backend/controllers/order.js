@@ -10,7 +10,7 @@ exports.createOrder = (req, res) => {
 	const newOrder = new order({
 		...req.body,
 		userId: req.params.userid,
-		dateId: req.params.dateid,
+		delivery_date: req.params.delivery_date,
 	});
 	newOrder
 		.save()
@@ -23,14 +23,17 @@ exports.createOrder = (req, res) => {
 		});
 };
 
-// * Get orders according to delivery date (dateId)
+// * Get orders according to delivery date (delivery_date)
 exports.getAllOrders = (req, res) => {
 	order
 		.findAll({
-			where: { dateid: req.params.dateid },
+			where: { delivery_date: req.params.delivery_date },
 		})
 		.then((obj) => {
 			res.send(obj);
+		})
+		.catch((err) => {
+			res.status(401).send(err);
 		});
 };
 
@@ -80,61 +83,61 @@ exports.emailConfirm = (req, res) => {
 			const prenom = user.prenom;
 			const nom = user.nom;
 
-			// Recherche datas of date (delivery date)
-			date.findOne({ where: { id: req.params.dateid } })
-				.then((date) => {
-					const deliverydate = date.delivery_date;
+			// // Recherche datas of date (delivery date)
+			// date.findOne({ where: { id: req.params.dateid } })
+			// 	.then((date) => {
+			// 		const deliverydate = date.delivery_date;
 
-					// Recherche datas of order (all lines)
-					order
-						.findAll({
-							where: {
-								[Op.and]: [
-									{ userId: req.params.userid },
-									{ dateId: req.params.dateid },
-								],
-							},
-						})
-						.then((orders) => {
-							const count = orders.length; //! A modifier (boucle)
+			// Recherche datas of order (all lines)
+			// order
+			// 	.findAll({
+			// 		where: {
+			// 			[Op.and]: [
+			// 				{ userId: req.params.userid },
+			// 				{ delivery_date: req.params.delivery_date },
+			// 			],
+			// 		},
+			// 	})
+			// 	.then((orders) => {
+			// 		const count = orders.length; //! A modifier (boucle)
 
-							const titre = "[La Civraie] Confirmation de votre commande";
-							const message =
-								"<p>Votre commande sera livrée au magasin de la ferme de La Civraie le " +
-								deliverydate +
-								".</p>";
-							const contenu = req.params.contenu;
-							const total = req.params.total;
-							transporter.sendMail(
-								{
-									from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
-									to: email,
-									subject: titre,
-									html:
-										"<p>Bonjour " +
-										prenom +
-										" " +
-										nom +
-										",</p></br>" +
-										message +
-										"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;'>Produit</th><th style='border: 1px solid black;'>Quantité</th><th style='border: 1px solid black;'>Unité</th><th style='border: 1px solid black;'>Prix</th></tr>" +
-										contenu +
-										"</table><p>Total de la commande =" +
-										total +
-										".</p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p>L'équipe de la Civraie</p>",
-								},
-								(error, info) => {
-									if (error) {
-										return res.status(401).send(error);
-									}
-									res.status(200).send("email envoyé !");
-								}
-							);
-							// res.status(200).send(prenom);
-						})
-						.catch((err) => res.status(401).send(err));
-				})
-				.catch((err) => res.status(401).send(err));
+			const titre = "[La Civraie] Confirmation de votre commande";
+			const message =
+				"<p>Votre commande sera livrée au magasin de la ferme de La Civraie le " +
+				req.params.delivery_date +
+				".</p>";
+			const contenu = req.params.contenu;
+			const total = req.params.total;
+			transporter.sendMail(
+				{
+					from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
+					to: email,
+					subject: titre,
+					html:
+						"<p>Bonjour " +
+						prenom +
+						" " +
+						nom +
+						",</p></br>" +
+						message +
+						"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;'>Produit</th><th style='border: 1px solid black;'>Quantité</th><th style='border: 1px solid black;'>Unité</th><th style='border: 1px solid black;'>Prix</th></tr>" +
+						contenu +
+						"</table><p>Total de la commande =" +
+						total +
+						".</p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p>L'équipe de la Civraie</p>",
+				},
+				(error, info) => {
+					if (error) {
+						return res.status(401).send(error);
+					}
+					res.status(200).send("email envoyé !");
+				}
+			);
+			// res.status(200).send(prenom);
+			// })
+			// .catch((err) => res.status(401).send(err));
+			// })
+			// .catch((err) => res.status(401).send(err));
 		})
 		.catch((err) => res.status(401).send(err));
 	// .catch((err) => res.status(401).send("bad request"));

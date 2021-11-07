@@ -29,8 +29,6 @@ order.belongsTo(user);
 module.exports = { user, order };
 order.belongsTo(product);
 module.exports = { product, order };
-order.belongsTo(date);
-module.exports = { date, order };
 
 //association tables producer/product et category/product
 product.belongsTo(producer);

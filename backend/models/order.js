@@ -4,6 +4,14 @@ module.exports = (sequelize, DataTypes) => {
 	const order = sequelize.define(
 		"order",
 		{
+			delivery_date: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				require,
+				validate: {
+					notEmpty: true,
+				},
+			},
 			quantity: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
