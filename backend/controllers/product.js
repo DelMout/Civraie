@@ -52,7 +52,7 @@ exports.getProductsActived = (req, res) => {
 	product
 		.findAll({
 			order: [["product", "ASC"]],
-			where: { ordering: req.params.ordering },
+			where: { active: 1 },
 		})
 		.then((obj) => {
 			res.send(obj);

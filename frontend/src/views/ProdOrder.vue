@@ -131,6 +131,7 @@ export default {
 			noProduct: false,
 			style: "",
 			inOrder: false,
+			beSelected: "",
 		};
 	},
 	computed: {
@@ -190,6 +191,12 @@ export default {
 									prod.data[i].producerId
 							)
 							.then((producer) => {
+								//color background if in panier
+								if (localStorage.getItem(prod.data[i].id) !== null) {
+									this.beSelected = "background-color:rgba(0,128,0,0.1);";
+								} else {
+									this.beSelected = "";
+								}
 								this.displayProd.push({
 									id: prod.data[i].id,
 									product: prod.data[i].product,
@@ -201,7 +208,7 @@ export default {
 									photo: prod.data[i].photo,
 									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
 									stock_updated: prod.data[i].stock_updated,
-									selected: "",
+									selected: this.beSelected,
 									qty: 0,
 								});
 								// sort alpha order
@@ -233,75 +240,111 @@ export default {
 		addQty: function(event, prod) {
 			this.inOrder = false;
 			// prod.qty += 1;
-			if (this.$store.state.order.length === 0) {
+			if (localStorage === null) {
 				// If order empty
-				this.$store.state.total = 0;
-				this.$store.state.order.push({
-					productId: prod.id,
-					product: prod.product,
-					quantity: 1,
-					unity: prod.unite_vente,
-					price_unity: prod.price_unite_vente,
-				});
+				// this.$store.state.total = 0;
+				localStorage.setItem("Total", 0);
+				// this.$store.state.order.push({
+				// 	productId: prod.id,
+				// 	product: prod.product,
+				// 	quantity: 1,
+				// 	unity: prod.unite_vente,
+				// 	price_unity: prod.price_unite_vente,
+				// });
 				localStorage.setItem(prod.id, 1);
 			} else {
-				for (let m = 0; m < this.$store.state.order.length; m++) {
-					if (this.$store.state.order[m].productId === prod.id) {
-						this.$store.state.order[m].quantity += 1;
-						localStorage.setItem(
-							prod.id,
-							JSON.parse(localStorage.getItem(prod.id)) + 1
-						);
-						this.inOrder = true;
-					}
-				}
-				if (!this.inOrder) {
-					this.$store.state.order.push({
-						productId: prod.id,
-						product: prod.product,
-						quantity: 1,
-						unity: prod.unite_vente,
-						price_unity: prod.price_unite_vente,
-					});
+				// for (let m = 0; m < this.$store.state.order.length; m++) {
+				// 	if (this.$store.state.order[m].productId === prod.id) {
+				// 		this.$store.state.order[m].quantity += 1;
+				// 		localStorage.setItem(
+				// 			prod.id,
+				// 			JSON.parse(localStorage.getItem(prod.id)) + 1
+				// 		);
+				// 		this.inOrder = true;
+				// 	}
+				// }
+				if (localStorage.getItem(prod.id) !== null) {
+					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) + 1);
+				} else {
 					localStorage.setItem(prod.id, 1);
 				}
+
+				// if (!this.inOrder) {
+				// 	this.$store.state.order.push({
+				// 		productId: prod.id,
+				// 		product: prod.product,
+				// 		quantity: 1,
+				// 		unity: prod.unite_vente,
+				// 		price_unity: prod.price_unite_vente,
+				// 	});
+
+				// }
 			}
-			this.$store.state.total = this.$store.state.total + JSON.parse(prod.price_unite_vente);
-			console.log(this.$store.state.total);
-			console.log(this.$store.state.order.length);
-			console.log(this.$store.state.order);
+			// this.$store.state.total = this.$store.state.total + JSON.parse(prod.price_unite_vente);
+			localStorage.setItem(
+				"Total",
+				JSON.parse(localStorage.getItem("Total")) + JSON.parse(prod.price_unite_vente)
+			);
+			// console.log(this.$store.state.total);
+			// console.log(this.$store.state.order.length);
+			// console.log(this.$store.state.order);
 			prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
-			//! Mettre à zéro this.order lors de la connection du user.
-			for (let m = 0; m < this.$store.state.order.length; m++) {
-				if (this.$store.state.order[m].productId === prod.id) {
-					if (this.$store.state.order[m].quantity === 1) {
-						//delete this product in this.order
-						this.$store.state.order.splice(m, 1);
-						// prod.selected = "";
-						localStorage.removeItem(prod.id);
-						this.$store.state.total =
-							this.$store.state.total - JSON.parse(prod.price_unite_vente);
-					} else {
-						this.$store.state.order[m].quantity -= 1;
-						localStorage.setItem(
-							prod.id,
-							JSON.parse(localStorage.getItem(prod.id)) - 1
-						);
-						this.$store.state.total =
-							this.$store.state.total - JSON.parse(prod.price_unite_vente);
-					}
+			console.log("g appuyé sur sub");
+			//! Mettre à zéro localStorage lors de la connection du user.
+			if (localStorage.getItem(prod.id) !== null) {
+				if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
+					localStorage.removeItem(prod.id);
+					localStorage.setItem(
+						"Total",
+						JSON.parse(localStorage.getItem("Total")) -
+							JSON.parse(prod.price_unite_vente)
+					);
+					prod.selected = "";
+				} else {
+					console.log("je dois décrémenter !");
+					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
+					localStorage.setItem(
+						"Total",
+						JSON.parse(localStorage.getItem("Total")) -
+							JSON.parse(prod.price_unite_vente)
+					);
 				}
 			}
+
+			// for (let m = 0; m < this.$store.state.order.length; m++) {
+			// 	if (this.$store.state.order[m].productId === prod.id) {
+			// 		if (this.$store.state.order[m].quantity === 1) {
+			// 			//delete this product in this.order
+			// 			this.$store.state.order.splice(m, 1);
+			// 			// prod.selected = "";
+			// 			localStorage.removeItem(prod.id);
+			// 			localStorage.setItem(
+			// 				"Total",
+			// 				localStorage.getItem("Total") - JSON.parse(prod.price_unite_vente)
+			// 			);
+			// 		} else {
+			// 			this.$store.state.order[m].quantity -= 1;
+			// 			localStorage.setItem(
+			// 				prod.id,
+			// 				JSON.parse(localStorage.getItem(prod.id)) - 1
+			// 			);
+			// 			localStorage.setItem(
+			// 				"Total",
+			// 				localStorage.getItem("Total") - JSON.parse(prod.price_unite_vente)
+			// 			);
+			// 		}
+			// 	}
+			// }
 
 			// if (prod.qty < 1) {
 			// 	prod.selected = "";
 			// }
 
-			console.log(this.$store.state.order);
-			console.log(this.$store.state.total);
+			// console.log(this.$store.state.order);
+			// console.log(this.$store.state.total);
 		},
 		//* Validation order
 		// validOrder: function() {

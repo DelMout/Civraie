@@ -3,7 +3,7 @@ import moment from "moment";
 
 export default createStore({
 	state: {
-		userId: null,
+		userId: 5,
 		// token:null,
 		isAdmin: 0,
 		deliveryDate: null,
