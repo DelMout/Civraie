@@ -64,9 +64,11 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate"]),
-		...mapState(["order", "userId"]),
+		...mapState(["order", "userId", "logged"]),
 	},
 	created: function() {
+		this.$store.dispatch("checkConnect");
+
 		console.log("hey !!");
 		console.log(this.$store.state.userId);
 		//*Select all products actived
@@ -107,6 +109,9 @@ export default {
 							this.products[i].unity +
 							"<td style='border: 1px solid black;'>" +
 							this.numFr(this.products[i].qty * this.products[i].price_unity);
+						//delete order in localStorage
+						localStorage.removeItem(this.products[i].id);
+
 						axios
 							.post(
 								process.env.VUE_APP_API +
@@ -137,8 +142,9 @@ export default {
 									)
 									.then(() => {
 										this.products = [];
-										localStorage.clear();
+										// localStorage.clear();
 										this.total = 0;
+										localStorage.removeItem("Total");
 										this.info =
 											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
 										console.log(

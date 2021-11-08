@@ -1,9 +1,10 @@
 <template>
 	<div>
-		<h3>Produits vendus à la commande</h3>
-		<p>
-			Prochain livraison produits au magasin : <b> {{ deliveryDate }}</b>
-		</p>
+		<h4>
+			<p>
+				Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
+			</p>
+		</h4>
 		<!-- A afficher si non connecté -->
 		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>
 		<h3>

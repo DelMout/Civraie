@@ -82,7 +82,7 @@ exports.login = (req, res) => {
 			}
 		})
 		.catch((err) => {
-			res.status(401).send("Email not OK");
+			res.status(401).send(err);
 		});
 };
 

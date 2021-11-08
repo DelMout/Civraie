@@ -46,6 +46,7 @@
 </template>
 <script>
 import axios from "axios";
+import { mapMutations, mapState, mapActions } from "vuex";
 
 export default {
 	data() {
@@ -71,7 +72,12 @@ export default {
 		//Update Active=0 for products with cloture_day in the past
 		axios.put(process.env.VUE_APP_API + "product/checkactive/putinactive");
 	},
+	computed: {
+		...mapState(["infoHome", "token", "userId", "isAdmin", "logged"]),
+	},
 	methods: {
+		...mapMutations(["setUserId", "setToken", "setAdmin", "setEmail"]),
+		...mapActions(["checkConnect"]),
 		//* Create a user
 		signup: function() {
 			axios
@@ -97,37 +103,29 @@ export default {
 
 		//* Login
 		login: function() {
-			const formData = new FormData();
-			formData.append("pseudo", this.$data.pseudo);
-			formData.append("interet", this.$data.interet);
-			formData.append("frequence", this.$data.frequence);
-			formData.append("jour", this.$data.jour);
-			formData.append("heure", this.$data.heure);
-			formData.append("participants", this.$data.participants);
-			formData.append("jeux", this.$data.jeux);
-			formData.append("nouveau", this.$data.nouveau);
-			formData.append("suggestions", this.$data.suggestions);
-			formData.append("commentaires", this.$data.commentaires);
 			axios
-				.post(
-					"http://localhost:3001/api/sondage/savesondage",
-					formData
-					// {
-					// pseudo: this.pseudo,
-					// interet: this.interet,
-					// frequence: this.frequence,
-					// jour: this.jour,
-					// heure: this.heure,
-					// participants: this.participants,
-					// jeux: this.jeux,
-					// nouveau: this.nouveau,
-					// suggestions: this.suggestions,
-					// commentaires: this.commentaires,
-					// }
-				)
-				.then(() => {
+				.post(process.env.VUE_APP_API + "user/login", {
+					email: this.email,
+					password: this.password,
+				})
+				.then((user) => {
+					const { userId, token, isAdmin } = user.data;
+					localStorage.setItem("userId", userId);
+					localStorage.setItem("token", token);
+					localStorage.setItem("isAdmin", isAdmin);
+					this.setAdmin(isAdmin);
+					this.$store.dispatch("checkConnect");
 					console.log("connected !");
-					// this.$router.push("/produits_vente_commande");
+					// Update last-connect and jeton
+					axios
+						.put(process.env.VUE_APP_API + "user/login/" + this.email)
+						.then(() => {
+							console.log("last_conn updated");
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+					this.$router.push("/produits_vente_commande");
 				})
 				.catch((err) => {
 					console.log(err);
