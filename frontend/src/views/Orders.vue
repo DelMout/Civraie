@@ -10,38 +10,20 @@
 			<button @click="displayByCustomer">Afficher par CLIENT</button>
 			<button @click="displayByProduct">Afficher par PRODUIT</button>
 		</div>
-		<div>
+		<div v-if="client">
 			<button @click="downloadClient">Télécharger Excel / CLIENT</button>
 		</div>
-		<div>
+		<div v-if="produit">
 			<button @click="downloadProduit">Télécharger Excel / PRODUIT</button>
 		</div>
 
-		<!-- <div>
-			<a :href="linkOpenExcel"
-				><button @click="exportExcel">Télécharger fichier Excel</button></a
-			>
-			<a href="http://localhost:3001/api/order/exportexcel/10"
-				><button >Télécharger fichier Excel</button></a
-			> -->
-		<!-- <button @click="exportExcel">Télécharger fichier Excel</button> -->
-		<!-- </div> -->
 		<!-- Tableau des commandes reçues -->
 		<div>
-			<i>Affichage par client (plusieurs petits tableaux) ou par produit</i>
 			<!-- Table par client -->
 			<table v-if="client">
 				<caption>
 					Commandes détaillées par client
 				</caption>
-				<!-- <tr>
-						<th colspan="2">Client</th>
-						<th>Date commande</th>
-					</tr>
-					<tr>
-						<td colspan="2">{{ ord.userName }} {{ ord.userFirstName }}</td>
-						<td>{{ dateFr(ord.order_date) }}</td>
-					</tr> -->
 				<tr>
 					<th>Client</th>
 					<th>Date commande</th>
@@ -82,7 +64,7 @@
 <script>
 import axios from "axios";
 import moment from "moment";
-// import XlsExport from "xlsexport";
+import XlsExport from "xlsexport";
 import { mapGetters } from "vuex";
 
 export default {
@@ -227,9 +209,8 @@ export default {
 			axios
 				.get(process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate)
 				.then((order) => {
+					console.log(order.data.length);
 					for (let i = 0; i < order.data.length; i++) {
-						this.inQtyProd = false;
-
 						axios
 							.get(
 								process.env.VUE_APP_API + "product/datas/" + order.data[i].productId
@@ -243,6 +224,7 @@ export default {
 											product.data.producerId
 									)
 									.then((producer) => {
+										this.inQtyProd = false;
 										for (let q = 0; q < this.qtyProd.length; q++) {
 											if (product.data.product === this.qtyProd[q].product) {
 												this.qtyProd[q].quantity =
@@ -285,23 +267,6 @@ export default {
 					console.log(err);
 				});
 			console.log(this.qtyProd);
-
-			// // Alternate color lines
-			// console.log("longur = " + this.qtyProd.length);
-			// for (let v = 1; v < this.qtyProd.length; v++) {
-			// 	if (this.qtyProd[v].producer != this.qtyProd[v - 1].producer) {
-			// 		if (this.qtyProd[v - 1].color === "line_pair") {
-			// 			this.qtyProd[v].color = "line_impair";
-			// 		} else {
-			// 			this.qtyProd[v].color = "line_pair";
-			// 		}
-			// 	} else {
-			// 		this.qtyProd[v].color = this.qtyProd[v - 1].color;
-			// 	}
-			// }
-
-			// console.log("resultat");
-			// console.log(this.qtyProd);
 		},
 
 		//* Number format
@@ -312,15 +277,15 @@ export default {
 		},
 
 		//* Downloading Excel By Customer
-		// downloadClient: function() {
-		// 	var xls = new XlsExport(this.orders, "Par_Client");
-		// 	xls.exportToXLS("commandes_Client_" + this.selectedDate + ".xls");
-		// },
+		downloadClient: function() {
+			var xls = new XlsExport(this.orders, "Par_Client");
+			xls.exportToXLS("commandes_Client_" + this.deliveryDate + ".xls");
+		},
 		// //* Downloading Excel By Product
-		// downloadProduit: function() {
-		// 	var xls = new XlsExport(this.qtyProd, "Par_Produit");
-		// 	xls.exportToXLS("commandes_Produit_" + this.selectedDate + ".xls");
-		// },
+		downloadProduit: function() {
+			var xls = new XlsExport(this.qtyProd, "Par_Produit");
+			xls.exportToXLS("commandes_Produit_" + this.deliveryDate + ".xls");
+		},
 	},
 };
 </script>

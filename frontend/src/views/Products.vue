@@ -2,7 +2,8 @@
 	<div>
 		<h1>Liste des produits</h1>
 		<p>{{ infoProd }}</p>
-		<p>Renseigner "0" ou "-1" pour case à laisser vide (pour : Prix/kg, Prix qté mini).</p>
+
+		<p>Saisir 0 pour ne pas renseigner Prix/kg.</p>
 		<p>
 			<button style="background-color:cyan;" class="" type="button" @click="aLaCommande">
 				{{ SeeAlaCommande }}
@@ -15,19 +16,15 @@
 				<th>Producteur</th>
 				<th>Catégorie</th>
 				<th>Jour clôture</th>
-				<th class="numb">Prix/kg</th>
-				<th>Quantité minimum vente</th>
-				<th class="numb">Prix Quantité mini</th>
-				<!-- <th class="numb">Stock initial</th>
-				<th class="numb">Stock après conso</th>
-				<th class="numb">Stock limite</th> -->
+				<th class="numb">Prix / kg</th>
+				<th>Unité vente</th>
+				<th class="numb">Prix / unité vente</th>
 				<th>Support vente</th>
 				<th class="photo">Photo</th>
 				<th class="numb">Actif</th>
-				<!-- <th>Alerte stock</th> -->
 			</tr>
 			<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
-				<td @click="modifProd($event, prod)" v-if="chooseCommande || prod.ordering == 2">
+				<td @click="modifProd($event, prod)" v-if="chooseCommande || prod.active == 1">
 					<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
 					<input
 						v-if="prod.modif && !prod.delete"
@@ -37,7 +34,7 @@
 					/>
 				</td>
 				<td
-					v-if="chooseCommande || prod.ordering == 2"
+					v-if="chooseCommande || prod.active == 1"
 					@click="displayProducersModif($event, prod)"
 					:id="prod.selectProdu"
 				>
@@ -45,7 +42,7 @@
 					<p v-if="produSelected">{{ produSelected }}</p>
 				</td>
 				<td
-					v-if="chooseCommande || prod.ordering == 2"
+					v-if="chooseCommande || prod.active == 1"
 					@click="displayCategoriesModif($event, prod)"
 					:id="prod.selectCate"
 				>
@@ -53,16 +50,15 @@
 					<p v-if="categorySelected">{{ categorySelected }}</p>
 				</td>
 				<td
-					v-if="chooseCommande || prod.ordering == 2"
+					v-if="chooseCommande || prod.active == 1"
 					@click="displayCloturedayModif($event, prod)"
 					:id="prod.selectCloture"
 				>
 					<p v-if="!clotureSelected">{{ cloturedays[prod.cloturedayId].cloture_day }}</p>
-					<!-- <p v-if="!clotureSelected">{{ prod.cloturedayId }}</p> -->
 					<p v-if="clotureSelected">{{ clotureSelected }}</p>
 				</td>
 				<td
-					v-if="chooseCommande || prod.ordering == 2"
+					v-if="chooseCommande || prod.active == 1"
 					class="numb"
 					@click="modifProd($event, prod)"
 				>
@@ -76,7 +72,7 @@
 						v-model="prod.price_kg"
 					/>
 				</td>
-				<td v-if="chooseCommande || prod.ordering == 2" @click="modifProd($event, prod)">
+				<td v-if="chooseCommande || prod.active == 1" @click="modifProd($event, prod)">
 					<p v-if="!prod.modif || prod.delete">{{ prod.unite_vente }}</p>
 					<input
 						v-if="prod.modif && !prod.delete"
@@ -86,7 +82,7 @@
 					/>
 				</td>
 				<td
-					v-if="chooseCommande || prod.ordering == 2"
+					v-if="chooseCommande || prod.active == 1"
 					class="numb"
 					@click="modifProd($event, prod)"
 				>
@@ -100,38 +96,9 @@
 						v-model="prod.price_unite_vente"
 					/>
 				</td>
-				<!-- <td
-					v-if="chooseCommande || prod.ordering == 2"
-					class="numb"
-					@click="modifProd($event, prod)"
-				>
-					<p v-if="!prod.modif || prod.delete">{{ prod.stock_init }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create numb"
-						type="text"
-						v-model="prod.stock_init"
-					/>
-				</td> -->
-				<!-- <td v-if="chooseCommande || prod.ordering == 2" class="numb">
-					{{ prod.stock_updated }}
-				</td>
-				<td
-					v-if="chooseCommande || prod.ordering == 2"
-					class="numb"
-					@click="modifProd($event, prod)"
-				>
-					<p v-if="!prod.modif || prod.delete">{{ prod.alert_stock }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create numb"
-						type="text"
-						v-model="prod.alert_stock"
-					/>
-				</td> -->
 
 				<td
-					v-if="chooseCommande || prod.ordering == 2"
+					v-if="chooseCommande || prod.active == 1"
 					@click="displayOrderingModif($event, prod)"
 					:id="prod.selectOrdering"
 				>
@@ -139,7 +106,7 @@
 					<p v-if="orderingSelected">{{ orderingSelected }}</p>
 				</td>
 				<td
-					v-if="chooseCommande || prod.ordering == 2"
+					v-if="chooseCommande || prod.active == 1"
 					@click="modifProd($event, prod)"
 					class="photo"
 				>
@@ -157,7 +124,7 @@
 						@change="onFileChange"
 					/>
 				</td>
-				<td class="numb" v-if="chooseCommande || prod.ordering == 2">
+				<td class="numb" v-if="chooseCommande || prod.active == 1">
 					<button
 						v-if="prod.active > 0"
 						class="active on"
@@ -171,9 +138,6 @@
 						@click="activeInactive($event, prod)"
 					></button>
 				</td>
-				<!-- <td v-if="prod.alert <= 0 && (chooseCommande || prod.ordering == 2)">
-					Attention stock faible !
-				</td> -->
 				<td v-if="prod.modif">
 					<button
 						v-if="prod.modif && !prod.delete"
@@ -202,6 +166,13 @@
 					</button>
 				</td>
 			</tr>
+			<!-- Info : product created -->
+			<dialog open v-if="dialog"
+				><p>Produit créé !</p>
+				<form method="dialog">
+					<button @click="closeDialog">Fermer</button>
+				</form></dialog
+			>
 			<tr>
 				<th>Produit</th>
 				<th>Producteur</th>
@@ -214,6 +185,7 @@
 				<th class="photo">Photo</th>
 				<th class="numb">Actif</th>
 			</tr>
+
 			<!-- Row for creating new product -->
 			<tr class="create">
 				<td><input class="create" type="text" id="name" v-model="name" /></td>
@@ -241,13 +213,6 @@
 						v-model="PriceQtyMini"
 					/>
 				</td>
-				<!-- <td class="numb">
-					<input class="create numb" type="text" id="stockinit" v-model="stockInit" />
-				</td>
-				<td class="nocolor numb">{{ stockInit }}</td> -->
-				<!-- <td class="numb">
-					<input class="create numb" type="text" id="stocklimit" v-model="stockLimit" />
-				</td> -->
 				<td @click="displayOrdering">{{ ordering }}</td>
 				<td class="photo">
 					<input class="photo" type="file" name="image" @change="onFileChange" />
@@ -374,7 +339,8 @@ export default {
 			clotureSelected: "",
 			index: "",
 			chooseCommande: true,
-			SeeAlaCommande: "Afficher seulement les produits à la commande",
+			SeeAlaCommande: "Afficher seulement les produits actifs",
+			dialog: false,
 		};
 	},
 	beforeCreate: function() {
@@ -611,14 +577,6 @@ export default {
 			this.categories = [];
 			// this.cloturedays = [];
 			this.displayCl = true;
-			//* All cloturedays
-			// axios.get(process.env.VUE_APP_API + "information/getall/Weekday").then((clo) => {
-			// 	for (let i = 0; i < clo.data.length; i++) {
-			// 		this.cloturedays.push({
-			// 			day: clo.data[i].content,
-			// 		});
-			// 	}
-			// });
 		},
 
 		//* Display all orderings (when modif)
@@ -753,6 +711,8 @@ export default {
 				axios
 					.post(process.env.VUE_APP_API + "product/createproduct", formData)
 					.then(() => {
+						//! Afficher boites de dialog
+						this.dialog = true;
 						this.infoProd = "Produit créé !";
 						this.producerId = "";
 						this.orderingItem = "";
@@ -762,6 +722,11 @@ export default {
 						console.log(this.image);
 					});
 			}
+		},
+		//* Close Dialog
+		closeDialog: function() {
+			this.dialog = false;
+			location.reload();
 		},
 
 		//* Want to modify a product

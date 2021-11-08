@@ -126,7 +126,8 @@ export default {
 					// }
 				)
 				.then(() => {
-					console.log("OK");
+					console.log("connected !");
+					// this.$router.push("/produits_vente_commande");
 				})
 				.catch((err) => {
 					console.log(err);

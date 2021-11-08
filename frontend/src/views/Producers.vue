@@ -118,7 +118,7 @@
 						type="button"
 						@click="Delete($event, prod)"
 					>
-						Supprimer ce producteur
+						Supprimer
 					</button>
 				</td>
 			</tr>
@@ -150,7 +150,7 @@
 
 				<td>
 					<button class="valCreate" type="button" @click="validateCreate">
-						Créer ce producteur
+						Créer
 					</button>
 				</td>
 			</tr>
@@ -332,10 +332,10 @@ table {
 }
 .create,
 .valCreate {
-	background-color: greenyellow;
+	background-color: rgb(252, 190, 76);
 }
 #green {
-	background-color: greenyellow;
+	background-color: rgb(252, 190, 76);
 }
 #red {
 	background-color: red;
