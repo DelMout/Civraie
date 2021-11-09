@@ -125,7 +125,11 @@ export default {
 						.catch((err) => {
 							console.log(err);
 						});
-					this.$router.push("/produits_vente_commande");
+					if (this.isAdmin === 1) {
+						this.$router.push("/commandes");
+					} else {
+						this.$router.push("/produits_vente_commande");
+					}
 				})
 				.catch((err) => {
 					console.log(err);

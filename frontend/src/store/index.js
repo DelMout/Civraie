@@ -5,7 +5,6 @@ import jwt_decode from "jwt-decode";
 export default createStore({
 	state: {
 		userId: null,
-		// token:null,
 		isAdmin: 0,
 		deliveryDate: null,
 		products: [],
@@ -85,6 +84,7 @@ export default createStore({
 		checkConnect(context) {
 			context.commit("setToken", localStorage.getItem("token"));
 			context.commit("setUserId", localStorage.getItem("userId"));
+			// context.commit("setAdmin", localStorage.getItem("isAdmin"));
 			if (context.state.token) {
 				if (this.getters.dateExp > this.getters.dateNow) {
 					context.commit("IS_TRUE");
@@ -99,6 +99,7 @@ export default createStore({
 		},
 		disconnect(context) {
 			context.commit("IS_FALSE");
+			context.commit("setAdmin", 0);
 		},
 	},
 });

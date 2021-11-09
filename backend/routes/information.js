@@ -14,4 +14,7 @@ router.get("/supportvente/:item", infoCtrl.supportVente); //! Retiré admin
 router.get("/getall/:title", infoCtrl.allInformations); //! Retiré admin
 // router.get("/supportvente/:title", infoCtrl.allSupportsVente); //! Retiré admin
 
+// * Gzt opening hours
+router.get("/openhours", infoCtrl.openHours); //! Retiré admin
+
 module.exports = router;

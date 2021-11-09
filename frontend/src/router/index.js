@@ -8,6 +8,8 @@ import Producers from "../views/Producers.vue";
 import Users from "../views/Users.vue";
 import Orders from "../views/Orders.vue";
 import Panier from "../views/Panier.vue";
+import SendEmail from "../views/SendEmail.vue";
+import OpeningHours from "../views/OpeningHours.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -43,6 +45,7 @@ const routes = [
 			title: "Ferme La Civraie / Mon Panier",
 		},
 	},
+
 	{
 		path: "/produits_vente_commande",
 		name: "ProdOrder",
@@ -50,6 +53,15 @@ const routes = [
 		meta: {
 			title: "Ferme La Civraie / Produits commande",
 		},
+	},
+	{
+		path: "/envoi_email",
+		name: "SendEmail",
+		component: SendEmail,
+		meta: {
+			title: "Ferme La Civraie / Envoi email",
+		},
+		//TODO Limiter l'accès au proprio
 	},
 	{
 		path: "/tous_produits",
@@ -84,6 +96,15 @@ const routes = [
 		component: Orders,
 		meta: {
 			title: "Ferme La Civraie / Commandes",
+		},
+		//TODO Limiter l'accès au proprio
+	},
+	{
+		path: "/horaires_ouverture",
+		name: "OpeningHours",
+		component: OpeningHours,
+		meta: {
+			title: "Ferme La Civraie / Horaires ouverture",
 		},
 		//TODO Limiter l'accès au proprio
 	},

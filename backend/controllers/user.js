@@ -315,44 +315,46 @@ exports.emailInfo = (req, res) => {
 	});
 
 	// Title and content of specific email
-	information
-		.update(
-			{
-				title: req.body.title,
-				content: req.body.content,
-			},
-			{ where: { item: "specific_email" } }
-		)
-		.then(() => {
-			// information.findOne({ where: { item: "specific_email" } }).then((specific) => {
-			// 	const title = specific.title;
-			// 	const content = specific.content;
+	// information
+	// 	.update(
+	// 		{
+	// 			title: req.body.title,
+	// 			content: req.body.content,
+	// 		},
+	// 		{ where: { item: "specific_email" } }
+	// 	)
+	// 	.then(() => {
+	// 		// information.findOne({ where: { item: "specific_email" } }).then((specific) => {
+	// 		// 	const title = specific.title;
+	// 		// 	const content = specific.content;
 
-			// List of users non isAdmin
-			user.findAndCountAll({ where: { isAdmin: 0 } })
-				.then((users) => {
-					// res.send(users);
-					const count = users.count;
-					for (let i = 0; i < count; i++) {
-						// Message for each user
-						transporter.sendMail(
-							{
-								from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
-								to: users.rows[i].email,
-								subject: "[La Civraie]" + req.body.title,
-								html:
-									req.body.content +
-									"</br><a href='http://localhost:8080'>Le magasin de La Civraie</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p>",
-							},
-							(error, info) => {
-								if (error) {
-									return res.status(401).send(error);
-								}
-								res.status(200).send("email envoyé !");
-							}
-						);
+	// List of users non isAdmin
+	user.findAndCountAll({ where: { isAdmin: 0 } })
+		.then((users) => {
+			// res.send(users);
+			const count = users.count;
+			for (let i = 0; i < count; i++) {
+				// Message for each user
+				transporter.sendMail(
+					{
+						from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
+						to: users.rows[i].email,
+						subject: "[La Civraie] " + req.body.title,
+						html:
+							req.body.content +
+							"<p>Passer votre commande sur le site de la ferme de La Civraie :<br/><a href='http://localhost:8080/'>La ferme de la Civraie</a></p><p>Les horaires d'ouverture du magasin :<br/>" +
+							req.body.horaires +
+							"</p><p>La ferme de La Civraie<br />Magasin Civraie, Si Frais<br />Adrien et Céline Pichon<br />La Civraie<br />Noyant<br />49490 Noyant-Villages<br />Tél : 06 14 10 04 47</p>",
+					},
+					(error, info) => {
+						if (error) {
+							return res.status(401).send(error);
+						}
+						res.status(200).send("email envoyé à tous !");
 					}
-				})
-				.catch((err) => res.status(401).send("bad request"));
-		});
+				);
+			}
+		})
+		.catch((err) => res.status(401).send("bad request"));
+	// });
 };

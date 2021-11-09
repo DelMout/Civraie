@@ -14,16 +14,24 @@
 		<router-link class="link" to="/">Accueil </router-link>
 		<!-- <router-link class="link" to="/produits_vente_magasin">Produits à la vente </router-link> -->
 		<router-link class="link" to="/produits_vente_commande">Commander </router-link>
-		<router-link class="link" v-if="isAdmin === 1" to="/tous_produits"
+		<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email">* Email *</router-link>
+		<router-link class="link" v-if="isAdminApp === 1" to="/commandes"
+			>* Commandes *</router-link
+		>
+		<router-link class="link" v-if="isAdminApp === 1" to="/tous_produits"
 			>* Produits *</router-link
 		>
-		<router-link class="link" v-if="isAdmin === 1" to="/producteurs"
-			>* Producteurs *</router-link
-		>
-		<router-link class="link" v-if="isAdmin === 1" to="/utilisateurs"
+
+		<router-link class="link" v-if="isAdminApp === 1" to="/utilisateurs"
 			>* Utilisateurs *</router-link
 		>
-		<router-link class="link" v-if="isAdmin === 1" to="/commandes">* Commandes *</router-link>
+		<router-link class="link" v-if="isAdminApp === 1" to="/producteurs"
+			>* Producteurs *</router-link
+		>
+		<router-link class="link" v-if="isAdminApp === 1" to="/horaires_ouverture"
+			>* Horaires *</router-link
+		>
+
 		<!-- <router-link class="link" to="/panier">Mon Panier</router-link> -->
 	</div>
 	<router-view />
@@ -32,13 +40,23 @@
 import { mapState, mapActions } from "vuex"; // for authentification
 export default {
 	data() {
-		return {};
+		return {
+			isAdminApp: 0,
+		};
 	},
 	computed: {
-		...mapState(["logged"]),
+		...mapState(["logged", "isAdmin"]),
+	},
+	beforeMount: function() {
+		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page
+		this.isAdminApp = parseInt(localStorage.getItem("isAdmin"));
+	},
+	updated: function() {
+		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page
+		this.isAdminApp = parseInt(localStorage.getItem("isAdmin"));
 	},
 	methods: {
-		...mapActions(["disconnect"]),
+		...mapActions(["disconnect", "checkConnect"]),
 
 		//* Disconnect
 		disconnect: function() {
@@ -73,7 +91,7 @@ export default {
 	cursor: pointer;
 }
 
-a.router-link-exact-active {
+#nav a.router-link-exact-active {
 	color: rgb(11, 112, 11);
 	font-weight: 600;
 }
