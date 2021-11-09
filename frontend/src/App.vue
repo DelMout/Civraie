@@ -1,7 +1,9 @@
 <template>
 	<div id="connected" v-if="logged">
 		<div class="panier_connect">
-			<p><a href="http://localhost:8080/panier">Mon Panier</a></p>
+			<p>
+				<a href="http://localhost:8080/panier">Mon Panier </a><span> {{ total }}</span>
+			</p>
 		</div>
 		<div class="panier_connect">
 			<p><i>Vous êtes connecté(e)</i></p>
@@ -45,7 +47,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(["logged", "isAdmin"]),
+		...mapState(["logged", "isAdmin", "total"]),
 	},
 	beforeMount: function() {
 		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page

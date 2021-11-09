@@ -71,6 +71,8 @@ export default {
 		localStorage.clear(); //! A modifier qd user en fonction !
 		//Update Active=0 for products with cloture_day in the past
 		axios.put(process.env.VUE_APP_API + "product/checkactive/putinactive");
+
+		//TODO Aller chercler les horaires d'ouverture pour les afficher dans cette page.
 	},
 	computed: {
 		...mapState(["infoHome", "token", "userId", "isAdmin", "logged"]),

@@ -83,31 +83,13 @@ exports.emailConfirm = (req, res) => {
 			const prenom = user.prenom;
 			const nom = user.nom;
 
-			// // Recherche datas of date (delivery date)
-			// date.findOne({ where: { id: req.params.dateid } })
-			// 	.then((date) => {
-			// 		const deliverydate = date.delivery_date;
-
-			// Recherche datas of order (all lines)
-			// order
-			// 	.findAll({
-			// 		where: {
-			// 			[Op.and]: [
-			// 				{ userId: req.params.userid },
-			// 				{ delivery_date: req.params.delivery_date },
-			// 			],
-			// 		},
-			// 	})
-			// 	.then((orders) => {
-			// 		const count = orders.length; //! A modifier (boucle)
-
 			const titre = "[La Civraie] Confirmation de votre commande";
 			const message =
 				"<p>Votre commande sera livrée au magasin de la ferme de La Civraie le " +
 				req.params.delivery_date +
 				".</p>";
 			const contenu = req.params.contenu;
-			const total = req.params.total;
+			// const total = req.params.total;
 			transporter.sendMail(
 				{
 					from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
@@ -120,11 +102,9 @@ exports.emailConfirm = (req, res) => {
 						nom +
 						",</p></br>" +
 						message +
-						"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;'>Produit</th><th style='border: 1px solid black;'>Quantité</th><th style='border: 1px solid black;'>Unité</th><th style='border: 1px solid black;'>Prix</th></tr>" +
+						"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;'>Produit</th><th style='border: 1px solid black;'>Quantité</th><th style='border: 1px solid black;'>Unité</th></tr>" +
 						contenu +
-						"</table><p>Total de la commande =" +
-						total +
-						".</p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p>L'équipe de la Civraie</p>",
+						"</table></p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p>L'équipe de la Civraie</p>",
 				},
 				(error, info) => {
 					if (error) {

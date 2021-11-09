@@ -6,11 +6,8 @@
 			</p>
 		</h4>
 		<!-- A afficher si non connecté -->
-		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>
-		<h3>
-			Passer votre commande avant le {{ dateCommande }} soir. Livraison le {{ dateLivraison }}
-		</h3> -->
-		<p>{{ infoOrder }}</p>
+		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>-->
+
 		<!-- Display categories products -->
 		<div>
 			<!-- V-for -->
@@ -23,31 +20,6 @@
 				</div>
 			</div>
 		</div>
-		<!-- Table pour le panier de commande -->
-		<table v-if="total > 0">
-			<caption>
-				Votre commande
-			</caption>
-			<tr>
-				<th>Produit</th>
-				<th>Quantité</th>
-				<th>Unité</th>
-				<th>Prix</th>
-			</tr>
-			<tr v-for="prod in displayProd" :key="prod.id">
-				<td v-if="prod.qty > 0">{{ prod.product }}</td>
-				<td v-if="prod.qty > 0">{{ prod.qty }} x</td>
-				<td v-if="prod.qty > 0">{{ prod.unite_vente }}</td>
-				<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unite_vente) }}</td>
-			</tr>
-
-			<td colspan="4">
-				Prix total de la commande : <span>{{ numFr(total) }} </span
-				><button class="addsub" type="button" @click="validOrder">
-					Valider la commande
-				</button>
-			</td>
-		</table>
 
 		<!-- Présentation produits sur petites cartes -->
 		<div id="conteneur" v-if="card_products">
@@ -105,8 +77,6 @@ import { mapState, mapMutations, mapGetters } from "vuex";
 export default {
 	data() {
 		return {
-			dateCommande: "25/08/2021",
-			dateLivraison: "30/08/2021",
 			products: [],
 			displayProd: [],
 			categories: [],
@@ -121,7 +91,7 @@ export default {
 				{ id: 5, cloture_day: "Vendredi" },
 				{ id: 6, cloture_day: "Samedi" },
 			],
-			total: 0,
+			total: 0, // Qty of products in panier
 			dateId: 10, //TODO Aller chercher la bonne info
 			userId: 7, //TODO Aller chercher la bonne info
 			infoOrder: "",
@@ -165,7 +135,7 @@ export default {
 
 	methods: {
 		// ...mapActions(["nextDeliveryDay"]),
-		...mapMutations(["setProducts"]),
+		...mapMutations(["setProducts", "setTotal"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
@@ -239,215 +209,38 @@ export default {
 
 		//* Add product to the order
 		addQty: function(event, prod) {
+			//! if logged null, alors message pour "se connecter pour commander"
 			this.inOrder = false;
-			// prod.qty += 1;
 			if (localStorage === null) {
-				// If order empty
-				// this.$store.state.total = 0;
-				localStorage.setItem("Total", 0);
-				// this.$store.state.order.push({
-				// 	productId: prod.id,
-				// 	product: prod.product,
-				// 	quantity: 1,
-				// 	unity: prod.unite_vente,
-				// 	price_unity: prod.price_unite_vente,
-				// });
+				localStorage.setItem("Total", 1);
 				localStorage.setItem(prod.id, 1);
 			} else {
-				// for (let m = 0; m < this.$store.state.order.length; m++) {
-				// 	if (this.$store.state.order[m].productId === prod.id) {
-				// 		this.$store.state.order[m].quantity += 1;
-				// 		localStorage.setItem(
-				// 			prod.id,
-				// 			JSON.parse(localStorage.getItem(prod.id)) + 1
-				// 		);
-				// 		this.inOrder = true;
-				// 	}
-				// }
 				if (localStorage.getItem(prod.id) !== null) {
 					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) + 1);
 				} else {
 					localStorage.setItem(prod.id, 1);
+					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) + 1);
 				}
-
-				// if (!this.inOrder) {
-				// 	this.$store.state.order.push({
-				// 		productId: prod.id,
-				// 		product: prod.product,
-				// 		quantity: 1,
-				// 		unity: prod.unite_vente,
-				// 		price_unity: prod.price_unite_vente,
-				// 	});
-
-				// }
 			}
-			// this.$store.state.total = this.$store.state.total + JSON.parse(prod.price_unite_vente);
-			localStorage.setItem(
-				"Total",
-				JSON.parse(localStorage.getItem("Total")) + JSON.parse(prod.price_unite_vente)
-			);
-			// console.log(this.$store.state.total);
-			// console.log(this.$store.state.order.length);
-			// console.log(this.$store.state.order);
+			this.$store.commit("setTotal", localStorage.getItem("Total"));
+
 			prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
 			console.log("g appuyé sur sub");
-			//! Mettre à zéro localStorage lors de la connection du user.
 			if (localStorage.getItem(prod.id) !== null) {
 				if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
 					localStorage.removeItem(prod.id);
-					localStorage.setItem(
-						"Total",
-						JSON.parse(localStorage.getItem("Total")) -
-							JSON.parse(prod.price_unite_vente)
-					);
+					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) - 1);
 					prod.selected = "";
 				} else {
 					console.log("je dois décrémenter !");
 					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
-					localStorage.setItem(
-						"Total",
-						JSON.parse(localStorage.getItem("Total")) -
-							JSON.parse(prod.price_unite_vente)
-					);
 				}
 			}
-
-			// for (let m = 0; m < this.$store.state.order.length; m++) {
-			// 	if (this.$store.state.order[m].productId === prod.id) {
-			// 		if (this.$store.state.order[m].quantity === 1) {
-			// 			//delete this product in this.order
-			// 			this.$store.state.order.splice(m, 1);
-			// 			// prod.selected = "";
-			// 			localStorage.removeItem(prod.id);
-			// 			localStorage.setItem(
-			// 				"Total",
-			// 				localStorage.getItem("Total") - JSON.parse(prod.price_unite_vente)
-			// 			);
-			// 		} else {
-			// 			this.$store.state.order[m].quantity -= 1;
-			// 			localStorage.setItem(
-			// 				prod.id,
-			// 				JSON.parse(localStorage.getItem(prod.id)) - 1
-			// 			);
-			// 			localStorage.setItem(
-			// 				"Total",
-			// 				localStorage.getItem("Total") - JSON.parse(prod.price_unite_vente)
-			// 			);
-			// 		}
-			// 	}
-			// }
-
-			// if (prod.qty < 1) {
-			// 	prod.selected = "";
-			// }
-
-			// console.log(this.$store.state.order);
-			// console.log(this.$store.state.total);
+			this.$store.commit("setTotal", localStorage.getItem("Total"));
 		},
-		//* Validation order
-		// validOrder: function() {
-		// 	this.manqProd = "";
-		// 	for (let i = 0; i < this.length; i++) {
-		// 		const decrem = parseInt(this.displayProd[i].stock_updated - this.displayProd[i].qty);
-		// 		if (this.products[i].qty > 0) {
-		// 			if (decrem < 0) {
-		// 				this.manqProd =
-		// 					"Manque des produits. Merci de baisser votre demande sur les produits suivants." +
-		// 					this.manqProd +
-		// 					" Stock =" +
-		// 					this.products[i].stock_updated +
-		// 					" pour les " +
-		// 					this.products[i].product +
-		// 					".";
-		// 				this.infoOrder = this.manqProd;
-		// 			}
-		// 		}
-		// 	}
-		// 	this.tablMail = "";
-		// 	for (let i = 0; i < this.length; i++) {
-		// 		const decrem = parseInt(this.products[i].stock_updated - this.products[i].qty);
-		// 		if (this.products[i].qty > 0) {
-		// 			// si stock dispo
-		// 			if (this.manqProd == "") {
-		// 				// Si aucun manquant sinon user refait commande
-
-		// 				this.tablMail =
-		// 					this.tablMail +
-		// 					"<tr><td style='border: 1px solid black;'>" +
-		// 					this.products[i].product +
-		// 					"<td style='border: 1px solid black;'>" +
-		// 					this.products[i].qty +
-		// 					"<td style='border: 1px solid black;'>" +
-		// 					this.products[i].unite_vente +
-		// 					"<td style='border: 1px solid black;'>" +
-		// 					this.numFr(this.products[i].qty * this.products[i].price_unite_vente);
-		// 				// Ajout données à la table Order
-		// 				axios
-		// 					.post(
-		// 						process.env.VUE_APP_API +
-		// 							"order/createorder/" +
-		// 							this.userId +
-		// 							"/" +
-		// 							this.dateId,
-		// 						{
-		// 							productId: this.products[i].id,
-		// 							quantity: this.products[i].qty,
-		// 							order_date: Date.now(),
-		// 						}
-		// 					)
-		// 					.then(() => {
-		// 						//Décrémenter qté à la table Products
-		// 						axios
-		// 							.put(
-		// 								process.env.VUE_APP_API +
-		// 									"product/modif/" +
-		// 									this.products[i].id,
-		// 								{
-		// 									stock_updated: decrem,
-		// 								}
-		// 							)
-		// 							.then(() => {
-		// 								console.log("order enregistrée dans base de données.");
-		// // 								//TODO Envoi de mail confirmation
-		// 								if (this.manqProd == "") {
-		// 									axios
-		// 										.post(
-		// 											process.env.VUE_APP_API +
-		// 												"order/emailconf/" +
-		// 												this.userId +
-		// 												"/" +
-		// 												this.dateId +
-		// 												"/" +
-		// 												this.tablMail +
-		// 												"/" +
-		// 												this.numFr(this.total)
-		// 										)
-		// 										.then(() => {
-		// 											this.infoOrder =
-		// 												"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-		// 										})
-		// 										.catch((err) => {
-		// 											this.infoOrder = err;
-		// 											console.log(err);
-		// 										});
-		// 								}
-		// 							})
-		// 							.catch((err) => {
-		// 								this.infoOrder = err;
-		// 								console.log(err);
-		// 							});
-		// 					})
-		// 					.catch((err) => {
-		// 						this.infoOrder = err;
-		// 						console.log(err);
-		// 					});
-		// 			}
-		// 		}
-		// 	}
-		// },
 	},
 };
 </script>

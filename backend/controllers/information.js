@@ -11,6 +11,9 @@ exports.supportVente = (req, res) => {
 		})
 		.then((obj) => {
 			res.send(obj.content);
+		})
+		.catch((err) => {
+			res.send(err);
 		});
 };
 
@@ -22,6 +25,9 @@ exports.allInformations = (req, res) => {
 		})
 		.then((obj) => {
 			res.send(obj);
+		})
+		.catch((err) => {
+			res.send(err);
 		});
 };
 
@@ -33,5 +39,25 @@ exports.openHours = (req, res) => {
 		})
 		.then((obj) => {
 			res.send(obj.content);
+		})
+		.catch((err) => {
+			res.send(err);
+		});
+};
+
+// * Save modification of opening hours
+exports.modifOpenHours = (req, res) => {
+	information
+		.update(
+			{ ...req.body },
+			{
+				where: { item: "open_hours" },
+			}
+		)
+		.then((obj) => {
+			res.send(obj);
+		})
+		.catch((err) => {
+			res.send(err);
 		});
 };

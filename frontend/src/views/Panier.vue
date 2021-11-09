@@ -22,25 +22,25 @@
 					<th>Produit</th>
 					<th>Quantité</th>
 					<th>Unité</th>
-					<th>Prix/unité</th>
-					<th>Prix</th>
+					<!-- <th>Prix/unité</th>
+					<th>Prix</th> -->
 					<th>Modification</th>
 				</tr>
 				<tr v-for="prod in products" :key="prod.id">
 					<td v-if="prod.qty > 0">{{ prod.product }}</td>
 					<td v-if="prod.qty > 0">{{ prod.qty }}</td>
 					<td v-if="prod.qty > 0">{{ prod.unity }}</td>
-					<td v-if="prod.qty > 0">{{ numFr(prod.price_unity) }}</td>
-					<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unity) }}</td>
+					<!-- <td v-if="prod.qty > 0">{{ numFr(prod.price_unity) }}</td>
+					<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unity) }}</td> -->
 					<td v-if="prod.qty > 0">- + supp</td>
 				</tr>
 				<!-- <td>Total = {{ total }}</td> -->
-				<tr>
+				<!-- <tr>
 					<td colspan="4">
 						Prix total de la commande :
 					</td>
 					<td id="total">{{ numFr(total) }}</td>
-				</tr>
+				</tr> -->
 			</table>
 
 			<button class="addsub" type="button" @click="validOrder">
@@ -106,9 +106,9 @@ export default {
 							"<td style='border: 1px solid black;'>" +
 							this.products[i].qty +
 							"<td style='border: 1px solid black;'>" +
-							this.products[i].unity +
-							"<td style='border: 1px solid black;'>" +
-							this.numFr(this.products[i].qty * this.products[i].price_unity);
+							this.products[i].unity;
+						// "<td style='border: 1px solid black;'>" +
+						// this.numFr(this.products[i].qty * this.products[i].price_unity);
 						//delete order in localStorage
 						localStorage.removeItem(this.products[i].id);
 
@@ -136,9 +136,7 @@ export default {
 											"/" +
 											this.deliveryDate +
 											"/" +
-											this.tablMail +
-											"/" +
-											this.numFr(this.total)
+											this.tablMail
 									)
 									.then(() => {
 										this.products = [];
