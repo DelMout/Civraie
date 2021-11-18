@@ -10,7 +10,7 @@ exports.createProduct = (req, res) => {
 		req.body.photo = null;
 	}
 	const newProduct = new product({
-		stock_updated: req.body.stock_init,
+		// stock_updated: req.body.stock_init,
 		...req.body,
 	});
 	newProduct
@@ -20,7 +20,7 @@ exports.createProduct = (req, res) => {
 		})
 		.catch((err) => {
 			// res.send(err);
-			res.status(401).send(err.errors[0].validatorKey);
+			res.status(401).send(err);
 		});
 };
 

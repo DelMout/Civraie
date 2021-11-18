@@ -9,7 +9,7 @@ export default createStore({
 		deliveryDate: null,
 		products: [],
 		order: [],
-		total: 0,
+		total: localStorage.getItem("Total"),
 		logged: false,
 		token: null,
 		infoHome: "",

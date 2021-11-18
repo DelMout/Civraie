@@ -3,7 +3,6 @@
 		<h1>Liste des produits</h1>
 		<p>{{ infoProd }}</p>
 
-		<p>Saisir 0 pour ne pas renseigner Prix/kg.</p>
 		<p>
 			<button style="background-color:cyan;" class="" type="button" @click="aLaCommande">
 				{{ SeeAlaCommande }}
@@ -18,11 +17,16 @@
 				<th>Jour clôture</th>
 				<th class="numb">Prix / kg</th>
 				<th>Unité vente</th>
-				<th class="numb">Prix / unité vente</th>
 				<th>Support vente</th>
 				<th class="photo">Photo</th>
 				<th class="numb">Actif</th>
 			</tr>
+			<!-- <dialog open v-if="modifPhoto"
+				><p>Photo modifiée !</p>
+				<form method="dialog">
+					<button @click="closeDialog">Fermer</button>
+				</form></dialog
+			> -->
 			<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
 				<td @click="modifProd($event, prod)" v-if="chooseCommande || prod.active == 1">
 					<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
@@ -62,14 +66,12 @@
 					class="numb"
 					@click="modifProd($event, prod)"
 				>
-					<p v-if="(!prod.modif && prod.price_kg > 0) || prod.delete">
-						{{ prod.price_kg }} <span> €</span>
-					</p>
+					<p v-if="!prod.modif || prod.delete">{{ prod.price }} <span> €</span></p>
 					<input
 						v-if="prod.modif && !prod.delete"
 						class="create numb"
 						type="text"
-						v-model="prod.price_kg"
+						v-model="prod.price"
 					/>
 				</td>
 				<td v-if="chooseCommande || prod.active == 1" @click="modifProd($event, prod)">
@@ -79,21 +81,6 @@
 						class="create numb"
 						type="text"
 						v-model="prod.unite_vente"
-					/>
-				</td>
-				<td
-					v-if="chooseCommande || prod.active == 1"
-					class="numb"
-					@click="modifProd($event, prod)"
-				>
-					<p v-if="(!prod.modif && prod.price_unite_vente > 0) || prod.delete">
-						{{ prod.price_unite_vente }} <span>€</span>
-					</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create numb"
-						type="text"
-						v-model="prod.price_unite_vente"
 					/>
 				</td>
 
@@ -178,9 +165,8 @@
 				<th>Producteur</th>
 				<th>Catégorie</th>
 				<th>Jour clôture</th>
-				<th class="numb">Prix/kg</th>
-				<th>Quantité minimum vente</th>
-				<th class="numb">Prix Quantité mini</th>
+				<th class="numb">Prix</th>
+				<th>Unité vente</th>
 				<th>Support vente</th>
 				<th class="photo">Photo</th>
 				<th class="numb">Actif</th>
@@ -200,19 +186,12 @@
 				</td>
 
 				<td class="numb">
-					<input class="create numb" type="text" id="price_kg" v-model="priceKg" />
+					<input class="create numb" type="text" id="price" v-model="price" />
 				</td>
 				<td class="">
 					<input class="create " type="text" id="qtymini" v-model="qtyMini" />
 				</td>
-				<td class="numb">
-					<input
-						class="create numb"
-						type="text"
-						id="priceqtymini"
-						v-model="PriceQtyMini"
-					/>
-				</td>
+
 				<td @click="displayOrdering">{{ ordering }}</td>
 				<td class="photo">
 					<input class="photo" type="file" name="image" @change="onFileChange" />
@@ -298,7 +277,7 @@ export default {
 			lengthPc: "",
 			lengthCate: "",
 			name: "",
-			priceKg: "",
+			price: "",
 			qtyMini: "",
 			PriceQtyMini: "",
 			stockInit: "",
@@ -378,7 +357,7 @@ export default {
 											product: prod.data[i].product,
 											producerId: prod.data[i].producerId,
 											producer: producer.data.entreprise,
-											price_kg: prod.data[i].price_kg,
+											price: prod.data[i].price,
 											unite_vente: prod.data[i].unite_vente,
 											price_unite_vente: prod.data[i].price_unite_vente,
 											stock_init: prod.data[i].stock_init,
@@ -672,38 +651,19 @@ export default {
 		validateCreate: function() {
 			// let img = document.getElementById("picture").files[0];
 			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
-			console.log(
-				this.name +
-					" - " +
-					this.producerId +
-					" - " +
-					this.categoryId +
-					" - " +
-					this.clotureToSelect +
-					" - " +
-					this.priceKg +
-					" - " +
-					this.qtyMini +
-					" - " +
-					this.PriceQtyMini +
-					" - " +
-					this.orderingItem +
-					" - " +
-					this.image +
-					" - "
-			);
-			if (this.priceKg <= 0 && this.PriceQtyMini <= 0) {
+
+			if (this.price <= 0) {
 				this.infoProd =
 					"Merci de donner au moins un prix soit à 'Prix/kg' soit à 'Prix qté mini'.";
 			} else {
+				console.log("on y est !");
 				const formData = new FormData();
 				formData.append("product", this.name);
 				formData.append("producerId", this.producerId);
 				formData.append("categoryId", this.categoryId);
 				formData.append("cloturedayId", this.clotureId);
-				formData.append("price_kg", this.priceKg);
+				formData.append("price", this.price);
 				formData.append("unite_vente", this.qtyMini);
-				formData.append("price_unite_vente", this.PriceQtyMini);
 				formData.append("ordering", this.orderingItem);
 				formData.append("image", this.image);
 				formData.append("active", this.active);
@@ -719,7 +679,7 @@ export default {
 					})
 					.catch((err) => {
 						this.infoProd = err;
-						console.log(this.image);
+						console.log(err);
 					});
 			}
 		},
@@ -748,12 +708,8 @@ export default {
 			formData.append("producerId", prod.producerId);
 			formData.append("categoryId", prod.categoryId);
 			formData.append("cloturedayId", prod.cloturedayId);
-			formData.append("price_kg", prod.price_kg);
+			formData.append("price", prod.price);
 			formData.append("unite_vente", prod.unite_vente);
-			formData.append("price_unite_vente", prod.price_unite_vente);
-			// formData.append("stock_init", prod.stock_init);
-			// formData.append("stock_updated", prod.stock_init);
-			// formData.append("alert_stock", prod.alert_stock);
 			formData.append("ordering", prod.ordering);
 			formData.append("image", this.image);
 			axios
@@ -775,6 +731,7 @@ export default {
 						item.selectCloture = 0;
 					});
 					this.infoProd = "Vos modifications ont été prises en compte";
+					location.reload();
 				})
 				.catch((err) => {
 					this.infoProd = err;

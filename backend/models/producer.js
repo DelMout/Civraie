@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
 				allowNull: true,
 				validate: {
 					notEmpty: true,
-					is: ["^[a-zÀ-ÿ-]+$", "i"],
 				},
 			},
 			entreprise: {

@@ -22,14 +22,28 @@
 		</div>
 
 		<!-- Présentation produits sur petites cartes -->
+		<!-- info producer when hover on product name -->
 		<div id="conteneur" v-if="card_products">
 			<div v-for="prod in displayProd" :key="prod.product">
-				<div class="card" :style="prod.selected">
+				<div class="card_head" v-if="seeProducer">
+					<p>
+						{{ prod.producer }}<br />
+						{{ prod.producer_address }}
+					</p>
+				</div>
+				<div
+					@mouseover="seeProducer = true"
+					@mouseleave="seeProducer = false"
+					class="card"
+					:style="prod.selected"
+				>
 					<!-- <p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
 						Attention stock faible !
 					</p> -->
 					<!-- <p id="nulle" v-if="prod.stock_updated == 0">Plus de stock !</p> -->
-					<p class="product">{{ prod.product }}</p>
+					<p class="product">
+						{{ prod.product }}
+					</p>
 					<!-- <p>{{ prod.producer }}</p> -->
 
 					<img
@@ -41,11 +55,7 @@
 					/>
 
 					<p>
-						<span v-if="prod.price_kg > 0"> {{ numFr(prod.price_kg) }}/kg </span>
-
-						<span v-if="prod.price_kg <= 0">
-							{{ numFr(prod.price_unite_vente) }}/{{ prod.unite_vente }}
-						</span>
+						<span> {{ numFr(prod.price) }}/{{ prod.unite_vente }} </span>
 					</p>
 					<p>
 						<!-- {{ prod.cloturedayId }} -->
@@ -103,6 +113,7 @@ export default {
 			style: "",
 			inOrder: false,
 			beSelected: "",
+			seeProducer: false,
 		};
 	},
 	computed: {
@@ -172,10 +183,10 @@ export default {
 									id: prod.data[i].id,
 									product: prod.data[i].product,
 									producer: producer.data.entreprise,
+									producer_address: producer.data.address,
 									cloturedayId: prod.data[i].cloturedayId,
-									price_kg: prod.data[i].price_kg,
+									price: prod.data[i].price,
 									unite_vente: prod.data[i].unite_vente,
-									price_unite_vente: prod.data[i].price_unite_vente,
 									photo: prod.data[i].photo,
 									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
 									stock_updated: prod.data[i].stock_updated,
@@ -281,6 +292,15 @@ caption {
 	width: 10rem;
 	height: 15rem;
 	margin: 4px;
+	display: flex;
+	flex-direction: column;
+}
+.card_head {
+	border: 3px solid rgba(255, 255, 255, 0.4);
+	box-shadow: 5px 5px 5px grey;
+	width: 10rem;
+	height: 5rem;
+	/* margin: 4px; */
 	display: flex;
 	flex-direction: column;
 }
