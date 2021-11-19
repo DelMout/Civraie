@@ -1,15 +1,20 @@
 <template>
-	<div id="connected" v-if="logged">
-		<div class="panier_connect">
-			<p>
-				<a href="http://localhost:8080/panier">Mon Panier </a><span> {{ total }}</span>
-			</p>
+	<div id="entete">
+		<div id="logo">
+			<img id="logoEntete" src="./assets/logocivraie.png" alt="logo entete Civraie" />
 		</div>
-		<div class="panier_connect">
-			<p><i>Vous êtes connecté(e)</i></p>
-		</div>
-		<div>
-			<p><a @click="disconnect">Déconnection</a></p>
+		<div id="connected" v-if="logged">
+			<div class="panier_connect">
+				<p>
+					<a href="http://localhost:8080/panier">Mon Panier </a><span> {{ total }}</span>
+				</p>
+			</div>
+			<div class="panier_connect">
+				<p><i>Vous êtes connecté(e)</i></p>
+			</div>
+			<div>
+				<p><a @click="disconnect">Déconnection</a></p>
+			</div>
 		</div>
 	</div>
 	<div id="nav">
@@ -76,7 +81,9 @@ export default {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
-	color: #2c3e50;
+	color: white;
+	background-color: #122f1c;
+	margin-top: 1rem;
 }
 
 #nav {
@@ -97,12 +104,25 @@ export default {
 	color: rgb(11, 112, 11);
 	font-weight: 600;
 }
+#entete {
+	display: flex;
+	justify-content: space-between;
+}
+#logo {
+	margin-left: 2rem;
+	display: flex;
+	width: 20%;
+}
 
 #connected {
 	display: flex;
 	justify-content: flex-end;
 	font-size: 0.8rem;
 	margin-bottom: 0;
+	margin-right: 2rem;
+}
+#logoEntete {
+	width: 50%;
 }
 
 .panier_connect {

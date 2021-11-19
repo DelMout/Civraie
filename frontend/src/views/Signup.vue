@@ -1,7 +1,11 @@
 <template>
-	<div>
-		<h1>Bienvenue à la ferme de La Civraie</h1>
-		<p>Des produits frais et de saison toute l'année</p>
+	<div id="signup">
+		<!-- <h1>Bienvenue à la ferme de La Civraie</h1>
+		<p>Des produits frais et de saison toute l'année</p> -->
+		<div>
+			<img id="logoAccueil" src="../assets/fermeCivraie.png" alt="logo Civraie" />
+		</div>
+		<p class="produ">19 producteurs et artisans réunis près de chez vous !</p>
 
 		<p v-if="creation" class="Coord">
 			<label for="firstname">Prénom</label
@@ -214,3 +218,17 @@ export default {
 	},
 };
 </script>
+<style scoped>
+#logoAccueil {
+	display: flex;
+	width: 40%;
+	margin: auto;
+}
+.produ {
+	font-size: 1.2rem;
+}
+#signup {
+	font-family: cursive;
+	color: white;
+}
+</style>
