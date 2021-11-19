@@ -1,7 +1,14 @@
 <template>
 	<div id="entete">
 		<div id="logo">
-			<img id="logoEntete" src="./assets/logocivraie.png" alt="logo entete Civraie" />
+			<img
+				v-if="inPages"
+				id="logoEntete"
+				src="./assets/logocivraie.png"
+				alt="logo entete Civraie"
+				@click="returnHome"
+			/>
+			<p></p>
 		</div>
 		<div id="connected" v-if="logged">
 			<div class="panier_connect">
@@ -18,7 +25,7 @@
 		</div>
 	</div>
 	<div id="nav">
-		<router-link class="link" to="/">Accueil </router-link>
+		<!-- <router-link class="link" to="/">Accueil </router-link> -->
 		<!-- <router-link class="link" to="/produits_vente_magasin">Produits à la vente </router-link> -->
 		<router-link class="link" to="/produits_vente_commande">Commander </router-link>
 		<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email">* Email *</router-link>
@@ -52,7 +59,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(["logged", "isAdmin", "total"]),
+		...mapState(["logged", "isAdmin", "total", "inPages"]),
 	},
 	beforeMount: function() {
 		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page
@@ -62,6 +69,9 @@ export default {
 		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page
 		this.isAdminApp = parseInt(localStorage.getItem("isAdmin"));
 	},
+	created: function() {
+		this.$store.state.inPages = false;
+	},
 	methods: {
 		...mapActions(["disconnect", "checkConnect"]),
 
@@ -70,6 +80,12 @@ export default {
 			localStorage.clear();
 			this.$store.dispatch("disconnect");
 			this.$router.push("http://localhost:8080/");
+		},
+
+		//* Go back to Home
+		returnHome: function() {
+			this.$store.state.inPages = false;
+			this.$router.push("/");
 		},
 	},
 };
@@ -92,7 +108,6 @@ export default {
 }
 
 #nav a {
-	text-decoration: none;
 	color: #999;
 }
 #connected a {
@@ -101,8 +116,9 @@ export default {
 }
 
 #nav a.router-link-exact-active {
-	color: rgb(11, 112, 11);
+	color: white;
 	font-weight: 600;
+	text-decoration: none;
 }
 #entete {
 	display: flex;
@@ -123,6 +139,7 @@ export default {
 }
 #logoEntete {
 	width: 50%;
+	cursor: pointer;
 }
 
 .panier_connect {

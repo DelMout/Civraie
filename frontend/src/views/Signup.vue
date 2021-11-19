@@ -7,26 +7,36 @@
 		</div>
 		<p class="produ">19 producteurs et artisans réunis près de chez vous !</p>
 
-		<p v-if="creation" class="Coord">
+		<!-- <p v-if="creation" class="Coord">
 			<label for="firstname">Prénom</label
 			><input class="" type="text" id="firstname" v-model="prenom" />
-		</p>
-		<p v-if="creation" class="Coord">
-			<label for="lastname">Nom</label
-			><input class="" type="text" id="lastname" v-model="nom" />
-		</p>
-		<p v-if="!logged" class="Coord">
-			<label for="email">Adresse email</label
-			><input class="" type="text" id="email" v-model="email" />
-		</p>
-		<p v-if="creation" class="Coord">
-			<label for="phone">Téléphone</label
-			><input class="" type="text" id="phone" v-model="phone" />
-		</p>
-		<p v-if="!(forgot || logged)" class="Coord">
-			<label for="password">Mot de passe</label
-			><input class="" type="text" id="password" v-model="password" />
-		</p>
+		</p> -->
+		<div class="cells">
+			<div class="">
+				<p class="p-float-label " v-if="creation">
+					<InputText class="fill" id="firstname" type="text" v-model="prenom" /><label
+						for="firstname"
+						>Prénom</label
+					>
+				</p>
+				<p class="p-float-label " v-if="creation">
+					<InputText class="fill" id="lastname" type="text" v-model="nom" />
+					<label for="lastname">Nom</label>
+				</p>
+				<p class="p-float-label " v-if="!logged">
+					<InputText class="fill" id="email" type="text" v-model="email" />
+					<label for="email">Email</label>
+				</p>
+				<p class="p-float-label " v-if="creation">
+					<InputText class="fill" id="phone" type="text" v-model="phone" />
+					<label for="phone">Téléphone</label>
+				</p>
+				<p class="p-float-label " v-if="!(forgot || logged)">
+					<InputText class="fill" id="password" type="text" v-model="password" />
+					<label for="password">Mot de passe</label>
+				</p>
+			</div>
+		</div>
 		<div v-if="!(!creation || forgot)">
 			<button class="" type="button" @click="signup">Valider mon inscription</button>
 		</div>
@@ -140,48 +150,6 @@ export default {
 				.catch((err) => {
 					console.log(err);
 				});
-
-			// axios
-			// 	.post(process.env.VUE_APP_API + "user/login", {
-			// 		email: this.email,
-			// 		password: this.password,
-			// 	})
-			// 	.then(() => {
-			// 		// Find firstname and name of user
-			// 		axios
-			// 			.get(process.env.VUE_APP_API + "user/firstname/" + this.email)
-			// 			.then((user) => {
-			// 				this.prenom = user.data.prenom;
-			// 				this.nom = user.data.nom;
-			// 				this.admin = user.data.isAdmin;
-
-			// 				// MAJ last_connect + jeton
-			// 				axios
-			// 					.put(process.env.VUE_APP_API + "user/login/" + this.email)
-			// 					.then(() => {
-			// 						//TODO Info à transmettre dans Vuex
-			// 						// this.info =
-			// 						// 	"Bonjour " +
-			// 						// 	this.prenom +
-			// 						// 	" " +
-			// 						// 	this.nom +
-			// 						// 	", vous êtes connecté(e).";
-			// 						this.logged = true;
-			// 						this.creation = false;
-			// 						this.forgot = false;
-			// 						if (this.admin === 0) {
-			// 							this.$router.push("/produits_vente_commande");
-			// 						}
-			// 						if (this.admin === 1) {
-			// 							this.$router.push("/tous_produits");
-			// 						}
-			// 					})
-
-			// 					.catch(() => {
-			// 						this.info = "Adresse email ou mot de passe erroné.";
-			// 					});
-			// 			});
-			// 	});
 		},
 
 		//* Password forgotten
@@ -230,5 +198,16 @@ export default {
 #signup {
 	font-family: cursive;
 	color: white;
+}
+label {
+	text-align: left;
+}
+.cells {
+	color: yellow;
+	width: 15%;
+	margin: auto;
+}
+.fill {
+	width: 100%;
 }
 </style>

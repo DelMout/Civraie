@@ -13,6 +13,7 @@ export default createStore({
 		logged: false,
 		token: null,
 		infoHome: "",
+		inPages: true,
 	},
 	mutations: {
 		setUserId(state, userId) {

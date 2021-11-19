@@ -4,6 +4,10 @@
 			<p>
 				Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
 			</p>
+			<span class="p-float-label">
+				<InputText id="username" type="text" v-model="value2" />
+				<label for="username">Username</label>
+			</span>
 		</h4>
 		<!-- A afficher si non connecté -->
 		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>-->
@@ -118,7 +122,7 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate", "dayNow"]),
-		...mapState(["products", "order", "total"]),
+		...mapState(["products", "order", "total", "inPages"]),
 	},
 	beforeCreate: function() {
 		this.products = [];
@@ -131,6 +135,7 @@ export default {
 		console.log("now = " + now);
 		this.$store.commit("setProducts", this.products);
 		console.log(this.$store.state.products);
+		this.$store.state.inPages = true;
 
 		//* All categories
 		axios.get(process.env.VUE_APP_API + "category/getcategories").then((catego) => {
