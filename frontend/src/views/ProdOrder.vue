@@ -4,10 +4,6 @@
 			<p>
 				Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
 			</p>
-			<span class="p-float-label">
-				<InputText id="username" type="text" v-model="value2" />
-				<label for="username">Username</label>
-			</span>
 		</h4>
 		<!-- A afficher si non connecté -->
 		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>-->
@@ -28,54 +24,47 @@
 		<!-- Présentation produits sur petites cartes -->
 		<!-- info producer when hover on product name -->
 		<div id="conteneur" v-if="card_products">
-			<div v-for="prod in displayProd" :key="prod.product">
+			<div id="sousCont" v-for="prod in displayProd" :key="prod.product">
 				<div class="card_head" v-if="seeProducer">
 					<p>
 						{{ prod.producer }}<br />
 						{{ prod.producer_address }}
 					</p>
 				</div>
-				<div
+				<Card
 					@mouseover="seeProducer = true"
 					@mouseleave="seeProducer = false"
-					class="card"
 					:style="prod.selected"
 				>
-					<!-- <p id="faible" v-if="prod.alert <= 0 && prod.stock_updated > 0">
-						Attention stock faible !
-					</p> -->
-					<!-- <p id="nulle" v-if="prod.stock_updated == 0">Plus de stock !</p> -->
-					<p class="product">
+					<template #header>
+						<img
+							style="border-radius: 8px 8px 0 0"
+							v-if="prod.photo"
+							:src="prod.photo"
+							alt="product photo"
+						/>
+					</template>
+					<template #title>
 						{{ prod.product }}
-					</p>
-					<!-- <p>{{ prod.producer }}</p> -->
+					</template>
+					<template #content> {{ numFr(prod.price) }}/{{ prod.unite_vente }} </template>
+					<template #footer>
+						<p id="butAddSub">
+							<Button
+								label="-"
+								class="addsub sub p-button-raised p-button-danger"
+								@click="subQty($event, prod)"
+							/>
+							<span id="qty">{{ prod.qty }}</span>
 
-					<img
-						class="photo"
-						v-if="prod.photo"
-						style="width:100px;"
-						:src="prod.photo"
-						alt="product photo"
-					/>
-
-					<p>
-						<span> {{ numFr(prod.price) }}/{{ prod.unite_vente }} </span>
-					</p>
-					<p>
-						<!-- {{ prod.cloturedayId }} -->
-						{{ cloturedays[prod.cloturedayId].cloture_day }}
-					</p>
-					<!-- <p>Quantité mini :<br />{{ prod.unite_vente }}</p> -->
-					<p id="butAddSub">
-						<button class="addsub" type="button" @click="subQty($event, prod)">
-							-
-						</button>
-
-						<button class="addsub" type="button" @click="addQty($event, prod)">
-							+
-						</button>
-					</p>
-				</div>
+							<Button
+								label="+"
+								class="addsub p-button-raised p-button-success"
+								@click="addQty($event, prod)"
+							/>
+						</p>
+					</template>
+				</Card>
 			</div>
 
 			<p v-if="noProduct">Pas de produits en vente actuellement dans cette catégorie.</p>
@@ -230,17 +219,20 @@ export default {
 			if (localStorage === null) {
 				localStorage.setItem("Total", 1);
 				localStorage.setItem(prod.id, 1);
+				prod.qty = 1;
 			} else {
 				if (localStorage.getItem(prod.id) !== null) {
 					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) + 1);
+					prod.qty = localStorage.getItem(prod.id);
 				} else {
 					localStorage.setItem(prod.id, 1);
 					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) + 1);
+					prod.qty = 1;
 				}
 			}
 			this.$store.commit("setTotal", localStorage.getItem("Total"));
 
-			prod.selected = "background-color:rgba(0,128,0,0.1);";
+			// prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
@@ -249,10 +241,12 @@ export default {
 				if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
 					localStorage.removeItem(prod.id);
 					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) - 1);
-					prod.selected = "";
+					prod.qty = 0;
+					// prod.selected = "";
 				} else {
 					console.log("je dois décrémenter !");
 					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
+					prod.qty = localStorage.getItem(prod.id);
 				}
 			}
 			this.$store.commit("setTotal", localStorage.getItem("Total"));
@@ -264,21 +258,6 @@ export default {
 h3 {
 	margin-top: 0;
 }
-td,
-th {
-	border: 1px solid white;
-	width: 200px;
-	height: 40px;
-}
-th {
-	width: 200px;
-	height: 40px;
-}
-table,
-caption {
-	border-collapse: collapse;
-	background-color: greenyellow;
-}
 
 #conteneur {
 	display: flex;
@@ -289,16 +268,39 @@ caption {
 	margin: auto;
 	padding-right: auto;
 	padding-left: auto;
-	width: 107rem;
+	width: 80%;
+	/* background-color: lawngreen; */
 }
-.card {
-	border: 3px solid green;
-	box-shadow: 5px 5px 5px grey;
-	width: 10rem;
-	height: 15rem;
+#sousCont {
+	width: 100%;
+}
+::v-deep(.p-card) {
+	/* border: 2px solid #125e1c; */
+	box-shadow: 5px 5px 5px white;
+	width: 10%;
 	margin: 4px;
+	padding: 0;
+	height: 90%;
 	display: flex;
 	flex-direction: column;
+	border-radius: 8px;
+	/* background-color: #c6e6c7; */
+}
+::v-deep(.p-card .p-card-header) {
+	width: 100%;
+}
+::v-deep(.p-card .p-card-title) {
+	font-weight: bold;
+	font-size: 1rem;
+	width: 100%;
+	margin: 0;
+	/* background-color: lawngreen; */
+}
+::v-deep(.p-card .p-card-footer) {
+	margin: 0;
+}
+#qty {
+	/* width: 3rem; */
 }
 .card_head {
 	border: 3px solid rgba(255, 255, 255, 0.4);
@@ -309,46 +311,29 @@ caption {
 	display: flex;
 	flex-direction: column;
 }
-.product {
-	font-weight: bold;
-	font-size: 0.8rem;
-	margin-bottom: 0;
-}
-/* #nulle {
-	background-color: red;
-	color: white;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	margin-top: 0;
-	margin-bottom: 0;
-}
-#faible {
-	background-color: orange;
-	color: black;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	margin-top: 0;
-	margin-bottom: 0;
-} */
+
 img {
 	margin: auto;
 }
 .addsub {
-	background-color: green;
-	color: white;
-	font-size: 16px;
-	font-weight: bold;
-	padding: 1px 6px 1px 6px;
+	font-weight: 800;
+	padding: 0 3px 5px 3px;
+	line-height: 10px;
+	font-size: 20px;
+	margin-inline: 10px;
+}
+.sub {
+	padding: 0px 5px 5px 5px;
 }
 #butAddSub {
-	margin-top: auto;
+	margin-top: 0;
 }
 .categories {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
 	align-content: space-between;
-	width: 82rem;
+	width: 70rem;
 	margin: auto;
 }
 
@@ -356,20 +341,15 @@ img {
 	display: flex;
 	padding: 0rem 0.9rem 0rem 0.9rem;
 	margin: 0 1rem 1rem 1rem;
-	/* border: 3px solid green; */
 	border-radius: 10px;
-	box-shadow: 5px 5px 5px rgb(85, 85, 85);
-	width: 6.5rem;
+	box-shadow: 5px 5px 5px white;
+	width: 8rem;
 	height: 3.5rem;
 	font-weight: bolder;
-
-	color: rgb(85, 85, 85);
-	/* color: rgb(85, 85, 85); */
+	color: #12511c;
 	font-size: 1.2rem;
-	/* -webkit-text-stroke: 1.5px white; */
-	/* text-shadow: 2px 2px 2px rgb(4, 88, 4); */
-	text-shadow: 2px 3px 3px white;
-	font-family: Tahoma, sans-serif;
+	/* text-shadow: 2px 3px 3px white; */
+	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 	cursor: pointer;
 }
 
@@ -382,75 +362,77 @@ img {
 }
 .category_card p {
 	margin: auto;
+	text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 40px #ffffff, 0 0 80px #ffffff,
+		0 0 160px #ffffff;
 }
 #fruit {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/pomme.jpg");
 	background-size: 100%;
 }
 #legume {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/legume2.jpg");
 	background-size: 100%;
 	/* border: 4px solid rgb(85, 85, 85); */
 }
 #lapin {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/lapin.jpg");
 	background-size: 100%;
 }
 #oeuf {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/oeufs2.jpg");
 	background-size: 100%;
 }
 #lait {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/fromage1.jpg");
 	background-size: 100%;
 }
 #volaille {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/poules.jpg");
 	background-size: 100%;
 }
 #bovine {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/vache.jpg");
 	background-size: 100%;
 }
 #porcine {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/cochons.jpg");
 	background-size: 100%;
 }
 #sucre {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/confit.jpg");
 	background-size: 100%;
 }
 #sale {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/pasta.jpg");
 	background-size: 100%;
 }
 #huile {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/huile.jpg");
 	background-size: 100%;
 }
 #boisson {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/vins.jpg");
 	background-size: 100%;
 }
 #garni {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/panier_garni.jpg");
 	background-size: 120%;
 }
 #divers {
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7)),
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/rayon_magasin.jpg");
 	background-size: 100%;
 }
@@ -458,12 +440,12 @@ img {
 /* MEDIA QUERIES */
 @media only screen and (max-width: 1500px) {
 	.category_card {
-		width: 5rem;
-		height: 2.5rem;
+		width: 6.5rem;
+		height: 2.8rem;
 		font-size: 0.9rem;
 	}
 	.categories {
-		width: 70rem;
+		width: 70%;
 	}
 	#conteneur {
 		width: 81rem;

@@ -3,58 +3,97 @@
 		<!-- <h1>Bienvenue à la ferme de La Civraie</h1>
 		<p>Des produits frais et de saison toute l'année</p> -->
 		<div>
-			<img id="logoAccueil" src="../assets/fermeCivraie.png" alt="logo Civraie" />
+			<img
+				@click="returnHome"
+				id="logoAccueil"
+				src="../assets/fermeCivraie.png"
+				alt="logo Civraie"
+			/>
 		</div>
 		<p class="produ">19 producteurs et artisans réunis près de chez vous !</p>
 
-		<!-- <p v-if="creation" class="Coord">
-			<label for="firstname">Prénom</label
-			><input class="" type="text" id="firstname" v-model="prenom" />
-		</p> -->
 		<div class="cells">
 			<div class="">
-				<p class="p-float-label " v-if="creation">
+				<p class="p-float-label field" v-if="creation">
 					<InputText class="fill" id="firstname" type="text" v-model="prenom" /><label
 						for="firstname"
 						>Prénom</label
 					>
 				</p>
-				<p class="p-float-label " v-if="creation">
+				<p class="p-float-label field" v-if="creation">
 					<InputText class="fill" id="lastname" type="text" v-model="nom" />
 					<label for="lastname">Nom</label>
 				</p>
-				<p class="p-float-label " v-if="!logged">
+				<p class="p-float-label field" v-if="!logged">
 					<InputText class="fill" id="email" type="text" v-model="email" />
 					<label for="email">Email</label>
 				</p>
-				<p class="p-float-label " v-if="creation">
+				<p class="p-float-label field" v-if="creation">
 					<InputText class="fill" id="phone" type="text" v-model="phone" />
 					<label for="phone">Téléphone</label>
 				</p>
-				<p class="p-float-label " v-if="!(forgot || logged)">
-					<InputText class="fill" id="password" type="text" v-model="password" />
+				<p class="p-float-label field" v-if="!(forgot || logged)">
+					<Password
+						class="fill "
+						id="password"
+						v-model="password"
+						inputStyle="width:100%"
+						:feedback="passwordInd"
+						toggleMask
+					>
+						<template #footer>
+							<br />
+							<ul class="p-pl-2 p-ml-2 p-mt-0" style="line-height: 1.5">
+								<li>Au moins 1 minuscule</li>
+								<li>Au moins 1 majuscule</li>
+								<li>Au moins 1 chiffre</li>
+								<li>Minimum 8 caractères</li>
+							</ul>
+						</template>
+					</Password>
 					<label for="password">Mot de passe</label>
 				</p>
 			</div>
 		</div>
 		<div v-if="!(!creation || forgot)">
-			<button class="" type="button" @click="signup">Valider mon inscription</button>
+			<Button
+				label="Valider mon inscription"
+				class="p-button-raised p-button-primary login"
+				@click="signup"
+			/>
 		</div>
 		<div v-if="!(creation || forgot || logged)">
-			<button class="" type="button" @click="login">Se connecter</button>
-		</div>
-		<div v-if="forgot">
-			<button class="" type="button" @click="forgotten">
-				Demander un nouveau mot de passe
-			</button>
+			<Button
+				label="Se connecter"
+				class="p-button-raised p-button-primary login"
+				@click="login"
+			/>
 		</div>
 		<p>{{ infoPrem }}</p>
 		<p>{{ info }}</p>
-		<div v-if="!(creation || forgot || logged)">
-			<button class="" type="button" @click="wantCreate">Créer un compte</button>
+
+		<div v-if="forgot">
+			<Button
+				label="Demander un nouveau mot de passe"
+				class="p-button-raised p-button-primary login"
+				@click="forgotten"
+			/>
 		</div>
-		<div v-if="!(creation || forgot || logged)">
-			<button class="" type="button" @click="wantNewPassword">Mot de passe oublié</button>
+		<div id="createForget">
+			<div v-if="!(creation || forgot || logged)">
+				<Button
+					label="Créer un compte"
+					class="p-button-raised p-button-text creaforget"
+					@click="wantCreate"
+				/>
+			</div>
+			<div v-if="!(creation || forgot || logged)">
+				<Button
+					label="Mot de passe oublié"
+					class="p-button-raised p-button-text creaforget"
+					@click="wantNewPassword"
+				/>
+			</div>
 		</div>
 	</div>
 </template>
@@ -76,6 +115,7 @@ export default {
 			creation: false,
 			forgot: false,
 			logged: false,
+			passwordInd: false,
 		};
 	},
 	beforeMount: function() {
@@ -172,6 +212,7 @@ export default {
 			this.creation = true;
 			this.forgot = false;
 			this.logged = false;
+			this.passwordInd = true;
 			this.info = "Merci de renseigner les informations demandées.";
 		},
 
@@ -183,31 +224,52 @@ export default {
 			this.info =
 				"Merci de renseigner votre adresse email. Vous aller revevoir un email pour initialiser votre mot de passe.";
 		},
+
+		//* Refresh page - Go back initial page "Login"
+		returnHome: function() {
+			location.reload();
+			this.passwordInd = false;
+		},
 	},
 };
 </script>
 <style scoped>
 #logoAccueil {
 	display: flex;
-	width: 40%;
+	width: 30%;
 	margin: auto;
+	cursor: pointer;
 }
 .produ {
 	font-size: 1.2rem;
+	margin-bottom: 2rem;
 }
 #signup {
-	font-family: cursive;
+	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 	color: white;
 }
 label {
 	text-align: left;
 }
 .cells {
-	color: yellow;
 	width: 15%;
 	margin: auto;
 }
 .fill {
 	width: 100%;
+}
+.field {
+	margin-bottom: 2rem;
+}
+.login {
+	font-weight: bold;
+}
+#createForget {
+	display: flex;
+	justify-content: center;
+}
+.creaforget {
+	margin-right: 1rem;
+	margin-left: 1rem;
 }
 </style>
