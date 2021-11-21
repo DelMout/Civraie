@@ -8,6 +8,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Password from "primevue/password";
 import Card from "primevue/card";
+import OverlayPanel from "primevue/overlaypanel";
 
 // import JsonExcel from "vue-json-excel";
 import "primeicons/primeicons.css"; //icons
@@ -32,6 +33,7 @@ createApp(App)
 	.component("Button", Button)
 	.component("Password", Password)
 	.component("Card", Card)
+	.component("OverlayPanel", OverlayPanel)
 
 	// .component("downloadExcel", JsonExcel)
 	.mount("#app");

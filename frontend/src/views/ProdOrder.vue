@@ -25,17 +25,13 @@
 		<!-- info producer when hover on product name -->
 		<div id="conteneur" v-if="card_products">
 			<div id="sousCont" v-for="prod in displayProd" :key="prod.product">
-				<div class="card_head" v-if="seeProducer">
+				<OverlayPanel ref="op">
 					<p>
 						{{ prod.producer }}<br />
 						{{ prod.producer_address }}
 					</p>
-				</div>
-				<Card
-					@mouseover="seeProducer = true"
-					@mouseleave="seeProducer = false"
-					:style="prod.selected"
-				>
+				</OverlayPanel>
+				<Card @click="overlay">
 					<template #header>
 						<img
 							style="border-radius: 8px 8px 0 0"
@@ -250,6 +246,10 @@ export default {
 				}
 			}
 			this.$store.commit("setTotal", localStorage.getItem("Total"));
+		},
+		//* Display producer of product
+		overlay(event) {
+			this.$refs.op.toggle(event);
 		},
 	},
 };
