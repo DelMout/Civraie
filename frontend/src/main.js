@@ -9,6 +9,7 @@ import Button from "primevue/button";
 import Password from "primevue/password";
 import Card from "primevue/card";
 import OverlayPanel from "primevue/overlaypanel";
+import Dropdown from "primevue/dropdown";
 
 // import JsonExcel from "vue-json-excel";
 import "primeicons/primeicons.css"; //icons
@@ -34,6 +35,7 @@ createApp(App)
 	.component("Password", Password)
 	.component("Card", Card)
 	.component("OverlayPanel", OverlayPanel)
+	.component("Dropdown", Dropdown)
 
 	// .component("downloadExcel", JsonExcel)
 	.mount("#app");
