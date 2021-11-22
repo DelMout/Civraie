@@ -25,15 +25,17 @@
 		<!-- info producer when hover on product name -->
 		<div id="conteneur" v-if="card_products">
 			<div id="sousCont" v-for="prod in displayProd" :key="prod.product">
-				<OverlayPanel ref="op">
-					<p>
+				<OverlayPanel ref="op" class="overlay" style="textAlign:center;borderRadius:8px">
+					<i>
+						<u>Producteur</u> :<br />
 						{{ prod.producer }}<br />
 						{{ prod.producer_address }}
-					</p>
+					</i>
 				</OverlayPanel>
-				<Card @click="overlay">
+				<Card @mouseover="overlay">
 					<template #header>
 						<img
+							id="vignette"
 							style="border-radius: 8px 8px 0 0"
 							v-if="prod.photo"
 							:src="prod.photo"
@@ -261,59 +263,70 @@ h3 {
 
 #conteneur {
 	display: flex;
-	/* justify-content: center; */
-	flex-wrap: wrap;
+	justify-content: center;
+	/* flex-wrap: wrap; */
 	/* align-content: space-between; */
-	align-content: flex-start;
+	/* align-content: flex-start; */
 	margin: auto;
 	padding-right: auto;
 	padding-left: auto;
 	width: 80%;
-	/* background-color: lawngreen; */
 }
 #sousCont {
-	width: 100%;
+	width: 15%;
+	display: flex;
+	justify-content: center;
+	/* flex-wrap: wrap; */
+	/* align-content: space-between; */
+	/* background-color: greenyellow; */
 }
 ::v-deep(.p-card) {
 	/* border: 2px solid #125e1c; */
 	box-shadow: 5px 5px 5px white;
-	width: 10%;
-	margin: 4px;
+	width: 10rem;
+	margin: 0;
+	/* margin: 4px; */
 	padding: 0;
-	height: 90%;
+	height: 17rem;
 	display: flex;
 	flex-direction: column;
 	border-radius: 8px;
-	/* background-color: #c6e6c7; */
 }
 ::v-deep(.p-card .p-card-header) {
-	width: 100%;
+	/* width: 100%; */
+	height: 40%;
+	margin: 0;
+}
+#vignette {
+	max-height: 100%;
+	width: auto;
 }
 ::v-deep(.p-card .p-card-title) {
 	font-weight: bold;
 	font-size: 1rem;
 	width: 100%;
 	margin: 0;
-	/* background-color: lawngreen; */
+	height: 4rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+::v-deep(.p-card .p-card-content) {
+	height: 2rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 ::v-deep(.p-card .p-card-footer) {
-	margin: 0;
-}
-#qty {
-	/* width: 3rem; */
-}
-.card_head {
-	border: 3px solid rgba(255, 255, 255, 0.4);
-	box-shadow: 5px 5px 5px grey;
-	width: 10rem;
-	height: 5rem;
-	/* margin: 4px; */
+	height: auto;
 	display: flex;
-	flex-direction: column;
+	justify-content: center;
+	margin-bottom: 0;
+	/* align-items: flex-end; */
 }
 
 img {
-	margin: auto;
+	margin: 0;
 }
 .addsub {
 	font-weight: 800;
@@ -448,7 +461,7 @@ img {
 		width: 70%;
 	}
 	#conteneur {
-		width: 81rem;
+		width: 80%;
 	}
 }
 </style>
