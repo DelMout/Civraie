@@ -35,11 +35,18 @@
 				<Card @mouseover="overlay">
 					<template #header>
 						<img
-							id="vignette"
+							class="vignette"
 							style="border-radius: 8px 8px 0 0"
 							v-if="prod.photo"
 							:src="prod.photo"
 							alt="product photo"
+						/>
+						<img
+							class="vignette"
+							style="border-radius: 8px 8px 0 0"
+							v-if="!prod.photo"
+							src="../assets/legume2.jpg"
+							alt="legumes"
 						/>
 					</template>
 					<template #title>
@@ -264,7 +271,8 @@ h3 {
 #conteneur {
 	display: flex;
 	justify-content: center;
-	/* flex-wrap: wrap; */
+	flex-wrap: wrap;
+
 	/* align-content: space-between; */
 	/* align-content: flex-start; */
 	margin: auto;
@@ -273,9 +281,10 @@ h3 {
 	width: 80%;
 }
 #sousCont {
-	width: 15%;
+	width: 12rem;
 	display: flex;
 	justify-content: center;
+	margin-bottom: 1rem;
 	/* flex-wrap: wrap; */
 	/* align-content: space-between; */
 	/* background-color: greenyellow; */
@@ -293,11 +302,10 @@ h3 {
 	border-radius: 8px;
 }
 ::v-deep(.p-card .p-card-header) {
-	/* width: 100%; */
-	height: 40%;
-	margin: 0;
+	height: 7rem;
+	/* margin: 0; */
 }
-#vignette {
+.vignette {
 	max-height: 100%;
 	width: auto;
 }

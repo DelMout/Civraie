@@ -128,8 +128,11 @@ export default {
 
 		//TODO Aller chercler les horaires d'ouverture pour les afficher dans cette page.
 	},
+	created: function() {
+		this.$store.state.inPages = false;
+	},
 	computed: {
-		...mapState(["infoHome", "token", "userId", "isAdmin", "logged"]),
+		...mapState(["infoHome", "token", "userId", "isAdmin", "logged", "inPages"]),
 	},
 	methods: {
 		...mapMutations(["setUserId", "setToken", "setAdmin", "setEmail"]),

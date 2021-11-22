@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<h1>Liste des produits</h1>
+	<div id="productsTable">
+		<h3>Liste des produits</h3>
 		<p>{{ infoProd }}</p>
 
 		<p>
@@ -8,216 +8,227 @@
 				{{ SeeAlaCommande }}
 			</button>
 		</p>
-
-		<table>
-			<tr>
-				<th>Produit</th>
-				<th>Producteur</th>
-				<th>Catégorie</th>
-				<th>Jour clôture</th>
-				<th class="numb">Prix / kg</th>
-				<th>Unité vente</th>
-				<th>Support vente</th>
-				<th class="photo">Photo</th>
-				<th class="numb">Actif</th>
-			</tr>
-			<!-- <dialog open v-if="modifPhoto"
+		<div id="tableau">
+			<table>
+				<tr>
+					<th>Produit</th>
+					<th>Producteur</th>
+					<th>Catégorie</th>
+					<th>Jour clôture</th>
+					<th class="numb">Prix / kg</th>
+					<th>Unité vente</th>
+					<th>Support vente</th>
+					<th class="photo">Photo</th>
+					<th class="numb">Actif</th>
+				</tr>
+				<!-- <dialog open v-if="modifPhoto"
 				><p>Photo modifiée !</p>
 				<form method="dialog">
 					<button @click="closeDialog">Fermer</button>
 				</form></dialog
 			> -->
-			<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
-				<td @click="modifProd($event, prod)" v-if="chooseCommande || prod.active == 1">
-					<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create numb"
-						type="text"
-						v-model="prod.product"
-					/>
-				</td>
-				<td
-					v-if="chooseCommande || prod.active == 1"
-					@click="displayProducersModif($event, prod)"
-					:id="prod.selectProdu"
-				>
-					<p v-if="!produSelected">{{ prod.producer }}</p>
-					<p v-if="produSelected">{{ produSelected }}</p>
-				</td>
-				<td
-					v-if="chooseCommande || prod.active == 1"
-					@click="displayCategoriesModif($event, prod)"
-					:id="prod.selectCate"
-				>
-					<p v-if="!categorySelected">{{ prod.category }}</p>
-					<p v-if="categorySelected">{{ categorySelected }}</p>
-				</td>
-				<td
-					v-if="chooseCommande || prod.active == 1"
-					@click="displayCloturedayModif($event, prod)"
-					:id="prod.selectCloture"
-				>
-					<p v-if="!clotureSelected">{{ cloturedays[prod.cloturedayId].cloture_day }}</p>
-					<p v-if="clotureSelected">{{ clotureSelected }}</p>
-				</td>
-				<td
-					v-if="chooseCommande || prod.active == 1"
-					class="numb"
-					@click="modifProd($event, prod)"
-				>
-					<p v-if="!prod.modif || prod.delete">{{ prod.price }} <span> €</span></p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create numb"
-						type="text"
-						v-model="prod.price"
-					/>
-				</td>
-				<td v-if="chooseCommande || prod.active == 1" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.unite_vente }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create numb"
-						type="text"
-						v-model="prod.unite_vente"
-					/>
-				</td>
+				<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
+					<td @click="modifProd($event, prod)" v-if="chooseCommande || prod.active == 1">
+						<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.product"
+						/>
+					</td>
+					<td
+						v-if="chooseCommande || prod.active == 1"
+						@click="displayProducersModif($event, prod)"
+						:id="prod.selectProdu"
+					>
+						<p v-if="!produSelected">{{ prod.producer }}</p>
+						<p v-if="produSelected">{{ produSelected }}</p>
+					</td>
+					<td
+						v-if="chooseCommande || prod.active == 1"
+						@click="displayCategoriesModif($event, prod)"
+						:id="prod.selectCate"
+					>
+						<p v-if="!categorySelected">{{ prod.category }}</p>
+						<p v-if="categorySelected">{{ categorySelected }}</p>
+					</td>
+					<td
+						v-if="chooseCommande || prod.active == 1"
+						@click="displayCloturedayModif($event, prod)"
+						:id="prod.selectCloture"
+					>
+						<p v-if="!clotureSelected">
+							{{ cloturedays[prod.cloturedayId].cloture_day }}
+						</p>
+						<p v-if="clotureSelected">{{ clotureSelected }}</p>
+					</td>
+					<td
+						v-if="chooseCommande || prod.active == 1"
+						class="numb"
+						@click="modifProd($event, prod)"
+					>
+						<p v-if="!prod.modif || prod.delete">{{ prod.price }} <span> €</span></p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create numb"
+							type="text"
+							v-model="prod.price"
+						/>
+					</td>
+					<td v-if="chooseCommande || prod.active == 1" @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.unite_vente }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.unite_vente"
+						/>
+					</td>
 
-				<td
-					v-if="chooseCommande || prod.active == 1"
-					@click="displayOrderingModif($event, prod)"
-					:id="prod.selectOrdering"
-				>
-					<p v-if="!orderingSelected">{{ prod.support }}</p>
-					<p v-if="orderingSelected">{{ orderingSelected }}</p>
-				</td>
-				<td
-					v-if="chooseCommande || prod.active == 1"
-					@click="modifProd($event, prod)"
-					class="photo"
-				>
-					<img
+					<td
+						v-if="chooseCommande || prod.active == 1"
+						@click="displayOrderingModif($event, prod)"
+						:id="prod.selectOrdering"
+					>
+						<p v-if="!orderingSelected">{{ prod.support }}</p>
+						<p v-if="orderingSelected">{{ orderingSelected }}</p>
+					</td>
+					<td
+						v-if="chooseCommande || prod.active == 1"
+						@click="modifProd($event, prod)"
 						class="photo"
-						v-if="prod.photo"
-						style="width:80px;"
-						:src="prod.photo"
-						alt="product photo"
-					/><input
-						v-if="prod.modif && !prod.delete"
-						class="create photo"
-						type="file"
-						name="image"
-						@change="onFileChange"
-					/>
-				</td>
-				<td class="numb" v-if="chooseCommande || prod.active == 1">
-					<button
-						v-if="prod.active > 0"
-						class="active on"
-						type="button"
-						@click="activeInactive($event, prod)"
-					></button>
-					<button
-						v-if="prod.active === 0"
-						class="active off"
-						type="button"
-						@click="activeInactive($event, prod)"
-					></button>
-				</td>
-				<td v-if="prod.modif">
-					<button
-						v-if="prod.modif && !prod.delete"
-						id="validModif"
-						class="modif"
-						type="button"
-						@click="validModif($event, prod)"
 					>
-						Valider les modifications
-					</button>
-					<button
-						v-if="prod.modif && !prod.delete"
-						class="modif wantDelete"
-						type="button"
-						@click="wantDelete($event, prod)"
-					>
-						Sup
-					</button>
-					<button
-						v-if="prod.delete"
-						class="modif wantDelete"
-						type="button"
-						@click="Delete($event, prod)"
-					>
-						Supprimer ce produit
-					</button>
-				</td>
-			</tr>
-			<!-- Info : product created -->
-			<dialog open v-if="dialog"
-				><p>Produit créé !</p>
-				<form method="dialog">
-					<button @click="closeDialog">Fermer</button>
-				</form></dialog
-			>
-			<tr>
-				<th>Produit</th>
-				<th>Producteur</th>
-				<th>Catégorie</th>
-				<th>Jour clôture</th>
-				<th class="numb">Prix</th>
-				<th>Unité vente</th>
-				<th>Support vente</th>
-				<th class="photo">Photo</th>
-				<th class="numb">Actif</th>
-			</tr>
+						<img
+							class="photo"
+							v-if="prod.photo"
+							style="width:80px;"
+							:src="prod.photo"
+							alt="product photo"
+						/>
+						<!-- <input
+							v-if="prod.modif && !prod.delete"
+							class="create modifPhoto"
+							type="file"
+							name="image"
+							@change="onFileChange"
+						/> -->
+						<div class="uploadFile" v-if="prod.modif && !prod.delete">
+							<button class="btn-upload">Choisir un fichier</button>
+							<input type="file" name="image" @change="onFileChange" />
+						</div>
+					</td>
+					<td class="numb" v-if="chooseCommande || prod.active == 1">
+						<button
+							v-if="prod.active > 0"
+							class="active on"
+							type="button"
+							@click="activeInactive($event, prod)"
+						></button>
+						<button
+							v-if="prod.active === 0"
+							class="active off"
+							type="button"
+							@click="activeInactive($event, prod)"
+						></button>
+					</td>
+					<td v-if="prod.modif" class="valButton">
+						<Button
+							v-if="prod.modif && !prod.delete"
+							id=""
+							label="Modifier"
+							class="p-button-raised validModif valButton p-button-warning"
+							@click="validModif($event, prod)"
+						/>
+						<Button
+							v-if="prod.modif && !prod.delete"
+							id=""
+							label="Supprimer"
+							class="p-button-raised  valButton p-button-danger"
+							@click="wantDelete($event, prod)"
+						/>
+						<Button
+							v-if="prod.delete"
+							id="toDelete"
+							label="Supprimer ce produit"
+							class="p-button-raised  valButton p-button-danger p-button-text"
+							@click="Delete($event, prod)"
+						/>
+					</td>
+				</tr>
+				<!-- Info : product created -->
+				<dialog open v-if="dialog"
+					><p>Produit créé !</p>
+					<form method="dialog">
+						<button @click="closeDialog">Fermer</button>
+					</form></dialog
+				>
+				<tr>
+					<th>Produit</th>
+					<th>Producteur</th>
+					<th>Catégorie</th>
+					<th>Jour clôture</th>
+					<th class="numb">Prix</th>
+					<th>Unité vente</th>
+					<th>Support vente</th>
+					<th class="photo">Photo</th>
+					<th class="numb">Actif</th>
+				</tr>
 
-			<!-- Row for creating new product -->
-			<tr class="create">
-				<td><input class="create" type="text" id="name" v-model="name" /></td>
-				<td @click="displayProducers">
-					{{ prodcToSelect }}
-				</td>
-				<td @click="displayCategories">
-					{{ cateToSelect }}
-				</td>
-				<td @click="displayCloturedays">
-					{{ clotureToSelect }}
-				</td>
+				<!-- Row for creating new product -->
+				<tr class="create createProd">
+					<td class="createProd">
+						<input class="createProd" type="text" id="name" v-model="name" />
+					</td>
+					<td class="createProd" @click="displayProducers">
+						{{ prodcToSelect }}
+					</td>
+					<td class="createProd" @click="displayCategories">
+						{{ cateToSelect }}
+					</td>
+					<td class="createProd" @click="displayCloturedays">
+						{{ clotureToSelect }}
+					</td>
 
-				<td class="numb">
-					<input class="create numb" type="text" id="price" v-model="price" />
-				</td>
-				<td class="">
-					<input class="create " type="text" id="qtymini" v-model="qtyMini" />
-				</td>
+					<td class="numb createProd">
+						<input class="createProd numb" type="text" id="price" v-model="price" />
+					</td>
+					<td class="createProd">
+						<input class="createProd " type="text" id="qtymini" v-model="qtyMini" />
+					</td>
 
-				<td @click="displayOrdering">{{ ordering }}</td>
-				<td class="photo">
-					<input class="photo" type="file" name="image" @change="onFileChange" />
-				</td>
-				<td class="numb">
-					<button
-						v-if="active > 0"
-						class="active on"
-						type="button"
-						@click="createActive()"
-					></button>
-					<button
-						v-if="active === 0"
-						class="active off"
-						type="button"
-						@click="createActive()"
-					></button>
-				</td>
-				<td>
-					<button class="valCreate" type="button" @click="validateCreate">
-						Créer ce produit
-					</button>
-				</td>
-			</tr>
-		</table>
-
+					<td class="createProd" @click="displayOrdering">{{ ordering }}</td>
+					<td class="photo createProd">
+						<div class="uploadFile">
+							<button class="btn-upload">Choisir un fichier</button>
+							<input type="file" name="image" @change="onFileChange" />
+						</div>
+					</td>
+					<td class="createProd numb">
+						<button
+							v-if="active > 0"
+							class="active on"
+							type="button"
+							@click="createActive()"
+						></button>
+						<button
+							v-if="active === 0"
+							class="active off"
+							type="button"
+							@click="createActive()"
+						></button>
+					</td>
+					<td class="createProd">
+						<Button
+							id="toCreate"
+							label="Créer ce produit"
+							class="p-button-raised  valButton p-button-warning p-button-text"
+							@click="validateCreate"
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<!-- Table of producers -->
 		<div v-if="displayP">
 			<table v-for="prodc in producers" :key="prodc.entreprise">
@@ -817,48 +828,107 @@ export default {
 };
 </script>
 <style scoped>
+h3 {
+	margin-top: 0rem;
+	margin-bottom: 0rem;
+}
+#productsTable {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+#tableau {
+	margin: auto;
+	width: 100%;
+}
 td,
 th {
 	border: 1px solid black;
 }
 td,
-th,
-input,
-.valCreate {
-	height: 40px;
+input {
+	height: 5rem;
+}
+th {
+	height: 3rem;
+	background-color: rgb(235, 141, 47);
+	color: black;
 }
 th,
 td,
-input,
-.valCreate {
-	width: 200px;
+input {
+	width: 10rem;
 }
-
+tr {
+	width: 50%;
+	background-color: white;
+	color: black;
+}
 .numb {
-	width: 80px;
+	width: 5rem;
 }
 .photo {
-	width: 120px;
+	width: 5rem;
 }
 table {
 	border-collapse: collapse;
+	width: 80vw;
+	margin-right: auto;
+	margin-left: auto;
 }
-#validModif {
-	background-color: rgb(252, 190, 76);
+.valButton {
+	font-size: 0.8rem;
+	width: 8rem;
 }
-.wantDelete {
-	background-color: red;
-	color: white;
+.validModif {
+	background-color: #fbc02d;
+	color: black;
+	margin-bottom: 4px;
 }
-.create,
-.valCreate {
-	background-color: rgb(252, 190, 76);
+#toDelete {
+	background-color: white;
+	font-weight: bolder;
+}
+#toCreate {
+	background-color: white;
+	font-weight: bolder;
+	color: black;
+	padding: 2px;
+}
+.create {
+	background-color: #fbc02d;
+	width: 10rem;
+}
+.createProd {
+	height: 2.5rem;
+	background-color: #fbc02d;
+}
+.uploadFile {
+	display: inline-block;
+	position: relative;
+	overflow: hidden;
+}
+.uploadFile input[type="file"] {
+	left: 0;
+	top: 0;
+	opacity: 0;
+	position: absolute;
+	cursor: pointer;
+}
+.btn-upload {
+	background-color: #fbc02d;
+	border: 1px solid grey;
+	color: #000;
+	padding: 1px 1px;
+	border-radius: 7px;
+	font-size: 0.8rem;
 }
 #green {
-	background-color: rgb(252, 190, 76);
+	background-color: #fbc02d;
 }
 #red {
-	background-color: red;
+	background-color: #d32f2f;
 	color: white;
 }
 .nocolor {

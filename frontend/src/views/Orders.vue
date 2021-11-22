@@ -65,7 +65,7 @@
 import axios from "axios";
 import moment from "moment";
 import XlsExport from "xlsexport";
-import { mapGetters } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
 	data() {
@@ -101,6 +101,8 @@ export default {
 		console.log("coucou");
 		//* Display orders
 		this.client = true;
+		this.$store.state.inPages = true;
+
 		axios
 			.get(process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate)
 			.then((order) => {
@@ -169,6 +171,7 @@ export default {
 
 	computed: {
 		...mapGetters(["deliveryDate"]),
+		...mapState(["inPages"]),
 	},
 	methods: {
 		//* Format French date
