@@ -95,6 +95,18 @@
 				/>
 			</div>
 		</div>
+		<div style="width:30vw">
+			<Toast position="center">
+				<template #message="slotProps">
+					<div class="p-d-flex p-flex-row">
+						<div class="p-text-center">
+							<i class="pi pi-exclamation-triangle" style="font-size: 2rem"></i>
+							<p>{{ slotProps.message.detail }}</p>
+						</div>
+					</div>
+				</template>
+			</Toast>
+		</div>
 	</div>
 </template>
 <script>
@@ -191,7 +203,22 @@ export default {
 					}
 				})
 				.catch((err) => {
-					console.log(err);
+					console.log(err.response.data);
+					if (err.response.data === "Password not OK") {
+						this.$toast.add({
+							severity: "error",
+							detail: "Mot de passe incorrect !",
+							closable: false,
+							life: 4000,
+						});
+					} else {
+						this.$toast.add({
+							severity: "error",
+							detail: "Email inconnu !",
+							closable: false,
+							life: 4000,
+						});
+					}
 				});
 		},
 

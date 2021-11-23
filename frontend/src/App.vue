@@ -12,14 +12,26 @@
 		</div>
 		<div id="connected" v-if="logged">
 			<div class="panier_connect">
-				<p>
-					<a href="http://localhost:8080/panier">Mon Panier </a><span> {{ total }}</span>
+				<p v-if="total > 0">
+					<a
+						href="http://localhost:8080/panier"
+						class="pi pi-shopping-bag p-mr-4"
+						style="font-size:1.5rem;"
+						v-badge="total"
+					></a>
+				</p>
+				<p v-if="total == 0">
+					<a
+						href="http://localhost:8080/panier"
+						class="pi pi-shopping-bag p-mr-4"
+						style="font-size:1.5rem;"
+					></a>
 				</p>
 			</div>
-			<div class="panier_connect">
+			<div class="panier_connect" style="margin-top:0.7rem;">
 				<p><i>Vous êtes connecté(e)</i></p>
 			</div>
-			<div>
+			<div style="margin-top:0.7rem;">
 				<p><a @click="disconnect">Déconnection</a></p>
 			</div>
 		</div>
@@ -106,7 +118,9 @@ export default {
 	padding: 30px;
 	padding-top: 0;
 }
-
+a {
+	color: white;
+}
 #nav a {
 	color: #999;
 }

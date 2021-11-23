@@ -1,13 +1,7 @@
 <template>
 	<div id="productsTable">
 		<h3>Liste des produits</h3>
-		<p>{{ infoProd }}</p>
 
-		<p>
-			<button style="background-color:cyan;" class="" type="button" @click="aLaCommande">
-				{{ SeeAlaCommande }}
-			</button>
-		</p>
 		<div id="tableau">
 			<table>
 				<tr>
@@ -21,12 +15,6 @@
 					<th class="photo">Photo</th>
 					<th class="numb">Actif</th>
 				</tr>
-				<!-- <dialog open v-if="modifPhoto"
-				><p>Photo modifiée !</p>
-				<form method="dialog">
-					<button @click="closeDialog">Fermer</button>
-				</form></dialog
-			> -->
 				<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
 					<td
 						@click="modifProd($event, prod)"
@@ -93,7 +81,7 @@
 						</p>
 						<Dropdown
 							v-if="prod.modif"
-							v-model="prod.clotureday"
+							v-model="clotureModel"
 							:options="cloturedays"
 							optionLabel="cloture_day"
 							optionValue="id"
@@ -206,13 +194,7 @@
 						/>
 					</td>
 				</tr>
-				<!-- Info : product created -->
-				<dialog open v-if="dialog"
-					><p>Produit créé !</p>
-					<form method="dialog">
-						<button @click="closeDialog">Fermer</button>
-					</form></dialog
-				>
+
 				<tr>
 					<th>Produit</th>
 					<th>Producteur</th>
@@ -230,9 +212,7 @@
 					<td class="createProd">
 						<input class="createProd" type="text" id="name" v-model="name" />
 					</td>
-					<!-- <td class="createProd" @click="displayProducers">
-						{{ prodcToSelect }}
-					</td> -->
+
 					<td class="createProd">
 						<Dropdown
 							class="dropclass"
@@ -311,49 +291,15 @@
 				</tr>
 			</table>
 		</div>
-		<!-- Table of producers -->
-		<!-- <div v-if="displayP">
-			<table v-for="prodc in producers" :key="prodc.entreprise">
-				<tr @click="selectProdc($event, prodc, prod)">
-					{{
-						prodc.entreprise
-					}}
-				</tr>
-			</table>
-		</div> -->
-
-		<!-- Table of ordering -->
-		<!-- <div v-if="displayO">
-			<table v-for="ord in orderinginfo" :key="ord.ordering">
-				<tr @click="selectOrdering($event, ord)">
-					{{
-						ord.ordering
-					}}
-				</tr>
-			</table>
-		</div> -->
-
-		<!-- Table of categories -->
-		<!-- <div v-if="displayC">
-			<table v-for="cate in categories" :key="cate.id">
-				<tr @click="selectCategory($event, cate)">
-					{{
-						cate.category
-					}}
-				</tr>
-			</table>
-		</div> -->
-
-		<!-- Table of cloture_days -->
-		<!-- <div v-if="displayCl">
-			<table v-for="clotu in cloturedays" :key="clotu.id">
-				<tr @click="selectClotureday($event, clotu)">
-					{{
-						clotu.cloture_day
-					}}
-				</tr>
-			</table>
-		</div> -->
+		<!-- Info : product created or deleted -->
+		<div>
+			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
+				><p>{{ infoProd }}</p>
+				<template #footer>
+					<Button label="OK" @click="closeCreated" autofocus />
+				</template>
+			</Dialog>
+		</div>
 
 		<p>Nombre produits = {{ length }}</p>
 	</div>
@@ -364,7 +310,6 @@ import axios from "axios";
 export default {
 	data() {
 		return {
-			infoProd: "",
 			products: [],
 			length: "",
 			lengthPc: "",
@@ -411,11 +356,13 @@ export default {
 			clotureSelected: "",
 			index: "",
 			chooseCommande: true,
-			SeeAlaCommande: "Afficher seulement les produits actifs",
 			dialog: false,
 			producerModel: "",
 			categoryModel: "",
 			orderingModel: "",
+			clotureModel: "",
+			modifInProgress: false,
+			infoProd: "",
 		};
 	},
 	beforeCreate: function() {
@@ -748,54 +695,47 @@ export default {
 			// let img = document.getElementById("picture").files[0];
 			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
 
-			if (this.price <= 0) {
-				this.infoProd =
-					"Merci de donner au moins un prix soit à 'Prix/kg' soit à 'Prix qté mini'.";
-			} else {
-				console.log("on y est !");
-				const formData = new FormData();
-				formData.append("product", this.name);
-				formData.append("producerId", this.prodcToSelect);
-				formData.append("categoryId", this.cateToSelect);
-				formData.append("cloturedayId", this.clotureToSelect);
-				formData.append("price", this.price);
-				formData.append("unite_vente", this.qtyMini);
-				formData.append("ordering", this.ordering);
-				formData.append("image", this.image);
-				formData.append("active", this.active);
+			console.log("on y est !");
+			const formData = new FormData();
+			formData.append("product", this.name);
+			formData.append("producerId", this.prodcToSelect);
+			formData.append("categoryId", this.cateToSelect);
+			formData.append("cloturedayId", this.clotureToSelect);
+			formData.append("price", this.price);
+			formData.append("unite_vente", this.qtyMini);
+			formData.append("ordering", this.ordering);
+			formData.append("image", this.image);
+			formData.append("active", this.active);
 
-				axios
-					.post(process.env.VUE_APP_API + "product/createproduct", formData)
-					.then(() => {
-						//! Afficher boites de dialog
-						this.dialog = true;
-						this.infoProd = "Produit créé !";
-						this.producerId = "";
-						this.orderingItem = "";
-					})
-					.catch((err) => {
-						this.infoProd = err;
-						console.log(err);
-					});
-			}
+			axios
+				.post(process.env.VUE_APP_API + "product/createproduct", formData)
+				.then(() => {
+					//! Afficher boites de dialog
+					this.dialog = true;
+					this.infoProd = "Produit créé !";
+					this.producerId = "";
+					this.orderingItem = "";
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 		},
 		//* Close Dialog
-		closeDialog: function() {
+		closeCreated: function() {
 			this.dialog = false;
 			location.reload();
 		},
 
 		//* Want to modify a product
 		modifProd: function(event, prod) {
-			// document.location.reload();
-
-			// this.products.forEach(function(item) {
-			// 	item.modif = false;
-			// });
-			prod.modif = "yellow";
-			this.producerModel = prod.producerId;
-			this.categoryModel = prod.categoryId;
-			this.orderingModel = prod.ordering;
+			if (!this.modifInProgress) {
+				prod.modif = "yellow";
+				this.producerModel = prod.producerId;
+				this.categoryModel = prod.categoryId;
+				this.orderingModel = prod.ordering;
+				this.clotureModel = prod.cloturedayId;
+				this.modifInProgress = true;
+			}
 		},
 
 		//* Validation modifications
@@ -804,13 +744,13 @@ export default {
 			console.log(id);
 			console.log(this.producerModel);
 			console.log(this.categoryModel);
-			console.log(prod.clotureday);
+			console.log(this.clotureModel);
 			console.log(this.orderingModel);
 			const formData = new FormData();
 			formData.append("product", prod.product);
 			formData.append("producerId", this.producerModel);
 			formData.append("categoryId", this.categoryModel);
-			formData.append("cloturedayId", prod.clotureday);
+			formData.append("cloturedayId", this.clotureModel);
 			formData.append("price", prod.price);
 			formData.append("unite_vente", prod.unite_vente);
 			formData.append("ordering", this.orderingModel);
@@ -833,11 +773,9 @@ export default {
 						item.selectCate = 0;
 						item.selectCloture = 0;
 					});
-					this.infoProd = "Vos modifications ont été prises en compte";
 					location.reload();
 				})
 				.catch((err) => {
-					this.infoProd = err;
 					console.log(err);
 				});
 		},
@@ -860,23 +798,12 @@ export default {
 				// },
 
 				.then(() => {
+					this.dialog = true;
 					this.infoProd = "Le produit a été supprimé.";
 				})
 				.catch((err) => {
-					this.infoProd = err;
 					console.log(err);
 				});
-		},
-
-		//* Display producers with ordering = a la commande
-		aLaCommande: function() {
-			if (this.chooseCommande) {
-				this.chooseCommande = false;
-				this.SeeAlaCommande = "Afficher tous les produits";
-			} else {
-				this.chooseCommande = true;
-				this.SeeAlaCommande = "Afficher seulement les produits à la commande";
-			}
 		},
 
 		//* Active or inactive the product (in list of products)
@@ -923,7 +850,7 @@ export default {
 <style scoped>
 h3 {
 	margin-top: 0rem;
-	margin-bottom: 0rem;
+	margin-bottom: 1rem;
 }
 #productsTable {
 	display: flex;

@@ -109,9 +109,9 @@ export default {
 			cateSelected: "",
 			noProduct: false,
 			style: "",
-			inOrder: false,
 			beSelected: "",
 			seeProducer: false,
+			qtyDisplay: 0,
 		};
 	},
 	computed: {
@@ -175,8 +175,10 @@ export default {
 								//color background if in panier
 								if (localStorage.getItem(prod.data[i].id) !== null) {
 									this.beSelected = "background-color:rgba(0,128,0,0.1);";
+									this.qtyDisplay = localStorage.getItem(prod.data[i].id);
 								} else {
 									this.beSelected = "";
+									this.qtyDisplay = 0;
 								}
 								this.displayProd.push({
 									id: prod.data[i].id,
@@ -190,7 +192,7 @@ export default {
 									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
 									stock_updated: prod.data[i].stock_updated,
 									selected: this.beSelected,
-									qty: 0,
+									qty: this.qtyDisplay,
 								});
 								// sort alpha order
 								this.displayProd.sort(function(a, b) {
@@ -220,7 +222,6 @@ export default {
 		//* Add product to the order
 		addQty: function(event, prod) {
 			//! if logged null, alors message pour "se connecter pour commander"
-			this.inOrder = false;
 			if (localStorage === null) {
 				localStorage.setItem("Total", 1);
 				localStorage.setItem(prod.id, 1);

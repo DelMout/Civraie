@@ -30,22 +30,39 @@
 					<td v-if="prod.qty > 0">{{ prod.product }}</td>
 					<td v-if="prod.qty > 0">{{ prod.qty }}</td>
 					<td v-if="prod.qty > 0">{{ prod.unity }}</td>
-					<!-- <td v-if="prod.qty > 0">{{ numFr(prod.price_unity) }}</td>
-					<td v-if="prod.qty > 0">{{ numFr(prod.qty * prod.price_unity) }}</td> -->
-					<td v-if="prod.qty > 0">- + supp</td>
-				</tr>
-				<!-- <td>Total = {{ total }}</td> -->
-				<!-- <tr>
-					<td colspan="4">
-						Prix total de la commande :
+					<td v-if="prod.qty > 0">
+						<p id="butAddSub">
+							<Button
+								label="-"
+								class="addsub sub p-button-raised p-button-danger"
+								@click="subQty($event, prod)"
+							/>
+
+							<Button
+								label="+"
+								class="addsub p-button-raised p-button-success"
+								@click="addQty($event, prod)"
+							/>
+						</p>
 					</td>
-					<td id="total">{{ numFr(total) }}</td>
-				</tr> -->
+				</tr>
 			</table>
 
-			<button class="addsub" type="button" @click="validOrder">
-				Valider la commande
-			</button>
+			<Button
+				label="Valider la commande"
+				class=" p-button-raised p-button-primary valid"
+				@click="validOrder"
+			/>
+		</div>
+		<div>
+			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
+				><p>
+					Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.
+				</p>
+				<template #footer>
+					<Button label="OK" @click="closeConfirm" autofocus />
+				</template>
+			</Dialog>
 		</div>
 	</div>
 </template>
@@ -60,15 +77,16 @@ export default {
 			products: [],
 			tablMail: "",
 			info: "Votre panier est actuellement vide.",
+			dialog: false,
 		};
 	},
 	computed: {
 		...mapGetters(["deliveryDate"]),
-		...mapState(["order", "userId", "logged"]),
+		...mapState(["order", "userId", "logged", "inPages"]),
 	},
 	created: function() {
 		this.$store.dispatch("checkConnect");
-
+		this.$store.state.inPages = true;
 		console.log("hey !!");
 		console.log(this.$store.state.userId);
 		//*Select all products actived
@@ -143,11 +161,7 @@ export default {
 										// localStorage.clear();
 										this.total = 0;
 										localStorage.removeItem("Total");
-										this.info =
-											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-										console.log(
-											"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation."
-										);
+										this.dialog = true;
 									})
 									.catch((err) => {
 										// this.infoOrder = err;
@@ -161,6 +175,45 @@ export default {
 				}
 			});
 		},
+		//* Add product to the order
+		addQty: function(event, prod) {
+			if (localStorage === null) {
+				localStorage.setItem("Total", 1);
+				localStorage.setItem(prod.id, 1);
+				prod.qty = 1;
+			} else {
+				if (localStorage.getItem(prod.id) !== null) {
+					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) + 1);
+					prod.qty = localStorage.getItem(prod.id);
+				} else {
+					localStorage.setItem(prod.id, 1);
+					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) + 1);
+					prod.qty = 1;
+				}
+			}
+			this.$store.commit("setTotal", localStorage.getItem("Total"));
+		},
+		//* Substract product to the order
+		subQty: function(event, prod) {
+			console.log("g appuyé sur sub");
+			if (localStorage.getItem(prod.id) !== null) {
+				if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
+					localStorage.removeItem(prod.id);
+					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) - 1);
+					prod.qty = 0;
+				} else {
+					console.log("je dois décrémenter !");
+					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
+					prod.qty = localStorage.getItem(prod.id);
+				}
+			}
+			this.$store.commit("setTotal", localStorage.getItem("Total"));
+		},
+		//* Close Dialog
+		closeConfirm: function() {
+			this.dialog = false;
+			location.reload();
+		},
 	},
 };
 </script>
@@ -172,28 +225,52 @@ export default {
 td,
 th {
 	border: 1px solid white;
-	width: 200px;
+	width: 10vw;
 	height: 40px;
+	color: #122f1c;
 }
 th {
-	width: 200px;
 	height: 40px;
+	background-color: #fbc02d;
+	color: white;
 }
 table,
 caption {
 	border-collapse: collapse;
-	background-color: greenyellow;
 	margin: auto;
+	height: 5vh;
+	/* color: #122f1c; */
 }
-button {
-	background-color: green;
-	color: white;
-	font-size: 16px;
+caption {
+	font-weight: 800;
+	padding: 1vh;
+	background-color: #fbc02d;
+}
+td {
+	background-color: white;
+	color: #122f1c;
+	border: 1px solid #fbc02d;
+}
+.valid {
 	font-weight: bold;
-	padding: 1px 6px 1px 6px;
+	width: 16vw;
 	margin: auto;
+	margin-top: 1rem;
 }
 #total {
 	font-weight: bold;
+}
+#butAddSub {
+	margin: 0;
+}
+.addsub {
+	font-weight: 800;
+	padding: 0 3px 5px 3px;
+	line-height: 10px;
+	font-size: 20px;
+	margin-inline: 10px;
+}
+.sub {
+	padding: 0px 5px 5px 5px;
 }
 </style>

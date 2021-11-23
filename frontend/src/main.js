@@ -10,6 +10,10 @@ import Password from "primevue/password";
 import Card from "primevue/card";
 import OverlayPanel from "primevue/overlaypanel";
 import Dropdown from "primevue/dropdown";
+import ToastService from "primevue/toastservice";
+import Toast from "primevue/toast";
+import Badge from "primevue/badge";
+import BadgeDirective from "primevue/badgedirective";
 
 // import JsonExcel from "vue-json-excel";
 import "primeicons/primeicons.css"; //icons
@@ -36,6 +40,10 @@ createApp(App)
 	.component("Card", Card)
 	.component("OverlayPanel", OverlayPanel)
 	.component("Dropdown", Dropdown)
+	.use(ToastService)
+	.component("Toast", Toast)
+	.directive("badge", BadgeDirective)
+	.component("Badge", Badge)
 
 	// .component("downloadExcel", JsonExcel)
 	.mount("#app");
