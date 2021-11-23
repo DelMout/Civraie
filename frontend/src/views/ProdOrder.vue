@@ -52,7 +52,7 @@
 					<template #title>
 						{{ prod.product }}
 					</template>
-					<template #content> {{ numFr(prod.price) }}/{{ prod.unite_vente }} </template>
+					<template #content> {{ numFr(prod.price) }} / {{ prod.unite_vente }} </template>
 					<template #footer>
 						<p id="butAddSub">
 							<Button
@@ -74,8 +74,18 @@
 
 			<p v-if="noProduct">Pas de produits en vente actuellement dans cette catégorie.</p>
 		</div>
-
-		<p>Nombre produits = {{ length }}</p>
+		<div style="width:30vw">
+			<Toast position="center">
+				<template #message="slotProps">
+					<div class="p-d-flex ">
+						<div class="p-text-center">
+							<i class="pi pi-exclamation-triangle" style="font-size: 2rem"></i>
+							<p class="p-text-center">{{ slotProps.message.detail }}</p>
+						</div>
+					</div>
+				</template>
+			</Toast>
+		</div>
 	</div>
 </template>
 <script>
@@ -116,7 +126,7 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate", "dayNow"]),
-		...mapState(["products", "order", "total", "inPages"]),
+		...mapState(["products", "order", "total", "inPages", "logged"]),
 	},
 	beforeCreate: function() {
 		this.products = [];
@@ -222,23 +232,36 @@ export default {
 		//* Add product to the order
 		addQty: function(event, prod) {
 			//! if logged null, alors message pour "se connecter pour commander"
-			if (localStorage === null) {
-				localStorage.setItem("Total", 1);
-				localStorage.setItem(prod.id, 1);
-				prod.qty = 1;
-			} else {
-				if (localStorage.getItem(prod.id) !== null) {
-					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) + 1);
-					prod.qty = localStorage.getItem(prod.id);
-				} else {
+			if (this.$store.state.logged) {
+				if (localStorage === null) {
+					localStorage.setItem("Total", 1);
 					localStorage.setItem(prod.id, 1);
-					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) + 1);
 					prod.qty = 1;
+				} else {
+					if (localStorage.getItem(prod.id) !== null) {
+						localStorage.setItem(
+							prod.id,
+							JSON.parse(localStorage.getItem(prod.id)) + 1
+						);
+						prod.qty = localStorage.getItem(prod.id);
+					} else {
+						localStorage.setItem(prod.id, 1);
+						localStorage.setItem(
+							"Total",
+							JSON.parse(localStorage.getItem("Total")) + 1
+						);
+						prod.qty = 1;
+					}
 				}
+				this.$store.commit("setTotal", localStorage.getItem("Total"));
+			} else {
+				this.$toast.add({
+					severity: "warn",
+					detail: "Merci de vous connecter pour commander.",
+					closable: false,
+					life: 4000,
+				});
 			}
-			this.$store.commit("setTotal", localStorage.getItem("Total"));
-
-			// prod.selected = "background-color:rgba(0,128,0,0.1);";
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {

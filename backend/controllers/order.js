@@ -4,6 +4,7 @@ const { date } = require("../models");
 const fs = require("fs");
 const { Op } = require("sequelize");
 const nodemailer = require("nodemailer");
+const path = require("path");
 
 // * Create a new order
 exports.createOrder = (req, res) => {
@@ -102,9 +103,17 @@ exports.emailConfirm = (req, res) => {
 						nom +
 						",</p></br>" +
 						message +
-						"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;'>Produit</th><th style='border: 1px solid black;'>Quantité</th><th style='border: 1px solid black;'>Unité</th></tr>" +
+						"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;width:100px;height:40px;'>Produit</th><th style='border: 1px solid black;width:80px;height:40px;'>Quantité</th><th style='border: 1px solid black;width:80px;height:40px;'>Unité</th></tr>" +
 						contenu +
-						"</table></p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p>L'équipe de la Civraie</p>",
+						"</table></p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p><p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px' src='cid:logo@civraie.com'/>",
+					attachments: [
+						{
+							filename: "logocivraie.png",
+							path: path.join(__dirname, "../images/logocivraie.png"),
+							cid: "logo@civraie.com",
+							contentDisposition: "inline",
+						},
+					],
 				},
 				(error, info) => {
 					if (error) {

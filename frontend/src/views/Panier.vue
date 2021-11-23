@@ -1,16 +1,12 @@
 <template>
 	<div>
 		<!-- Table pour le panier de commande -->
-		<div v-if="total === null">
+		<div v-if="total === null || total == 0">
 			<p>
 				{{ info }}
 			</p>
 		</div>
-		<div v-if="total === 0">
-			<p>
-				{{ info }}
-			</p>
-		</div>
+
 		<div id="commande" v-if="total > 0">
 			<h5>Votre commande pour une livraison le {{ deliveryDate }}.</h5>
 
@@ -55,7 +51,11 @@
 			/>
 		</div>
 		<div>
-			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
+			<Dialog
+				header="Confirmation"
+				v-model:visible="dialog"
+				:breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+				:style="{ width: '20vw' }"
 				><p>
 					Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.
 				</p>
@@ -119,15 +119,13 @@ export default {
 					if (this.products[i].qty > 0) {
 						this.tablMail =
 							this.tablMail +
-							"<tr><td style='border: 1px solid black;'>" +
+							"<tr style='text-align:center'><td style='border: 1px solid black;width:100px;height:50px;'>" +
 							this.products[i].product +
-							"<td style='border: 1px solid black;'>" +
+							"<td style='border: 1px solid black;width:80px;height:50px;'>" +
 							this.products[i].qty +
-							"<td style='border: 1px solid black;'>" +
+							"<td style='border: 1px solid black;width:80px;height:50px;'>" +
 							this.products[i].unity;
-						// "<td style='border: 1px solid black;'>" +
-						// this.numFr(this.products[i].qty * this.products[i].price_unity);
-						//delete order in localStorage
+
 						localStorage.removeItem(this.products[i].id);
 
 						axios
@@ -208,6 +206,9 @@ export default {
 				}
 			}
 			this.$store.commit("setTotal", localStorage.getItem("Total"));
+			if (localStorage.getItem("Total") == 0) {
+				location.reload();
+			}
 		},
 		//* Close Dialog
 		closeConfirm: function() {
