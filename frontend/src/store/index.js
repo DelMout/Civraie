@@ -14,6 +14,7 @@ export default createStore({
 		token: null,
 		infoHome: "",
 		inPages: true,
+		newUser: false,
 	},
 	mutations: {
 		setUserId(state, userId) {
@@ -31,9 +32,9 @@ export default createStore({
 		setProducts(state, products) {
 			state.products = products;
 		},
-		// setOrder(state, order) {
-		// 	state.order = order;
-		// },
+		setNewUser(state) {
+			state.newUser = true;
+		},
 		setTotal(state, total) {
 			state.total = total;
 		},

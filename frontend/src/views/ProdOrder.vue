@@ -126,7 +126,18 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate", "dayNow"]),
-		...mapState(["products", "order", "total", "inPages", "logged"]),
+		...mapState(["products", "order", "total", "inPages", "logged", "newUser"]),
+	},
+	mounted: function() {
+		if (this.$store.state.newUser) {
+			this.$toast.add({
+				severity: "success",
+				detail: "Votre compte a été créé !",
+				closable: false,
+				life: 4000,
+			});
+		}
+		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
 	},
 	beforeCreate: function() {
 		this.products = [];

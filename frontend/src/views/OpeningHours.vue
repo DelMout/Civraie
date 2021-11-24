@@ -1,14 +1,38 @@
 <template>
 	<div>
 		<h4>Horaires d'ouverture du magasin</h4>
-		<p>{{ info }}</p>
-		<p>Cette mention apparait sur l'accueil du site et en bas des mails envoyés.</p>
-		<p>
-			<label for="hours">Ouverture du magasin : </label
-			><textarea class="" id="hours" row="5" col="63" v-model="hours"></textarea>
-		</p>
+		<i>Cette mention apparait sur l'accueil du site et en bas des mails envoyés.</i>
+		<div id="window">
+			<p>Ouverture du magasin :</p>
+			<Editor v-model="hours" editorStyle="height: 20vh;">
+				<template #toolbar>
+					<span class="ql-formats">
+						<button class="ql-bold"></button>
+						<button class="ql-italic"></button>
+						<button class="ql-underline"></button>
+					</span>
+				</template>
+			</Editor>
+		</div>
 		<div>
-			<button @click="modifOpenHours">Valider les modifications</button>
+			<div v-if="!modifSent">
+				<Button
+					label="Valider les modifications"
+					class="p-button-raised p-button "
+					@click="modifOpenHours"
+				/>
+			</div>
+			<div v-if="modifSent">
+				<ProgressSpinner />
+			</div>
+		</div>
+		<div>
+			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
+				><p>Modifications sauvegardées !</p>
+				<template #footer>
+					<Button label="OK" @click="close" autofocus />
+				</template>
+			</Dialog>
 		</div>
 	</div>
 </template>
@@ -19,7 +43,9 @@ export default {
 	data() {
 		return {
 			hours: "",
-			info: "",
+			hoursFormed: "",
+			modifSent: false,
+			dialog: false,
 		};
 	},
 	created: function() {
@@ -36,17 +62,32 @@ export default {
 	methods: {
 		//* Save modifications of opening hours
 		modifOpenHours: function() {
+			this.modifSent = true;
+			this.hoursFormed = this.hours.replace(/<p>/g, "<p style='margin:0'>");
 			axios
 				.put(process.env.VUE_APP_API + "information/openhours/modification", {
-					content: this.hours,
+					content: this.hoursFormed,
 				})
 				.then(() => {
-					this.info = "Les horaires d'ouverture ont été modifiés.";
-				})
-				.catch((err) => {
-					this.info = err;
+					this.dialog = true;
+					this.modifSent = false;
 				});
+		},
+
+		//* Close Dialog
+		close: function() {
+			this.dialog = false;
 		},
 	},
 };
 </script>
+<style scoped>
+#window {
+	width: 40vw;
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+	margin-bottom: 2rem;
+	margin-top: 2rem;
+}
+</style>

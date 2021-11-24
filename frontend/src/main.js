@@ -14,6 +14,8 @@ import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
 import Badge from "primevue/badge";
 import BadgeDirective from "primevue/badgedirective";
+import ProgressSpinner from "primevue/progressspinner";
+import Editor from "primevue/editor";
 
 // import JsonExcel from "vue-json-excel";
 import "primeicons/primeicons.css"; //icons
@@ -44,6 +46,8 @@ createApp(App)
 	.component("Toast", Toast)
 	.directive("badge", BadgeDirective)
 	.component("Badge", Badge)
+	.component("ProgressSpinner", ProgressSpinner)
+	.component("Editor", Editor)
 
 	// .component("downloadExcel", JsonExcel)
 	.mount("#app");

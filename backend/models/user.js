@@ -31,7 +31,11 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			phone: {
 				type: DataTypes.STRING,
-				allowNull: true,
+				allowNull: false,
+				validate: {
+					notEmpty: true,
+					is: ["^[0-9 -.]{10,}$", "i"],
+				},
 			},
 
 			password: {

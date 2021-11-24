@@ -8,20 +8,19 @@ const jwt = require("jsonwebtoken"); // create token key
 const passwordValidator = require("password-validator");
 const schemaPassword = new passwordValidator();
 const nodemailer = require("nodemailer");
-const { resolve } = require("path");
+const path = require("path");
 
 //* Schema Password
-schemaPassword.is().min(10).has().uppercase().has().lowercase().has().digits();
+schemaPassword.is().min(8).has().uppercase().has().lowercase().has().digits();
 
 // * Create a new user
 exports.signup = (req, res) => {
 	if (!schemaPassword.validate(req.body.password)) {
-		return res
-			.status(401)
-			.send(
-				"password not enough strong, missing :" +
-					schemaPassword.validate(req.body.password, { list: true })
-			);
+		return res.status(401).send("password not enough strong");
+		// .send(
+		// 	"password not enough strong, missing :" +
+		// 		schemaPassword.validate(req.body.password, { list: true })
+		// );
 	} else {
 		// create 'jeton' for link when user forgot password
 		const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -52,7 +51,7 @@ exports.signup = (req, res) => {
 				});
 			})
 			.catch((err) => {
-				res.status(401).send(err);
+				res.status(401).send(err.errors[0].message);
 			});
 	}
 };
@@ -218,37 +217,55 @@ exports.emailPassword = (req, res) => {
 	//TODO Remplacer localhost:8080 par adresse site en ligne !!
 	user.findOne({ where: { email: req.params.email } })
 		.then((user) => {
-			const jeton = user.jeton;
-			const email = req.params.email;
-			const prenom = user.prenom;
-			const nom = user.nom;
-			const titre = "[La Civraie] Demande d'initialisation mot de passe";
-			const message =
-				"<p>Merci de cliquer sur le lien pour saisir un nouveau mot de passe.</p>";
-			transporter.sendMail(
-				{
-					from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
-					to: email,
-					subject: titre,
-					html:
-						"<p>Bonjour " +
-						prenom +
-						" " +
-						nom +
-						",</p></br>" +
-						message +
-						"</br><a href='http://localhost:8080/setpassword/" +
-						jeton +
-						"'>Saisir un nouveau mot de passe</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p>L'équipe de la Civraie</p>",
-				},
-				(error, info) => {
-					if (error) {
-						return res.status(401).send(error);
-					}
-					res.status(200).send("email envoyé !");
-				}
-			);
-			// res.status(200).send(prenom);
+			information
+				.findOne({
+					where: { item: "open_hours" },
+				})
+				.then((info) => {
+					const openhours = info.content;
+					const jeton = user.jeton;
+					const email = req.params.email;
+					const prenom = user.prenom;
+					const nom = user.nom;
+					const titre = "[La Civraie] Demande d'initialisation mot de passe";
+					const message =
+						"<p>Merci de cliquer sur le lien pour saisir un nouveau mot de passe.</p>";
+					transporter.sendMail(
+						{
+							from: "Magasin Civraie Si Frais <lacivraie@delmout.com>",
+							to: email,
+							subject: titre,
+							html:
+								"<p>Bonjour " +
+								prenom +
+								" " +
+								nom +
+								",</p></br>" +
+								message +
+								"</br><a href='http://localhost:8080/setpassword/" +
+								jeton +
+								"'>Saisir un nouveau mot de passe</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
+								openhours +
+								"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px' src='cid:logo@civraie.com'/>",
+							attachments: [
+								{
+									filename: "logocivraie.png",
+									path: path.join(__dirname, "../images/logocivraie.png"),
+									cid: "logo@civraie.com",
+									contentDisposition: "inline",
+								},
+							],
+						},
+						(error, info) => {
+							if (error) {
+								return res.status(401).send(error);
+							}
+							res.status(200).send("email envoyé !");
+						}
+					);
+					// res.status(200).send(prenom);
+				})
+				.catch((err) => res.status(401).send(err));
 		})
 		.catch((err) => res.status(401).send(err));
 	// .catch((err) => res.status(401).send("bad request"));
@@ -313,20 +330,6 @@ exports.emailInfo = (req, res) => {
 			pass: process.env.PASS_EMAIL,
 		},
 	});
-
-	// Title and content of specific email
-	// information
-	// 	.update(
-	// 		{
-	// 			title: req.body.title,
-	// 			content: req.body.content,
-	// 		},
-	// 		{ where: { item: "specific_email" } }
-	// 	)
-	// 	.then(() => {
-	// 		// information.findOne({ where: { item: "specific_email" } }).then((specific) => {
-	// 		// 	const title = specific.title;
-	// 		// 	const content = specific.content;
 
 	// List of users non isAdmin
 	user.findAndCountAll({ where: { isAdmin: 0 } })

@@ -39,7 +39,7 @@
 	<div id="nav">
 		<!-- <router-link class="link" to="/">Accueil </router-link> -->
 		<!-- <router-link class="link" to="/produits_vente_magasin">Produits à la vente </router-link> -->
-		<router-link class="link" to="/produits_vente_commande">Commander </router-link>
+		<router-link class="link" to="/produits_vente_commande">Produits </router-link>
 		<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email">* Email *</router-link>
 		<router-link class="link" v-if="isAdminApp === 1" to="/commandes"
 			>* Commandes *</router-link
@@ -57,8 +57,6 @@
 		<router-link class="link" v-if="isAdminApp === 1" to="/horaires_ouverture"
 			>* Horaires *</router-link
 		>
-
-		<!-- <router-link class="link" to="/panier">Mon Panier</router-link> -->
 	</div>
 	<router-view />
 </template>

@@ -1,5 +1,6 @@
 const { order } = require("../models");
 const { user } = require("../models");
+const { information } = require("../models");
 const { date } = require("../models");
 const fs = require("fs");
 const { Op } = require("sequelize");
@@ -80,54 +81,67 @@ exports.emailConfirm = (req, res) => {
 	//TODO Remplacer localhost:8080 par adresse site en ligne !!
 	user.findOne({ where: { id: req.params.userid } })
 		.then((user) => {
-			const email = user.email;
-			const prenom = user.prenom;
-			const nom = user.nom;
+			information
+				.findOne({
+					where: { item: "open_hours" },
+				})
+				.then((info) => {
+					const openhours = info.content;
 
-			const titre = "[La Civraie] Confirmation de votre commande";
-			const message =
-				"<p>Votre commande sera livrée au magasin de la ferme de La Civraie le " +
-				req.params.delivery_date +
-				".</p>";
-			const contenu = req.params.contenu;
-			// const total = req.params.total;
-			transporter.sendMail(
-				{
-					from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
-					to: email,
-					subject: titre,
-					html:
-						"<p>Bonjour " +
-						prenom +
-						" " +
-						nom +
-						",</p></br>" +
-						message +
-						"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;width:100px;height:40px;'>Produit</th><th style='border: 1px solid black;width:80px;height:40px;'>Quantité</th><th style='border: 1px solid black;width:80px;height:40px;'>Unité</th></tr>" +
-						contenu +
-						"</table></p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p><p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px' src='cid:logo@civraie.com'/>",
-					attachments: [
+					const email = user.email;
+					const prenom = user.prenom;
+					const nom = user.nom;
+
+					const titre = "[La Civraie] Confirmation de votre commande";
+					const message =
+						"<p>Votre commande sera livrée au magasin de la ferme de La Civraie le " +
+						req.params.delivery_date +
+						".</p>";
+					const contenu = req.params.contenu;
+					// const total = req.params.total;
+					transporter.sendMail(
 						{
-							filename: "logocivraie.png",
-							path: path.join(__dirname, "../images/logocivraie.png"),
-							cid: "logo@civraie.com",
-							contentDisposition: "inline",
+							from: "Magasin Civraie Si Frais <lacivraie@delmout.com>",
+							to: email,
+							subject: titre,
+							html:
+								"<p>Bonjour " +
+								prenom +
+								" " +
+								nom +
+								",</p></br>" +
+								message +
+								"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;width:100px;height:40px;'>Produit</th><th style='border: 1px solid black;width:80px;height:40px;'>Quantité</th><th style='border: 1px solid black;width:80px;height:40px;'>Unité</th></tr>" +
+								contenu +
+								"</table></p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
+								openhours +
+								"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px' src='cid:logo@civraie.com'/>",
+							attachments: [
+								{
+									filename: "logocivraie.png",
+									path: path.join(__dirname, "../images/logocivraie.png"),
+									cid: "logo@civraie.com",
+									contentDisposition: "inline",
+								},
+							],
 						},
-					],
-				},
-				(error, info) => {
-					if (error) {
-						return res.status(401).send(error);
-					}
-					res.status(200).send("email envoyé !");
-				}
-			);
-			// res.status(200).send(prenom);
-			// })
-			// .catch((err) => res.status(401).send(err));
-			// })
-			// .catch((err) => res.status(401).send(err));
+						(error, info) => {
+							if (error) {
+								return res.status(401).send(error);
+							}
+							res.status(200).send("email envoyé !");
+						}
+					);
+					// res.status(200).send(prenom);
+					// })
+					// .catch((err) => res.status(401).send(err));
+					// })
+					// .catch((err) => res.status(401).send(err));
+				})
+				.catch((err) => res.status(401).send(err));
 		})
+
 		.catch((err) => res.status(401).send(err));
+
 	// .catch((err) => res.status(401).send("bad request"));
 };

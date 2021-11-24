@@ -10,10 +10,21 @@
 				<label for="object">Objet : </label
 				><input class="" type="text" id="object" v-model="object" />
 			</p>
-			<p>
-				<label for="body">Contenu : </label
-				><textarea class="" id="body" row="5" col="63" v-model="body"></textarea>
-			</p>
+			<div id="window">
+				<p>Contenu :</p>
+				<Editor v-model="body" editorStyle="height: 50vh;">
+					<template #toolbar>
+						<span class="ql-formats">
+							<button class="ql-bold"></button>
+							<button class="ql-italic"></button>
+							<button class="ql-underline"></button>
+							<button class="ql-list " value="ordered"></button>
+							<button class="ql-list " value="bullet"></button>
+						</span>
+					</template>
+				</Editor>
+			</div>
+
 			<p>
 				Passer votre commande sur le site de la ferme de La Civraie :
 				<br />
@@ -87,4 +98,13 @@ export default {
 	},
 };
 </script>
-<style scoped></style>
+<style scoped>
+#window {
+	width: 40vw;
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+	margin-bottom: 2rem;
+	margin-top: 2rem;
+}
+</style>

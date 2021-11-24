@@ -1,7 +1,5 @@
 <template>
 	<div id="signup">
-		<!-- <h1>Bienvenue à la ferme de La Civraie</h1>
-		<p>Des produits frais et de saison toute l'année</p> -->
 		<div>
 			<img
 				@click="returnHome"
@@ -11,6 +9,7 @@
 			/>
 		</div>
 		<p class="produ">19 producteurs et artisans réunis près de chez vous !</p>
+		<p id="openhours"></p>
 
 		<div class="cells">
 			<div class="">
@@ -36,6 +35,7 @@
 					<Password
 						class="fill "
 						id="password"
+						@keyup.enter="enter"
 						v-model="password"
 						inputStyle="width:100%"
 						:feedback="passwordInd"
@@ -62,22 +62,27 @@
 				@click="signup"
 			/>
 		</div>
-		<div v-if="!(creation || forgot || logged)">
+		<div v-if="!(creation || forgot || logged) && !connectionInProgress">
 			<Button
 				label="Se connecter"
 				class="p-button-raised p-button-primary login"
 				@click="login"
 			/>
 		</div>
-		<p>{{ infoPrem }}</p>
+		<div v-if="connectionInProgress">
+			<ProgressSpinner />
+		</div>
 		<p>{{ info }}</p>
 
-		<div v-if="forgot">
+		<div v-if="forgot && !forgotSent">
 			<Button
 				label="Demander un nouveau mot de passe"
 				class="p-button-raised p-button-primary login"
 				@click="forgotten"
 			/>
+		</div>
+		<div v-if="forgotSent">
+			<ProgressSpinner />
 		</div>
 		<div id="createForget">
 			<div v-if="!(creation || forgot || logged)">
@@ -122,12 +127,52 @@ export default {
 			phone: "",
 			password: "",
 			admin: "",
-			infoPrem: "",
 			info: "",
 			creation: false,
 			forgot: false,
 			logged: false,
 			passwordInd: false,
+			forgotSent: false,
+			openhours: "",
+			connectionInProgress: false,
+			errors: [
+				{
+					error: "Validation is on phone failed",
+					message: "Le numéro de téléphone n'est pas correctement saisi.",
+				},
+				{
+					error: "password not enough strong",
+					message: "Votre mot de passe n'est pas assez fort.",
+				},
+				{
+					error: "Validation isEmail on email failed",
+					message: "Votre adresse email n'est pas correcte.",
+				},
+				{
+					error: "Validation is on nom failed",
+					message: "Votre nom contient des caractères indésirables.",
+				},
+				{
+					error: "Validation is on prenom failed",
+					message: "Votre prénom contient des caractères indésirables.",
+				},
+				{
+					error: "Validation notEmpty on prenom failed",
+					message: "Merci de renseigner votre prénom.",
+				},
+				{
+					error: "Validation notEmpty on nom failed",
+					message: "Merci de renseigner votre nom.",
+				},
+				{
+					error: "Validation notEmpty on phone failed",
+					message: "Merci de renseigner votre numéro de téléphone.",
+				},
+				{
+					error: "users.email must be unique",
+					message: "Cette adresse email est déjà affectée à un compte.",
+				},
+			],
 		};
 	},
 	beforeMount: function() {
@@ -137,17 +182,23 @@ export default {
 		localStorage.clear(); //! A modifier qd user en fonction !
 		//Update Active=0 for products with cloture_day in the past
 		axios.put(process.env.VUE_APP_API + "product/checkactive/putinactive");
-
-		//TODO Aller chercler les horaires d'ouverture pour les afficher dans cette page.
 	},
 	created: function() {
 		this.$store.state.inPages = false;
+		axios.get(process.env.VUE_APP_API + "information/openhours").then((rep) => {
+			let open = document.getElementById("openhours");
+			open.innerHTML = rep.data;
+		});
 	},
+	updated: function() {
+		//* Openhours
+	},
+
 	computed: {
-		...mapState(["infoHome", "token", "userId", "isAdmin", "logged", "inPages"]),
+		...mapState(["infoHome", "token", "userId", "isAdmin", "logged", "inPages", "newUser"]),
 	},
 	methods: {
-		...mapMutations(["setUserId", "setToken", "setAdmin", "setEmail"]),
+		...mapMutations(["setUserId", "setToken", "setAdmin", "setNewUser"]),
 		...mapActions(["checkConnect"]),
 		//* Create a user
 		signup: function() {
@@ -159,16 +210,21 @@ export default {
 					email: this.email,
 					password: this.password,
 				})
-				.then((resp) => {
-					this.infoPrem = "Votre compte est créé !";
+				.then(() => {
+					this.$store.commit("setNewUser");
 					this.login();
-					console.log(resp);
 				})
 				.catch((err) => {
-					this.info = err;
-					// this.info = "Votre compte n'a pas pu être créé :-(";
-					//TODO Info si compte déjà existant (adresse email)
-					console.log(err);
+					for (let i = 0; i < 9; i++) {
+						if (this.errors[i].error === err.response.data) {
+							this.$toast.add({
+								severity: "error",
+								detail: this.errors[i].message,
+								closable: false,
+								life: 4000,
+							});
+						}
+					}
 				});
 		},
 
@@ -180,6 +236,7 @@ export default {
 					password: this.password,
 				})
 				.then((user) => {
+					this.connectionInProgress = true;
 					const { userId, token, isAdmin } = user.data;
 					localStorage.setItem("userId", userId);
 					localStorage.setItem("token", token);
@@ -203,7 +260,6 @@ export default {
 					}
 				})
 				.catch((err) => {
-					console.log(err.response.data);
 					if (err.response.data === "Password not OK") {
 						this.$toast.add({
 							severity: "error",
@@ -222,18 +278,41 @@ export default {
 				});
 		},
 
+		//* Press Enter on email cell
+		enter: function() {
+			if (this.creation) {
+				this.signup();
+			} else {
+				this.login();
+			}
+		},
+
 		//* Password forgotten
 		forgotten: function() {
+			this.forgotSent = true;
+			this.info = "";
 			axios
 				.post(process.env.VUE_APP_API + "user/emailpassword/" + this.email)
 				.then(() => {
-					this.info = "Email envoyé !";
+					this.$toast.add({
+						severity: "info",
+						detail: "Email envoyé !",
+						closable: false,
+						life: 4000,
+					});
 					this.logged = false;
 					this.creation = false;
 					this.forgot = false;
+					this.forgotSent = false;
 				})
 				.catch(() => {
-					this.info = "Cette adresse email ne correspond à aucun compte.";
+					this.forgotSent = false;
+					this.$toast.add({
+						severity: "error",
+						detail: "Cette adresse email ne correspond à aucun compte.",
+						closable: false,
+						life: 4000,
+					});
 				});
 		},
 
@@ -243,7 +322,6 @@ export default {
 			this.forgot = false;
 			this.logged = false;
 			this.passwordInd = true;
-			this.info = "Merci de renseigner les informations demandées.";
 		},
 
 		//* Want new password
@@ -272,7 +350,11 @@ export default {
 }
 .produ {
 	font-size: 1.2rem;
+	margin-bottom: 1rem;
+}
+#openhours {
 	margin-bottom: 2rem;
+	font-style: italic;
 }
 #signup {
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;

@@ -44,11 +44,16 @@
 				</tr>
 			</table>
 
-			<Button
-				label="Valider la commande"
-				class=" p-button-raised p-button-primary valid"
-				@click="validOrder"
-			/>
+			<div v-if="!ordered">
+				<Button
+					label="Valider la commande"
+					class=" p-button-raised p-button-primary valid"
+					@click="validOrder"
+				/>
+			</div>
+			<div v-if="ordered">
+				<ProgressSpinner />
+			</div>
 		</div>
 		<div>
 			<Dialog
@@ -78,6 +83,7 @@ export default {
 			tablMail: "",
 			info: "Votre panier est actuellement vide.",
 			dialog: false,
+			ordered: false,
 		};
 	},
 	computed: {
@@ -113,6 +119,7 @@ export default {
 
 		//* Validation order
 		validOrder: function() {
+			this.ordered = true;
 			// Save in database
 			axios.get(process.env.VUE_APP_API + "product/actived").then((prod) => {
 				for (let i = 0; i < prod.data.length; i++) {
@@ -213,7 +220,7 @@ export default {
 		//* Close Dialog
 		closeConfirm: function() {
 			this.dialog = false;
-			location.reload();
+			this.$router.push("http://localhost:8080/produits_vente_commande");
 		},
 	},
 };
