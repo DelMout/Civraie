@@ -15,21 +15,30 @@ module.exports = (sequelize, DataTypes) => {
 			prenom: {
 				type: DataTypes.STRING,
 				allowNull: true,
-				validate: {
-					notEmpty: true,
-				},
+				// validate: {
+				// 	notEmpty: true,
+				// },
 			},
 			entreprise: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			products: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			address: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			phone: {
 				type: DataTypes.STRING,
@@ -38,9 +47,9 @@ module.exports = (sequelize, DataTypes) => {
 			email: {
 				type: DataTypes.STRING,
 				allowNull: true,
-				validate: {
-					isEmail: true,
-				},
+				// validate: {
+				// 	isEmail: true,
+				// },
 			},
 			site_web: {
 				type: DataTypes.STRING,

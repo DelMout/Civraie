@@ -1,162 +1,189 @@
 <template>
-	<div>
-		<h1>Liste des producteurs</h1>
-		<p>{{ infoProd }}</p>
+	<div id="producersTable">
+		<div id="entete">
+			<h3>Liste des producteurs</h3>
+			<p id="number">Nombre producteurs = {{ length }}</p>
+		</div>
 
-		<table>
-			<tr>
-				<th>Producteur</th>
-				<th>Nom</th>
-				<th class="">Prénom</th>
-				<th class="">Produits proposés</th>
-				<th class="">Adresse</th>
-				<th class="">Téléphone</th>
-				<th class="">Email</th>
-				<th>Site web</th>
-			</tr>
-			<tr v-for="prod in producers" :key="prod.id" :id="prod.delete">
-				<td @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.entreprise }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.entreprise"
-					/>
-				</td>
+		<ConfirmPopup></ConfirmPopup>
+		<ConfirmPopup group="demo">
+			<template #message="slotProps">
+				<div class="p-d-flex p-p-4">
+					<i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
+					<p class="p-pl-2">{{ slotProps.message.message }}</p>
+				</div>
+			</template>
+		</ConfirmPopup>
 
-				<td class="" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">
-						{{ prod.nom }}
-					</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.nom"
-					/>
-				</td>
-				<td @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.prenom }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.prenom"
-					/>
-				</td>
+		<div>
+			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
+				><p>{{ infoProd }}</p>
+				<template #footer>
+					<Button label="OK" @click="close" autofocus />
+				</template>
+			</Dialog>
+		</div>
 
-				<td class="" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.products }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.products"
-					/>
-				</td>
-				<td class="" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.address }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.address"
-					/>
-				</td>
-				<td class="" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.phone }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.phone"
-					/>
-				</td>
-				<td class="" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.email }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.email"
-					/>
-				</td>
-				<td class="" @click="modifProd($event, prod)">
-					<p v-if="!prod.modif || prod.delete">{{ prod.site_web }}</p>
-					<input
-						v-if="prod.modif && !prod.delete"
-						class="create "
-						type="text"
-						v-model="prod.site_web"
-					/>
-				</td>
+		<div style="width:30vw">
+			<Toast position="center">
+				<template #message="slotProps">
+					<div class="p-d-flex p-flex-row">
+						<div class="p-text-center">
+							<i class="pi pi-exclamation-triangle" style="font-size: 2rem"></i>
+							<p>{{ slotProps.message.detail }}</p>
+						</div>
+					</div>
+				</template>
+			</Toast>
+		</div>
 
-				<td v-if="prod.modif">
-					<button
-						v-if="prod.modif && !prod.delete"
-						style="background-color:greenyellow;"
-						class="modif"
-						type="button"
-						@click="validMod($event, prod)"
-					>
-						Valider les modifications
-					</button>
-					<button
-						v-if="prod.modif && !prod.delete"
-						style="background-color:red;color:white;"
-						class="modif"
-						type="button"
-						@click="wantDelete($event, prod)"
-					>
-						Sup
-					</button>
-					<button
-						v-if="prod.delete"
-						style="background-color:white;color:red;"
-						class="modif"
-						type="button"
-						@click="Delete($event, prod)"
-					>
-						Supprimer
-					</button>
-				</td>
-			</tr>
-			<!-- Row for creating new producer -->
-			<tr class="create">
-				<td><input class="create" type="text" id="entreprise" v-model="entreprise" /></td>
+		<div id="tableau">
+			<table>
+				<tr>
+					<th>Producteur</th>
+					<th>Nom</th>
+					<th class="">Prénom</th>
+					<th class="">Produits proposés</th>
+					<th class="">Adresse</th>
+					<th class="">Téléphone</th>
+					<th class="">Email</th>
+					<th>Site web</th>
+				</tr>
+				<tr v-for="prod in producers" :key="prod.id" :id="prod.delete">
+					<td @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.entreprise }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.entreprise"
+						/>
+					</td>
 
-				<td class="">
-					<input class="create " type="text" id="nom" v-model="nom" />
-				</td>
-				<td class="">
-					<input class="create " type="text" id="prenom" v-model="prenom" />
-				</td>
-				<td class="">
-					<input class="create " type="text" id="produits" v-model="produits" />
-				</td>
-				<td class="">
-					<input class="create " type="text" id="adresse" v-model="adresse" />
-				</td>
-				<td class="">
-					<input class="create " type="text" id="telephone" v-model="telephone" />
-				</td>
-				<td class="">
-					<input class="create " type="text" id="email" v-model="email" />
-				</td>
-				<td class="">
-					<input class="create " type="text" id="site" v-model="site" />
-				</td>
+					<td class="" @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">
+							{{ prod.nom }}
+						</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.nom"
+						/>
+					</td>
+					<td @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.prenom }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.prenom"
+						/>
+					</td>
 
-				<td>
-					<button class="valCreate" type="button" @click="validateCreate">
-						Créer
-					</button>
-				</td>
-			</tr>
-		</table>
+					<td class="" @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.products }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.products"
+						/>
+					</td>
+					<td class="" @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.address }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.address"
+						/>
+					</td>
+					<td class="" @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.phone }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.phone"
+						/>
+					</td>
+					<td class="" @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.email }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.email"
+						/>
+					</td>
+					<td class="" @click="modifProd($event, prod)">
+						<p v-if="!prod.modif || prod.delete">{{ prod.site_web }}</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.site_web"
+						/>
+					</td>
 
-		<p>Nombre producteurs = {{ length }}</p>
+					<td v-if="prod.modif" id="sup">
+						<Button
+							v-if="prod.modif && !prod.delete"
+							style="background-color:rgb(252, 190, 76);color:black;border:none"
+							icon="pi pi-check"
+							class="p-button-rounded butt"
+							@click="validMod($event, prod)"
+						/>
+
+						<Button
+							v-if="prod.modif"
+							id="trash"
+							icon="pi pi-trash"
+							class=" p-button-rounded p-button-danger butt"
+							@click="wantDelete($event, prod)"
+						/>
+					</td>
+				</tr>
+				<!-- Row for creating new producer -->
+				<tr class="create">
+					<td>
+						<input class="create" type="text" id="entreprise" v-model="entreprise" />
+					</td>
+
+					<td class="">
+						<input class="create " type="text" id="nom" v-model="nom" />
+					</td>
+					<td class="">
+						<input class="create " type="text" id="prenom" v-model="prenom" />
+					</td>
+					<td class="">
+						<input class="create " type="text" id="produits" v-model="produits" />
+					</td>
+					<td class="">
+						<input class="create " type="text" id="adresse" v-model="adresse" />
+					</td>
+					<td class="">
+						<input class="create " type="text" id="telephone" v-model="telephone" />
+					</td>
+					<td class="">
+						<input class="create " type="text" id="email" v-model="email" />
+					</td>
+					<td class="">
+						<input class="create " type="text" id="site" v-model="site" />
+					</td>
+
+					<td id="creer">
+						<Button
+							style="background:rgb(252, 190, 76)"
+							label="Créer"
+							class="p-button-raised validModif valButton valCreate"
+							@click="validateCreate"
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </template>
 <script>
@@ -169,11 +196,11 @@ export default {
 			producers: [],
 			length: "",
 			lengthPc: "",
-			entreprise: "Producteur",
-			nom: "Nom",
+			entreprise: "*Producteur",
+			nom: "*Nom",
 			prenom: "Prénom",
-			produits: "Produits proposés",
-			adresse: "Adresse",
+			produits: "*Produits proposés",
+			adresse: "*Adresse",
 			telephone: "Téléphone",
 			email: "Email",
 			site: "Site web",
@@ -182,6 +209,7 @@ export default {
 			prodId: "",
 			modif: false,
 			index: "",
+			dialog: false,
 		};
 	},
 	beforeCreate: function() {
@@ -238,10 +266,17 @@ export default {
 					site_web: this.site,
 				})
 				.then(() => {
+					this.dialog = true;
 					this.infoProd = "Producteur créé !";
 				})
-				.catch((err) => {
-					this.infoProd = err;
+				.catch(() => {
+					this.$toast.add({
+						severity: "error",
+						detail:
+							"Les champs 'Producteur', 'Nom', 'Produits proposés' et 'Adresse' sont obligatoires.",
+						closable: false,
+						life: 4000,
+					});
 				});
 		},
 
@@ -270,17 +305,24 @@ export default {
 
 				.then(() => {
 					prod.modif = false;
-					this.infoProd = "Vos modifications ont été prises en compte";
-				})
-				.catch((err) => {
-					this.infoProd = err;
-					console.log(err);
 				});
 		},
 
 		//* Want delete a product
 		wantDelete: function(event, prod) {
 			prod.delete = "red";
+			this.$confirm.require({
+				target: event.currentTarget,
+				message: "Souhaitez-vous supprimer ce producteur ?",
+				icon: "pi pi-info-circle",
+				acceptClass: "p-button-danger",
+				accept: () => {
+					this.Delete(event, prod);
+				},
+				reject: () => {
+					prod.delete = 0;
+				},
+			});
 		},
 
 		//* Delete product
@@ -293,17 +335,48 @@ export default {
 				// },
 
 				.then(() => {
-					this.infoProd = "Le producteur a été supprimé.";
-				})
-				.catch((err) => {
-					this.infoProd = err;
-					console.log(err);
+					this.dialog = true;
+					this.infoProd = "La ligne du producteur a été supprimée.";
 				});
+		},
+
+		//* Close Dialog
+		close: function() {
+			this.dialog = false;
+			location.reload();
 		},
 	},
 };
 </script>
 <style scoped>
+h3 {
+	margin: 0;
+	margin-right: 2rem;
+	text-align: right;
+	margin-left: 5rem;
+}
+#entete {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 0rem;
+	margin-bottom: 1rem;
+	margin-left: 5rem;
+}
+#number {
+	margin: 0;
+	font-size: 12px;
+	margin-top: 0.2rem;
+}
+#producersTable {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+#tableau {
+	margin: auto;
+	width: 95%;
+}
 td,
 th {
 	border: 1px solid black;
@@ -315,10 +388,18 @@ input,
 	height: 40px;
 }
 th,
-td,
-input,
-.valCreate {
+input {
 	width: 200px;
+}
+th {
+	height: 3rem;
+	background-color: rgb(235, 141, 47);
+	color: black;
+}
+tr {
+	width: 50%;
+	background-color: white;
+	color: black;
 }
 
 .numb {
@@ -329,6 +410,7 @@ input,
 }
 table {
 	border-collapse: collapse;
+	margin: auto;
 }
 .create,
 .valCreate {
@@ -343,5 +425,19 @@ table {
 }
 .nocolor {
 	background-color: white;
+}
+#sup,
+#creer {
+	border: 0px solid;
+	width: 100px;
+	background-color: #122f1c;
+}
+.butt {
+	margin-right: 5px;
+}
+.validModif {
+	background-color: pink;
+	color: black;
+	margin-bottom: 4px;
 }
 </style>

@@ -1,6 +1,19 @@
 <template>
 	<div id="productsTable">
-		<h3>Liste des produits</h3>
+		<div id="entete">
+			<h3>Liste des produits</h3>
+			<p id="number">Attention, "Actif" à faire qu'à partir du Dimanche !</p>
+		</div>
+
+		<ConfirmPopup></ConfirmPopup>
+		<ConfirmPopup group="demo">
+			<template #message="slotProps">
+				<div class="p-d-flex p-p-4">
+					<i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
+					<p class="p-pl-2">{{ slotProps.message.message }}</p>
+				</div>
+			</template>
+		</ConfirmPopup>
 
 		<div id="tableau">
 			<table>
@@ -9,18 +22,14 @@
 					<th>Producteur</th>
 					<th>Catégorie</th>
 					<th>Jour clôture</th>
-					<th class="numb">Prix / kg</th>
+					<th class="numb">Prix</th>
 					<th>Unité vente</th>
 					<th>Support vente</th>
 					<th class="photo">Photo</th>
 					<th class="numb">Actif</th>
 				</tr>
 				<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
-					<td
-						@click="modifProd($event, prod)"
-						v-if="chooseCommande || prod.active == 1"
-						:class="prod.modif"
-					>
+					<td @click="modifProd($event, prod)" :class="prod.modif">
 						<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
 						<input
 							v-if="prod.modif && !prod.delete"
@@ -29,14 +38,10 @@
 							v-model="prod.product"
 						/>
 					</td>
-					<td
-						v-if="chooseCommande || prod.active == 1"
-						@click="modifProd($event, prod)"
-						:class="prod.modif"
-					>
-						<p v-if="!prod.modif">{{ prod.producer }}</p>
+					<td @click="modifProd($event, prod)" :class="prod.modif">
+						<p v-if="!prod.modif || prod.delete">{{ prod.producer }}</p>
 						<Dropdown
-							v-if="prod.modif"
+							v-if="prod.modif && !prod.delete"
 							class="dropclass"
 							@click="displayProducers"
 							v-model="producerModel"
@@ -55,14 +60,10 @@
 						<p v-if="!produSelected">{{ prod.producer }}</p>
 						<p v-if="produSelected">{{ produSelected }}</p>
 					</td> -->
-					<td
-						v-if="chooseCommande || prod.active == 1"
-						@click="modifProd($event, prod)"
-						:class="prod.modif"
-					>
-						<p v-if="!prod.modif">{{ prod.category }}</p>
+					<td @click="modifProd($event, prod)" :class="prod.modif">
+						<p v-if="!prod.modif || prod.delete">{{ prod.category }}</p>
 						<Dropdown
-							v-if="prod.modif"
+							v-if="prod.modif && !prod.delete"
 							@click="displayCategories"
 							v-model="categoryModel"
 							:options="categories"
@@ -71,16 +72,12 @@
 							:placeholder="prod.category"
 						/>
 					</td>
-					<td
-						v-if="chooseCommande || prod.active == 1"
-						@click="modifProd($event, prod)"
-						:class="prod.modif"
-					>
-						<p v-if="!prod.modif">
+					<td @click="modifProd($event, prod)" :class="prod.modif">
+						<p v-if="!prod.modif || prod.delete">
 							{{ cloturedays[prod.cloturedayId].cloture_day }}
 						</p>
 						<Dropdown
-							v-if="prod.modif"
+							v-if="prod.modif && !prod.delete"
 							v-model="clotureModel"
 							:options="cloturedays"
 							optionLabel="cloture_day"
@@ -88,12 +85,7 @@
 							:placeholder="cloturedays[prod.cloturedayId].cloture_day"
 						/>
 					</td>
-					<td
-						v-if="chooseCommande || prod.active == 1"
-						class="numb"
-						@click="modifProd($event, prod)"
-						:class="prod.modif"
-					>
+					<td class="numb" @click="modifProd($event, prod)" :class="prod.modif">
 						<p v-if="!prod.modif || prod.delete">{{ prod.price }} <span> €</span></p>
 						<input
 							v-if="prod.modif && !prod.delete"
@@ -102,11 +94,7 @@
 							v-model="prod.price"
 						/>
 					</td>
-					<td
-						v-if="chooseCommande || prod.active == 1"
-						@click="modifProd($event, prod)"
-						:class="prod.modif"
-					>
+					<td @click="modifProd($event, prod)" :class="prod.modif">
 						<p v-if="!prod.modif || prod.delete">{{ prod.unite_vente }}</p>
 						<input
 							v-if="prod.modif && !prod.delete"
@@ -116,14 +104,10 @@
 						/>
 					</td>
 
-					<td
-						v-if="chooseCommande || prod.active == 1"
-						@click="modifProd($event, prod)"
-						:class="prod.modif"
-					>
-						<p v-if="!prod.modif">{{ prod.support }}</p>
+					<td @click="modifProd($event, prod)" :class="prod.modif">
+						<p v-if="!prod.modif || prod.delete">{{ prod.support }}</p>
 						<Dropdown
-							v-if="prod.modif"
+							v-if="prod.modif && !prod.delete"
 							@click="displayOrdering"
 							v-model="orderingModel"
 							:options="orderinginfo"
@@ -132,11 +116,7 @@
 							:placeholder="prod.support"
 						/>
 					</td>
-					<td
-						v-if="chooseCommande || prod.active == 1"
-						@click="modifProd($event, prod)"
-						class="photo"
-					>
+					<td @click="modifProd($event, prod)" class="photo">
 						<img
 							class="photo"
 							v-if="prod.photo"
@@ -144,19 +124,13 @@
 							:src="prod.photo"
 							alt="product photo"
 						/>
-						<!-- <input
-							v-if="prod.modif && !prod.delete"
-							class="create modifPhoto"
-							type="file"
-							name="image"
-							@change="onFileChange"
-						/> -->
+
 						<div class="uploadFile" v-if="prod.modif && !prod.delete">
 							<button class="btn-upload">Choisir un fichier</button>
 							<input type="file" name="image" @change="onFileChange" />
 						</div>
 					</td>
-					<td class="numb" v-if="chooseCommande || prod.active == 1">
+					<td class="numb">
 						<button
 							v-if="prod.active > 0"
 							class="active on"
@@ -170,7 +144,7 @@
 							@click="activeInactive($event, prod)"
 						></button>
 					</td>
-					<td v-if="prod.modif || prod.delete" class="valButton">
+					<td v-if="prod.modif" class="valButton ">
 						<Button
 							v-if="prod.modif && !prod.delete"
 							id=""
@@ -179,19 +153,19 @@
 							@click="validModif($event, prod)"
 						/>
 						<Button
-							v-if="prod.modif && !prod.delete"
+							v-if="prod.modif"
 							id=""
 							label="Supprimer"
 							class="p-button-raised  valButton p-button-danger"
 							@click="wantDelete($event, prod)"
 						/>
-						<Button
+						<!-- <Button
 							v-if="prod.delete"
 							id="toDelete"
 							label="Supprimer ce produit"
 							class="p-button-raised  valButton p-button-danger p-button-text"
 							@click="Delete($event, prod)"
-						/>
+						/> -->
 					</td>
 				</tr>
 
@@ -280,11 +254,11 @@
 							@click="createActive()"
 						></button>
 					</td>
-					<td class="createProd">
+					<td class=" valCreate valButton">
 						<Button
 							id="toCreate"
-							label="Créer ce produit"
-							class="p-button-raised  valButton p-button-warning p-button-text"
+							label="Créer"
+							class="p-button-raised validModif valButton p-button-warning"
 							@click="validateCreate"
 						/>
 					</td>
@@ -300,8 +274,6 @@
 				</template>
 			</Dialog>
 		</div>
-
-		<p>Nombre produits = {{ length }}</p>
 	</div>
 </template>
 <script>
@@ -355,7 +327,6 @@ export default {
 			orderingSelected: "",
 			clotureSelected: "",
 			index: "",
-			chooseCommande: true,
 			dialog: false,
 			producerModel: "",
 			categoryModel: "",
@@ -363,6 +334,7 @@ export default {
 			clotureModel: "",
 			modifInProgress: false,
 			infoProd: "",
+			tamponId: "",
 		};
 	},
 	beforeCreate: function() {
@@ -447,9 +419,6 @@ export default {
 		//* Display all producers (when creation product)
 		displayProducers: function() {
 			this.producers = [];
-			// this.orderinginfo = [];
-			// this.categories = [];
-			// this.displayP = true;
 			//* All producers
 			axios.get(process.env.VUE_APP_API + "producer").then((prodc) => {
 				this.lengthPc = prodc.data.length;
@@ -497,10 +466,7 @@ export default {
 
 		//* Display all categories (when creation product)
 		displayCategories: function() {
-			// this.producers = [];
-			// this.orderinginfo = [];
 			this.categories = [];
-			// this.displayC = true;
 			//* All producers
 			axios.get(process.env.VUE_APP_API + "category/getcategories").then((cate) => {
 				this.lengthCate = cate.data.length;
@@ -546,10 +512,7 @@ export default {
 
 		//* Display all orderings (when creation)
 		displayOrdering: function() {
-			// this.producers = [];
 			this.orderinginfo = [];
-			// this.categories = [];
-			// this.displayO = true;
 			//* All orderings
 			axios.get(process.env.VUE_APP_API + "information/getall/Ordering").then((ord) => {
 				this.lengthPc = ord.data.length;
@@ -582,24 +545,7 @@ export default {
 			this.index = this.products.findIndex((x) => x.product === prod.product);
 			console.log("index= " + this.index);
 			this.prodId = prod.product;
-			//* All cloturedays
-			// axios.get(process.env.VUE_APP_API + "information/getall/Weekday").then((clotu) => {
-			// 	for (let i = 0; i < clotu.data.length; i++) {
-			// 		this.cloturedays.push({
-			// 			day: clotu.data[i].content,
-			// 		});
-			// 	}
-			// });
 		},
-
-		//* Display all cloture_days (when creation)
-		// displayCloturedays: function() {
-		// 	// this.producers = [];
-		// 	// this.orderinginfo = [];
-		// 	this.categories = [];
-		// 	// this.cloturedays = [];
-		// 	this.displayCl = true;
-		// },
 
 		//* Display all orderings (when modif)
 		displayOrderingModif: function(event, prod) {
@@ -730,11 +676,21 @@ export default {
 		modifProd: function(event, prod) {
 			if (!this.modifInProgress) {
 				prod.modif = "yellow";
+				this.tamponId = prod.id;
 				this.producerModel = prod.producerId;
 				this.categoryModel = prod.categoryId;
 				this.orderingModel = prod.ordering;
 				this.clotureModel = prod.cloturedayId;
 				this.modifInProgress = true;
+			} else {
+				if (prod.id != this.tamponId) {
+					this.products.forEach((item) => {
+						if (item.id === this.tamponId) {
+							item.modif = 0;
+							this.modifInProgress = false;
+						}
+					});
+				}
 			}
 		},
 
@@ -783,9 +739,22 @@ export default {
 		//* Want delete a product
 		wantDelete: function(event, prod) {
 			prod.delete = "red";
-			prod.selectProdu = 0;
-			prod.selectOrdering = 0;
-			prod.modif = false;
+			prod.modif = "red";
+			// prod.selectProdu = 0;
+			// prod.selectOrdering = 0;
+			// prod.modif = false;
+			this.$confirm.require({
+				target: event.currentTarget,
+				message: "Souhaitez-vous supprimer ce producteur ?",
+				icon: "pi pi-info-circle",
+				acceptClass: "p-button-danger",
+				accept: () => {
+					this.Delete(event, prod);
+				},
+				reject: () => {
+					prod.delete = 0;
+				},
+			});
 		},
 
 		//* Delete product
@@ -849,8 +818,22 @@ export default {
 </script>
 <style scoped>
 h3 {
+	margin: 0;
+	margin-right: 2rem;
+	text-align: right;
+	margin-left: 5rem;
+}
+#entete {
+	display: flex;
+	justify-content: space-around;
 	margin-top: 0rem;
 	margin-bottom: 1rem;
+	margin-left: 5rem;
+}
+#number {
+	margin: 0;
+	font-size: 12px;
+	margin-top: 0.2rem;
 }
 #productsTable {
 	display: flex;
@@ -898,8 +881,13 @@ table {
 	margin-left: auto;
 }
 .valButton {
-	font-size: 0.8rem;
-	width: 8rem;
+	font-size: 1rem;
+	padding-right: 0;
+	padding-left: 0;
+	width: 6rem;
+	background-color: #122f1c;
+	border: 0px solid;
+	margin-left: 5px;
 }
 .validModif {
 	background-color: #fbc02d;
@@ -911,10 +899,8 @@ table {
 	font-weight: bolder;
 }
 #toCreate {
-	background-color: white;
 	font-weight: bolder;
 	color: black;
-	padding: 2px;
 }
 .create {
 	background-color: #fbc02d;
@@ -923,6 +909,9 @@ table {
 .createProd {
 	height: 2.5rem;
 	background-color: #fbc02d;
+}
+.valCreate {
+	height: 2.5rem;
 }
 .uploadFile {
 	display: inline-block;

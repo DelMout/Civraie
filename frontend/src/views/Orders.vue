@@ -1,4 +1,4 @@
-<template>
+<template id="ordersTable">
 	<div>
 		<h3>
 			Commandes reçues pour livraison :<br />
@@ -7,18 +7,27 @@
 		<!-- Dropdown -->
 		<div></div>
 		<div>
-			<button @click="displayByCustomer">Afficher par CLIENT</button>
-			<button @click="displayByProduct">Afficher par PRODUIT</button>
+			<Button
+				:label="custProd"
+				class="p-button-rounded   p-button-warning p-button-sm"
+				@click="display"
+			/>
+			<Button
+				:label="download"
+				style="color:black;margin-left:1rem"
+				class="p-button-rounded   p-button-sm"
+				@click="downloadX"
+			/>
 		</div>
-		<div v-if="client">
+		<!-- <div v-if="client">
 			<button @click="downloadClient">Télécharger Excel / CLIENT</button>
 		</div>
 		<div v-if="produit">
 			<button @click="downloadProduit">Télécharger Excel / PRODUIT</button>
-		</div>
+		</div> -->
 
 		<!-- Tableau des commandes reçues -->
-		<div>
+		<div id="tableau">
 			<!-- Table par client -->
 			<table v-if="client">
 				<caption>
@@ -92,6 +101,8 @@ export default {
 				fileName: "json.xlsx",
 			},
 			inQtyProd: false,
+			custProd: "Afficher par PRODUIT",
+			download: "Télécharger Excel par CLIENT",
 		};
 	},
 	beforeCreate: function() {
@@ -195,6 +206,18 @@ export default {
 				}
 			}
 		},
+		//* Choose display
+		display: function() {
+			if (this.custProd === "Afficher par PRODUIT") {
+				this.custProd = "Afficher par CLIENT";
+				this.download = "Télécharger Excel par PRODUIT";
+				this.displayByProduct();
+			} else {
+				this.custProd = "Afficher par PRODUIT";
+				this.download = "Télécharger Excel par CLIENT";
+				this.displayByCustomer();
+			}
+		},
 
 		//* Display of orders by customer
 		displayByCustomer: function() {
@@ -278,6 +301,16 @@ export default {
 				num
 			);
 		},
+		//* Choose download
+		downloadX: function() {
+			if (this.download === "Télécharger Excel par PRODUIT") {
+				// this.download = "Télécharger Excel par CLIENT";
+				this.downloadProduit();
+			} else {
+				// this.download = "Télécharger Excel par PRODUIT";
+				this.downloadClient();
+			}
+		},
 
 		//* Downloading Excel By Customer
 		downloadClient: function() {
@@ -293,6 +326,17 @@ export default {
 };
 </script>
 <style scoped>
+#ordersTable {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+#tableau {
+	margin: auto;
+	width: 80%;
+	margin-top: 1rem;
+}
 td,
 th {
 	border: 1px solid white;
@@ -306,6 +350,7 @@ th {
 table,
 caption {
 	border-collapse: collapse;
+	margin: auto;
 }
 caption {
 	background-color: green;
@@ -319,9 +364,11 @@ th {
 }
 .line_pair {
 	background-color: yellowgreen;
+	color: black;
 }
 .line_impair {
 	background-color: rgb(113, 155, 30);
+	color: black;
 }
 
 #conteneur {
