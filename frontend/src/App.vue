@@ -32,7 +32,7 @@
 				<p><i>Vous êtes connecté(e)</i></p>
 			</div>
 			<div style="margin-top:0.7rem;">
-				<p><a @click="disconnect">Déconnection</a></p>
+				<p><a @click="disconnect">Déconnexion</a></p>
 			</div>
 		</div>
 	</div>

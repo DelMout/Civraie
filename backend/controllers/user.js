@@ -271,52 +271,53 @@ exports.emailPassword = (req, res) => {
 	// .catch((err) => res.status(401).send("bad request"));
 };
 
-//! * Send an email to all users for ordering
-exports.emailOrder = (req, res) => {
-	let transporter = nodemailer.createTransport({
-		host: "source.o2switch.net",
-		port: 465,
-		secure: true, // true for 465, false for other ports
-		tls: {
-			rejectUnauthorized: false,
-		},
-		auth: {
-			user: process.env.FROM_EMAIL,
-			pass: process.env.PASS_EMAIL,
-		},
-	});
-	//TODO Remplacer les 2 dates en faisant un get dans tableau "dates"
-	// List of users non isAdmin
-	user.findAndCountAll({ where: { isAdmin: 0 } })
-		.then((users) => {
-			// res.send(users);
-			const count = users.count;
-			for (let i = 0; i < count; i++) {
-				// Message for each user
-				transporter.sendMail(
-					{
-						from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
-						to: users.rows[i].email,
-						subject: "[La Civraie] A vos commandes !",
-						html:
-							"<p>Bonjour " +
-							users.rows[i].prenom +
-							" " +
-							users.rows[i].nom +
-							",</p></br><p>Vous pouvez dès à présent créer une commande sur notre site. Vous avez jusqu'au 22/07/2021 pour saisir votre commande. Les produits seront ensuite livrés au magasin le 26/07/2021.</p></br><p>Par ici pour votre commande !</p><a href='http://localhost:8080>Le magasin de La Civraie'</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p>",
-					},
-					(error, info) => {
-						if (error) {
-							return res.status(401).send(error);
-						}
-						res.status(200).send("email envoyé !");
-					}
-				);
-			}
-		})
-		.catch((err) => res.status(401).send("bad request"));
-};
-//! * Send an email to all users for specific information
+// //! * Send an email to all users for ordering
+// exports.emailOrder = (req, res) => {
+// 	let transporter = nodemailer.createTransport({
+// 		host: "source.o2switch.net",
+// 		port: 465,
+// 		secure: true, // true for 465, false for other ports
+// 		tls: {
+// 			rejectUnauthorized: false,
+// 		},
+// 		auth: {
+// 			user: process.env.FROM_EMAIL,
+// 			pass: process.env.PASS_EMAIL,
+// 		},
+// 	});
+// 	//TODO Remplacer les 2 dates en faisant un get dans tableau "dates"
+// 	// List of users non isAdmin
+// 	user.findAndCountAll({ where: { isAdmin: 0 } })
+// 		.then((users) => {
+// 			// res.send(users);
+// 			const count = users.count;
+// 			for (let i = 0; i < count; i++) {
+// 				// Message for each user
+// 				transporter.sendMail(
+// 					{
+// 						from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
+// 						to: users.rows[i].email,
+// 						subject: "[La Civraie] A vos commandes !",
+// 						html:
+// 							"<p>Bonjour " +
+// 							users.rows[i].prenom +
+// 							" " +
+// 							users.rows[i].nom +
+// 							",</p></br><p>Vous pouvez dès à présent créer une commande sur notre site. Vous avez jusqu'au 22/07/2021 pour saisir votre commande. Les produits seront ensuite livrés au magasin le 26/07/2021.</p></br><p>Par ici pour votre commande !</p><a href='http://localhost:8080>Le magasin de La Civraie'</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p>",
+// 					},
+// 					(error, info) => {
+// 						if (error) {
+// 							return res.status(401).send(error);
+// 						}
+// 						res.status(200).send("email envoyé !");
+// 					}
+// 				);
+// 			}
+// 		})
+// 		.catch((err) => res.status(401).send("bad request"));
+// };
+
+// * Send an email to all users for specific information
 exports.emailInfo = (req, res) => {
 	let transporter = nodemailer.createTransport({
 		host: "source.o2switch.net",
@@ -334,30 +335,45 @@ exports.emailInfo = (req, res) => {
 	// List of users non isAdmin
 	user.findAndCountAll({ where: { isAdmin: 0 } })
 		.then((users) => {
-			// res.send(users);
-			const count = users.count;
-			for (let i = 0; i < count; i++) {
-				// Message for each user
-				transporter.sendMail(
-					{
-						from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
-						to: users.rows[i].email,
-						subject: "[La Civraie] " + req.body.title,
-						html:
-							req.body.content +
-							"<p>Passer votre commande sur le site de la ferme de La Civraie :<br/><a href='http://localhost:8080/'>La ferme de la Civraie</a></p><p>Les horaires d'ouverture du magasin :<br/>" +
-							req.body.horaires +
-							"</p><p>La ferme de La Civraie<br />Magasin Civraie, Si Frais<br />Adrien et Céline Pichon<br />La Civraie<br />Noyant<br />49490 Noyant-Villages<br />Tél : 06 14 10 04 47</p>",
-					},
-					(error, info) => {
-						if (error) {
-							return res.status(401).send(error);
-						}
-						res.status(200).send("email envoyé à tous !");
+			information
+				.findOne({
+					where: { item: "open_hours" },
+				})
+				.then((info) => {
+					const openhours = info.content;
+					const count = users.count;
+					for (let i = 0; i < count; i++) {
+						// Message for each user
+						transporter.sendMail(
+							{
+								from: "Magasin Civraie Si Frais <lacivraie@delmout.com>",
+								to: users.rows[i].email,
+								subject: "[La Civraie] " + req.body.title,
+								html:
+									req.body.content +
+									"<p>Passez votre commande sur le site du magasin Civraie, Si Frais :<br/><a href='http://localhost:8080/'>Magasin Civraie, Si Frais</a><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
+									openhours +
+									"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px' src='cid:logo@civraie.com'/>",
+								attachments: [
+									{
+										filename: "logocivraie.png",
+										path: path.join(__dirname, "../images/logocivraie.png"),
+										cid: "logo@civraie.com",
+										contentDisposition: "inline",
+									},
+								],
+							},
+							(error, info) => {
+								if (error) {
+									return res.status(401).send(error);
+								}
+								res.status(200).send("email envoyé à tous !");
+							}
+						);
 					}
-				);
-			}
+				})
+				.catch((err) => res.status(401).send(err));
 		})
-		.catch((err) => res.status(401).send("bad request"));
+		.catch((err) => res.status(401).send(err));
 	// });
 };

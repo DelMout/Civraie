@@ -40,8 +40,8 @@ router.post("/emailpassword/:email", userCtrl.emailPassword);
 // * Find user from his jeton
 router.get("/:jeton", userCtrl.jeton);
 
-// * send email to all users for ordering
-router.post("/emailorder", userCtrl.emailOrder); //! retiré admin
+// // * send email to all users for ordering
+// router.post("/emailorder", userCtrl.emailOrder); //! retiré admin
 
 // * send email to all users for specific information
 router.post("/emailinfo", userCtrl.emailInfo); //! retiré admin

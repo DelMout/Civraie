@@ -16,6 +16,9 @@ import Badge from "primevue/badge";
 import BadgeDirective from "primevue/badgedirective";
 import ProgressSpinner from "primevue/progressspinner";
 import Editor from "primevue/editor";
+import Textarea from "primevue/textarea";
+import ConfirmationService from "primevue/confirmationservice";
+import ConfirmPopup from "primevue/confirmpopup";
 
 // import JsonExcel from "vue-json-excel";
 import "primeicons/primeicons.css"; //icons
@@ -33,8 +36,11 @@ createApp(App)
 			medium: "Moyen",
 			strong: "Fort",
 			passwordPrompt: "Saisir un mot de passe",
+			accept: "OK",
+			reject: "Non",
 		},
 	})
+	.use(ConfirmationService)
 	.component("Dialog", Dialog) //! Exemple
 	.component("InputText", InputText)
 	.component("Button", Button)
@@ -48,6 +54,8 @@ createApp(App)
 	.component("Badge", Badge)
 	.component("ProgressSpinner", ProgressSpinner)
 	.component("Editor", Editor)
+	.component("Textarea", Textarea)
+	.component("ConfirmPopup", ConfirmPopup)
 
 	// .component("downloadExcel", JsonExcel)
 	.mount("#app");
