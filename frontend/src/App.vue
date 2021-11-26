@@ -40,6 +40,7 @@
 		<!-- <router-link class="link" to="/">Accueil </router-link> -->
 		<!-- <router-link class="link" to="/produits_vente_magasin">Produits à la vente </router-link> -->
 		<router-link class="link" to="/produits_vente_commande">Produits </router-link>
+		<router-link class="link" to="/producteurs_carousel">Producteurs </router-link>
 		<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email">* Email *</router-link>
 		<router-link class="link" v-if="isAdminApp === 1" to="/commandes"
 			>* Commandes *</router-link
@@ -51,7 +52,7 @@
 		<router-link class="link" v-if="isAdminApp === 1" to="/utilisateurs"
 			>* Utilisateurs *</router-link
 		>
-		<router-link class="link" v-if="isAdminApp === 1" to="/producteurs"
+		<router-link class="link" v-if="isAdminApp === 1" to="/producteurs_liste"
 			>* Producteurs *</router-link
 		>
 		<router-link class="link" v-if="isAdminApp === 1" to="/horaires_ouverture"

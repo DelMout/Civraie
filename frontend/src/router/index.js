@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Signup from "../views/Signup.vue";
 import Password from "../views/Password.vue";
-import ProdShop from "../views/ProdShop.vue";
+// import ProdShop from "../views/ProdShop.vue";
 import ProdOrder from "../views/ProdOrder.vue";
 import Products from "../views/Products.vue";
 import Producers from "../views/Producers.vue";
@@ -10,6 +10,7 @@ import Orders from "../views/Orders.vue";
 import Panier from "../views/Panier.vue";
 import SendEmail from "../views/SendEmail.vue";
 import OpeningHours from "../views/OpeningHours.vue";
+import ProducersCarousel from "../views/ProducersCarousel.vue";
 import NotFound from "../views/NotFound.vue";
 
 const routes = [
@@ -29,14 +30,14 @@ const routes = [
 			title: "Ferme La Civraie / Initialisation mot de passe",
 		},
 	},
-	{
-		path: "/produits_vente_magasin",
-		name: "ProdShop",
-		component: ProdShop,
-		meta: {
-			title: "Ferme La Civraie / Produits magasin",
-		},
-	},
+	// {
+	// 	path: "/produits_vente_magasin",
+	// 	name: "ProdShop",
+	// 	component: ProdShop,
+	// 	meta: {
+	// 		title: "Ferme La Civraie / Produits magasin",
+	// 	},
+	// },
 	{
 		path: "/panier",
 		name: "Panier",
@@ -52,6 +53,14 @@ const routes = [
 		component: ProdOrder,
 		meta: {
 			title: "Ferme La Civraie / Produits commande",
+		},
+	},
+	{
+		path: "/producteurs_carousel",
+		name: "Producteurs",
+		component: ProducersCarousel,
+		meta: {
+			title: "Ferme La Civraie / Producteurs",
 		},
 	},
 	{
@@ -77,7 +86,7 @@ const routes = [
 		name: "Producers",
 		component: Producers,
 		meta: {
-			title: "Ferme La Civraie / Producteurs",
+			title: "Ferme La Civraie / Liste Producteurs",
 		},
 		//TODO Limiter l'accès au proprio
 	},
