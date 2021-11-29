@@ -1,24 +1,52 @@
-<template
-	><div>
-		<h3>
-			{{ producers[7].name }}
-		</h3>
-		<p>{{ producers[7].city }}</p>
-		<p>
-			{{ producers[7].text }}
-		</p>
-		<p></p></div
-></template>
+<template>
+	<div>
+		<div id="conteneur">
+			<Button icon="pi pi-chevron-left" class="buttgo p-button-rounded" @click="goLeft" />
+			<div id="sousCont">
+				<Card>
+					<template #title>
+						<p id="title"></p>
+					</template>
+					<template #subtitle> <p id="subtitle"></p></template>
+					<template #content><p id="content"></p> </template>
+					<template #footer>
+						<div>
+							<table>
+								<tr>
+									<th>
+										Article
+									</th>
+									<th>
+										Prix
+									</th>
+								</tr>
+								<tr v-for="art in articles" :key="art.product">
+									<td>{{ art.product }}</td>
+									<td>{{ numFr(art.price) }} / {{ art.unite }}</td>
+								</tr>
+							</table>
+						</div>
+					</template>
+				</Card>
+			</div>
+			<Button icon="pi pi-chevron-right" class="buttgo p-button-rounded" @click="goRight" />
+		</div>
+	</div>
+</template>
 <script>
+import axios from "axios";
+
 export default {
 	data() {
 		return {
+			indice: 8,
+			articles: [],
 			producers: [
 				{
 					name: "Ferme de la Civraie",
 					city: "49 Noyant",
 					text:
-						"Adrien et Céline Pichon vous accueille sur la Ferme de la Civraie. Producteurs depuis	le 1er novembre 2010, nous produisons sur la ferme du lait de vaches de race mixte et des oeufs de poules pondeuses plein air. Ayant créé l’atelier vente directe en 2013, nous aimons le contact avec les clients, rencontrer de nouvelles personnes et répondre au mieux à leur besoin. Nous avons créer le magasin Civraie, Si Frais en septembre 2020. Nous sommes maintenant près de 20 producteurs réunis à la ferme !!",
+						"Adrien et Céline Pichon vous accueille sur la Ferme de la Civraie. Producteurs depuis	le 1er novembre 2010, nous produisons sur la ferme du lait de vaches de race mixte et des œufs de poules pondeuses plein air. Ayant créé l’atelier vente directe en 2013, nous aimons le contact avec les clients, rencontrer de nouvelles personnes et répondre au mieux à leur besoin. Nous avons créer le magasin Civraie, Si Frais en septembre 2020. Nous sommes maintenant près de 20 producteurs réunis à la ferme !!<br/>Pour le lait cru,apportez vos bouteilles, nous vendons le lait en vrac.",
 					array: "civraie",
 				},
 				{
@@ -64,10 +92,10 @@ export default {
 					array: "frene_legumes",
 				},
 				{
-					name: "La Cabrett' du Viornay",
-					city: "37 Marcilly-sur-Maulnes",
+					name: "<h4>La Cabrett' du Viornay</h4>",
+					city: "<h6>37 Marcilly-sur-Maulnes</h6>",
 					text:
-						"Petite exploitation à la limite du Maine et Loire, La Cabrett’ du Viornay élèvent de belles chèvres alpines. Ces dernières pâturent autour de la ferme afin de donner un lait de qualité. Le fromage est livré toutes les semaines à la Ferme de la Civraie.\n Pour vos commandes, pensez à réserver le dimanche soir pour une livraison le vendredi suivant.",
+						"<p>Petite exploitation à la limite du Maine et Loire, La Cabrett’ du Viornay élèvent de belles chèvres alpines. Ces dernières pâturent autour de la ferme afin de donner un lait de qualité. Le fromage est livré toutes les semaines à la Ferme de la Civraie.</p><p>Pour vos commandes, pensez à réserver le dimanche soir pour une livraison le vendredi suivant.</p>",
 					array: "cabrett",
 				},
 				{
@@ -151,12 +179,96 @@ export default {
 					name: "Atelier de Mamour Kymaey",
 					city: "49 Noyant",
 					text:
-						"Passionnée de couture, Laure vous propose une gamme de produits nous aidant à devenir plus responsable de nos déchets. Vous aimerez ces couleurs pep’s, attirantes, modernes. <br/>Actuellement en congé maternité, notre maman couturière re-viendra très vite avec ses produits !! Ils seront disponible à partir de fin janvier au magasin Civraie, Si Frais.",
+						"Passionnée de couture, Laure vous propose une gamme de produits nous aidant à devenir plus responsable de nos déchets. Vous aimerez ces couleurs pep’s, attirantes, modernes. <br/>Actuellement en congé maternité, notre maman couturière reviendra très vite avec ses produits !! Ils seront disponible à partir de fin janvier au magasin Civraie, Si Frais.",
 					array: "mamour",
 				},
 			],
 		};
 	},
+
+	mounted: function() {
+		//* Get id of producer
+		let j = 6;
+		axios
+			.get(process.env.VUE_APP_API + "producer/getproducerid/" + this.producers[j].name)
+			.then((produ) => {
+				console.log(produ.data.id);
+				//* Get list of products from producerId
+				axios
+					.get(process.env.VUE_APP_API + "product/producerid/" + produ.data.id)
+					.then((prod) => {
+						console.log(prod.data.length);
+						for (let i = 0; i < prod.data.length; i++) {
+							this.articles.push({
+								product: prod.data[i].product,
+								price: prod.data[i].price,
+								unite: prod.data[i].unite_vente,
+							});
+						}
+					});
+			});
+
+		let title = document.getElementById("title");
+		title.innerHTML = this.producers[this.indice].name;
+		let subtitle = document.getElementById("subtitle");
+		subtitle.innerHTML = this.producers[this.indice].city;
+
+		let content = document.getElementById("content");
+		content.innerHTML = this.producers[this.indice].text;
+	},
+
+	methods: {
+		//* Number format
+		numFr: function(num) {
+			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(
+				num
+			);
+		},
+
+		//* Show a new producer from the right
+		goRight: function() {
+			this.indice++;
+			let title = document.getElementById("title");
+			title.innerHTML = this.producers[this.indice].name;
+			let subtitle = document.getElementById("subtitle");
+			subtitle.innerHTML = this.producers[this.indice].city;
+
+			let content = document.getElementById("content");
+			content.innerHTML = this.producers[this.indice].text;
+			console.log(this.indice);
+		},
+	},
 };
 </script>
-<style scoped></style>
+<style scoped>
+#conteneur {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	margin: auto;
+	padding-right: auto;
+	padding-left: auto;
+	width: 95%;
+}
+#sousCont {
+	width: 70%;
+	display: flex;
+	justify-content: center;
+	margin-bottom: 1rem;
+}
+::v-deep(.p-card) {
+	box-shadow: 8px 8px 8px white;
+	margin: 0;
+	padding: 0;
+	/* height: 17rem; */
+	display: flex;
+	flex-direction: column;
+	border-radius: 15px;
+	width: 100%;
+}
+.buttgo {
+	/* width: 4rem; */
+	background-color: white;
+	color: green;
+}
+</style>

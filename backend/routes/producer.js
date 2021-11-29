@@ -16,6 +16,9 @@ router.get("/", producerCtrl.getAllProducers); //! Retiré admin
 // * See a producer via id
 router.get("/getproducer/:producerid", producerCtrl.getProducer);
 
+// * See the producerId via entreprise
+router.get("/getproducerid/:entreprise", producerCtrl.getProducerId);
+
 // * Modify a producer
 router.put("/modif/:producerid", producerCtrl.modifProducer); //! retiré admin
 

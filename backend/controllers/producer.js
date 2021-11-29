@@ -39,6 +39,19 @@ exports.getProducer = (req, res) => {
 			res.send(obj);
 		});
 };
+// * Get producerId via entreprise
+exports.getProducerId = (req, res) => {
+	producer
+		.findOne({
+			where: { entreprise: req.params.entreprise },
+		})
+		.then((obj) => {
+			res.send(obj);
+		})
+		.catch((err) => {
+			res.status(401).send(err);
+		});
+};
 
 //* Modify producer datas
 exports.modifProducer = (req, res) => {

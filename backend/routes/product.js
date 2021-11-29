@@ -16,6 +16,9 @@ router.get("/", productCtrl.getAllProducts); //! Retiré admin
 // * See products according to ordering
 router.get("/:ordering", productCtrl.getProductsOrdering); //! accès without authorisation
 
+// * See products according to producerId
+router.get("/producerid/:producerid", productCtrl.getProductsProducerid); //! accès without authorisation
+
 // * See all products actived
 router.get("/actived", productCtrl.getProductsActived); //! retiré auth
 

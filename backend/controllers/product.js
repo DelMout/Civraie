@@ -40,7 +40,19 @@ exports.getProductsOrdering = (req, res) => {
 	product
 		.findAll({
 			order: [["product", "ASC"]],
-			where: { active: 1 },
+			where: { ordering: req.params.ordering },
+		})
+		.then((obj) => {
+			res.send(obj);
+		});
+};
+
+// * Get  products according to producerId
+exports.getProductsProducerid = (req, res) => {
+	product
+		.findAll({
+			order: [["product", "ASC"]],
+			where: { producerId: req.params.producerid },
 		})
 		.then((obj) => {
 			res.send(obj);
