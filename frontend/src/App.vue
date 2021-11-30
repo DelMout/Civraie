@@ -4,7 +4,7 @@
 			<img
 				v-if="inPages"
 				id="logoEntete"
-				src="./assets/logocivraie.png"
+				src="./assets/fermeCivraie.png"
 				alt="logo entete Civraie"
 				@click="returnHome"
 			/>
