@@ -879,6 +879,7 @@ table {
 	width: 80vw;
 	margin-right: auto;
 	margin-left: auto;
+	margin-bottom: 5rem;
 }
 .valButton {
 	font-size: 1rem;

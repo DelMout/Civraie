@@ -68,6 +68,9 @@ exports.getProductsActived = (req, res) => {
 		})
 		.then((obj) => {
 			res.send(obj);
+		})
+		.catch((err) => {
+			res.send(err);
 		});
 };
 

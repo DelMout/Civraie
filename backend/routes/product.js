@@ -20,7 +20,7 @@ router.get("/:ordering", productCtrl.getProductsOrdering); //! accès without au
 router.get("/producerid/:producerid", productCtrl.getProductsProducerid); //! accès without authorisation
 
 // * See all products actived
-router.get("/actived", productCtrl.getProductsActived); //! retiré auth
+router.get("/getproducts/actived", productCtrl.getProductsActived); //! retiré auth
 
 // * See products according to ordering=1 and 2 AND category AND active=1
 router.get("/category/:category", productCtrl.getProductsCategory); //! retiré auth

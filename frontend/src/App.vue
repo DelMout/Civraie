@@ -39,25 +39,31 @@
 	<div id="nav">
 		<!-- <router-link class="link" to="/">Accueil </router-link> -->
 		<!-- <router-link class="link" to="/produits_vente_magasin">Produits à la vente </router-link> -->
-		<router-link class="link" to="/produits_vente_commande">Produits </router-link>
-		<router-link class="link" to="/producteurs_carousel">Producteurs </router-link>
-		<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email">* Email *</router-link>
-		<router-link class="link" v-if="isAdminApp === 1" to="/commandes"
-			>* Commandes *</router-link
-		>
-		<router-link class="link" v-if="isAdminApp === 1" to="/tous_produits"
-			>* Produits *</router-link
-		>
+		<div id="custom">
+			<router-link class="link " to="/produits_vente_commande">Produits </router-link>
+			<router-link class="link" to="/producteurs_carousel">Producteurs </router-link>
+		</div>
+		<div id="owner">
+			<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email"
+				>* Email *</router-link
+			>
+			<router-link class="link jo " v-if="isAdminApp === 1" to="/commandes"
+				>* Commandes *</router-link
+			>
+			<router-link class="link" v-if="isAdminApp === 1" to="/tous_produits"
+				>* Produits *</router-link
+			>
 
-		<router-link class="link" v-if="isAdminApp === 1" to="/utilisateurs"
-			>* Utilisateurs *</router-link
-		>
-		<router-link class="link" v-if="isAdminApp === 1" to="/producteurs_liste"
-			>* Producteurs *</router-link
-		>
-		<router-link class="link" v-if="isAdminApp === 1" to="/horaires_ouverture"
-			>* Horaires *</router-link
-		>
+			<router-link class="link" v-if="isAdminApp === 1" to="/utilisateurs"
+				>* Utilisateurs *</router-link
+			>
+			<router-link class="link" v-if="isAdminApp === 1" to="/producteurs_liste"
+				>* Producteurs *</router-link
+			>
+			<router-link class="link" v-if="isAdminApp === 1" to="/horaires_ouverture"
+				>* Horaires *</router-link
+			>
+		</div>
 	</div>
 	<router-view />
 </template>
@@ -114,22 +120,32 @@ export default {
 }
 
 #nav {
+	display: flex;
 	padding: 30px;
 	padding-top: 0;
+	justify-content: center;
 }
 a {
 	color: white;
 }
-#nav a {
+#owner a {
+	color: rgb(158, 158, 20);
+}
+#custom a {
 	color: #999;
+}
+#custom a.router-link-exact-active {
+	color: white;
+	font-weight: 600;
+	text-decoration: none;
 }
 #connected a {
 	text-decoration: underline;
 	cursor: pointer;
 }
 
-#nav a.router-link-exact-active {
-	color: white;
+#owner a.router-link-exact-active {
+	color: yellow;
 	font-weight: 600;
 	text-decoration: none;
 }

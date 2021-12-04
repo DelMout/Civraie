@@ -36,7 +36,7 @@
 					49490 Noyant-Villages<br />
 					Tél : 06 14 10 04 47
 				</p>
-				<img src="../assets/logocivraie.png" alt="logo Civraie" />
+				<img src="../assets/fermeCivraie.png" alt="logo Civraie" />
 			</div>
 			<div v-if="!emailSent">
 				<Button

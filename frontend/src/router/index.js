@@ -82,7 +82,7 @@ const routes = [
 		//TODO Limiter l'accès au proprio
 	},
 	{
-		path: "/producteurs",
+		path: "/producteurs_liste",
 		name: "Producers",
 		component: Producers,
 		meta: {

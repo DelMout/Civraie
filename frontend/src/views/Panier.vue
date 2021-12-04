@@ -96,7 +96,8 @@ export default {
 		console.log("hey !!");
 		console.log(this.$store.state.userId);
 		//*Select all products actived
-		axios.get(process.env.VUE_APP_API + "product/actived").then((prod) => {
+		axios.get(process.env.VUE_APP_API + "product/getproducts/actived").then((prod) => {
+			console.log(prod);
 			for (let c = 0; c < prod.data.length; c++) {
 				this.products.push({
 					id: prod.data[c].id,
@@ -107,6 +108,7 @@ export default {
 					qty: localStorage.getItem(prod.data[c].id),
 				});
 			}
+			console.log(this.products);
 		});
 	},
 	methods: {
@@ -121,7 +123,7 @@ export default {
 		validOrder: function() {
 			this.ordered = true;
 			// Save in database
-			axios.get(process.env.VUE_APP_API + "product/actived").then((prod) => {
+			axios.get(process.env.VUE_APP_API + "product/getproducts/actived").then((prod) => {
 				for (let i = 0; i < prod.data.length; i++) {
 					if (this.products[i].qty > 0) {
 						this.tablMail =

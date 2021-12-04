@@ -246,11 +246,11 @@ exports.emailPassword = (req, res) => {
 								jeton +
 								"'>Saisir un nouveau mot de passe</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
 								openhours +
-								"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px' src='cid:logo@civraie.com'/>",
+								"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px;margin-top:10px' src='cid:logo@civraie.com'/>",
 							attachments: [
 								{
 									filename: "logocivraie.png",
-									path: path.join(__dirname, "../images/logocivraie.png"),
+									path: path.join(__dirname, "../images/fermecivraie.png"),
 									cid: "logo@civraie.com",
 									contentDisposition: "inline",
 								},
@@ -353,11 +353,11 @@ exports.emailInfo = (req, res) => {
 									req.body.content +
 									"<p>Passez votre commande sur le site du magasin Civraie, Si Frais :<br/><a href='http://localhost:8080/'>Magasin Civraie, Si Frais</a><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
 									openhours +
-									"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px' src='cid:logo@civraie.com'/>",
+									"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px;margin-top:10px' src='cid:logo@civraie.com'/>",
 								attachments: [
 									{
 										filename: "logocivraie.png",
-										path: path.join(__dirname, "../images/logocivraie.png"),
+										path: path.join(__dirname, "../images/fermecivraie.png"),
 										cid: "logo@civraie.com",
 										contentDisposition: "inline",
 									},
