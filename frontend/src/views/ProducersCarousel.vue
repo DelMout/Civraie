@@ -182,7 +182,7 @@ export default {
 					name: "Vignoble le Gros Caillou",
 					city: "37 - Saint-Nicolas-de-Bourgueil",
 					text:
-						"Patrice a découvert le métier de viticulteur dès sa plus tendre enfance grâce à ses parents, des personnes passionnées par leur profession. Il est très vite tombé amoureux de la vigne et du vin. Et depuis, grâce aux conseils avisés de ses parents, il est devenu à son tour viticulteur. Son domaine familial depuis trois générations se situe au cœur de l’appellation Saint-Nicolas-de-Bourgueil. Il s’étend sur 18 hectares, 16 hectares en Saint-Nicolas-de-Bourgueil et 2 hectares en Bourgueil. Il produit essentiellement du vin rouge, des cuvées «Tradition », « Vieilles Vignes » et «en fût de chêne ». Ses vins sont légers, souples et fruités de cépage 100% cabernet franc. Ils se marient très bien avec tous les mets. Depuis 2020, son exploitation est devenue HVE* (Haute Valeur Environnementale).",
+						"Patrice a découvert le métier de viticulteur dès sa plus tendre enfance grâce à ses parents, des personnes passionnées par leur profession. Il est très vite tombé amoureux de la vigne et du vin. Et depuis, grâce aux conseils avisés de ses parents, il est devenu à son tour viticulteur. Son domaine familial depuis trois générations se situe au cœur de l’appellation Saint-Nicolas-de-Bourgueil. Il s’étend sur 18 hectares, 16 hectares en Saint-Nicolas-de-Bourgueil et 2 hectares en Bourgueil. Il produit essentiellement du vin rouge, des cuvées «Tradition », « Vieilles Vignes » et «en fût de chêne ». Ses vins sont légers, souples et fruités de cépage 100% cabernet franc. Ils se marient très bien avec tous les mets. Depuis 2020, son exploitation est devenue HVE (Haute Valeur Environnementale).",
 					imageDeux: "HVE.jpg",
 				},
 				{

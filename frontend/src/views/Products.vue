@@ -1,6 +1,18 @@
 <template>
 	<div id="productsTable">
 		<div id="entete">
+			<Button
+				id=""
+				label="Selection / Producteur"
+				class="p-button-raised validModif valButton p-button-warning"
+				@click="selectProducer"
+			/>
+			<Button
+				id=""
+				label="Créer un produit"
+				class="p-button-raised validModif valButton p-button-warning"
+				@click="downPage"
+			/>
 			<h3>Liste des produits</h3>
 			<p id="number">Attention, "Actif" à faire qu'à partir du Dimanche !</p>
 		</div>
@@ -190,7 +202,6 @@
 					<td class="createProd">
 						<Dropdown
 							class="dropclass"
-							@click="displayProducers"
 							v-model="prodcToSelect"
 							:options="producers"
 							optionLabel="entreprise"
@@ -200,7 +211,6 @@
 					</td>
 					<td class="createProd">
 						<Dropdown
-							@click="displayCategories"
 							v-model="cateToSelect"
 							:options="categories"
 							optionLabel="category"
@@ -226,7 +236,6 @@
 					</td>
 					<td class="createProd">
 						<Dropdown
-							@click="displayOrdering"
 							v-model="ordering"
 							:options="orderinginfo"
 							optionLabel="ordering"
@@ -414,6 +423,9 @@ export default {
 			}
 			console.log(this.products);
 		});
+		this.displayProducers();
+		this.displayCategories();
+		this.displayOrdering();
 	},
 	methods: {
 		//* Display all producers (when creation product)
@@ -812,6 +824,11 @@ export default {
 					this.active = 1;
 				}
 			}
+		},
+
+		//* Go down to the bottom of the page
+		downPage: function() {
+			window.scrollTo(0, document.body.scrollHeight);
 		},
 	},
 };
