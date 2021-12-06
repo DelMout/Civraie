@@ -49,6 +49,7 @@ export default {
 		};
 	},
 	created: function() {
+		this.$store.state.inPages = true;
 		//*Pick up opening hours
 		axios
 			.get(process.env.VUE_APP_API + "information/openhours")

@@ -109,7 +109,6 @@ export default {
 		this.orders = [];
 	},
 	created: function() {
-		console.log("coucou");
 		//* Display orders
 		this.client = true;
 		this.$store.state.inPages = true;

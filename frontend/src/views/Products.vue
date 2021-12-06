@@ -1,20 +1,35 @@
 <template>
 	<div id="productsTable">
 		<div id="entete">
-			<Button
-				id=""
-				label="Selection / Producteur"
-				class="p-button-raised validModif valButton p-button-warning"
-				@click="selectProducer"
-			/>
-			<Button
-				id=""
-				label="Créer un produit"
-				class="p-button-raised validModif valButton p-button-warning"
-				@click="downPage"
-			/>
 			<h3>Liste des produits</h3>
 			<p id="number">Attention, "Actif" à faire qu'à partir du Dimanche !</p>
+		</div>
+		<div id="selection">
+			<Button
+				id="selAll"
+				label="Tous les produits"
+				class="p-button-raised   p-button-primary"
+				@click="selectAllProducts"
+			/>
+			<Dropdown
+				id="selProd"
+				v-model="produSelected"
+				:options="producers"
+				optionLabel="entreprise"
+				optionValue="id"
+				placeholder="Sélection / Producteur"
+			/><Button
+				style="background-color:#a3d7a5;color:black;border:none"
+				icon="pi pi-check"
+				class="p-button-rounded"
+				@click="displayProdProdu"
+			/>
+			<Button
+				id="toBottom"
+				label="Créer un produit"
+				class="p-button-raised   p-button-warning"
+				@click="downPage"
+			/>
 		</div>
 
 		<ConfirmPopup></ConfirmPopup>
@@ -54,24 +69,16 @@
 						<p v-if="!prod.modif || prod.delete">{{ prod.producer }}</p>
 						<Dropdown
 							v-if="prod.modif && !prod.delete"
+							@click="selProducer"
 							class="dropclass"
-							@click="displayProducers"
 							v-model="producerModel"
 							:options="producers"
 							optionLabel="entreprise"
 							optionValue="id"
 							:placeholder="prod.producer"
 						/>
-						<!-- <p v-if="produSelected">{{ produSelected }}</p> -->
 					</td>
-					<!-- <td
-						v-if="chooseCommande || prod.active == 1"
-						@click="displayProducersModif($event, prod)"
-						:id="prod.selectProdu"
-					>
-						<p v-if="!produSelected">{{ prod.producer }}</p>
-						<p v-if="produSelected">{{ produSelected }}</p>
-					</td> -->
+
 					<td @click="modifProd($event, prod)" :class="prod.modif">
 						<p v-if="!prod.modif || prod.delete">{{ prod.category }}</p>
 						<Dropdown
@@ -351,7 +358,7 @@ export default {
 		this.producers = [];
 	},
 	created: function() {
-		console.log("Now = " + this.$store.getters.dayNow);
+		this.$store.state.inPages = true;
 		//* All products
 		axios.get(process.env.VUE_APP_API + "product").then((prod) => {
 			// console.log(products);
@@ -731,7 +738,6 @@ export default {
 
 				.then(() => {
 					prod.modif = false;
-					this.produSelected = "";
 					this.orderingSelected = "";
 					this.categorySelected = "";
 					this.clotureSelected = "";
@@ -830,6 +836,94 @@ export default {
 		downPage: function() {
 			window.scrollTo(0, document.body.scrollHeight);
 		},
+
+		//* Display list of products according to the producer selected
+		displayProdProdu: function() {
+			console.log(this.produSelected);
+			if (this.produSelected != "") {
+				this.products = [];
+				axios
+					.get(process.env.VUE_APP_API + "product/producerid/" + this.produSelected)
+					.then((prod) => {
+						// console.log(products);
+						this.length = prod.data.length;
+						for (let i = 0; i < this.length; i++) {
+							axios
+								.get(
+									process.env.VUE_APP_API +
+										"producer/getproducer/" +
+										this.produSelected
+								)
+								.then((producer) => {
+									axios
+										.get(
+											process.env.VUE_APP_API +
+												"information/supportvente/" +
+												prod.data[i].ordering
+										)
+										.then((ordering) => {
+											axios
+												.get(
+													process.env.VUE_APP_API +
+														"category/getcategory/" +
+														prod.data[i].categoryId
+												)
+												.then((cate) => {
+													this.products.push({
+														id: prod.data[i].id,
+														product: prod.data[i].product,
+														producerId: prod.data[i].producerId,
+														producer: producer.data.entreprise,
+														price: prod.data[i].price,
+														unite_vente: prod.data[i].unite_vente,
+														price_unite_vente:
+															prod.data[i].price_unite_vente,
+														stock_init: prod.data[i].stock_init,
+														stock_updated: prod.data[i].stock_updated,
+														alert_stock: prod.data[i].alert_stock,
+														photo: prod.data[i].photo,
+														alert:
+															prod.data[i].stock_updated -
+															prod.data[i].alert_stock,
+														ordering: prod.data[i].ordering,
+														categoryId: prod.data[i].categoryId,
+														category: cate.data.category,
+														cloturedayId: prod.data[i].cloturedayId,
+														support: ordering.data,
+														active: prod.data[i].active,
+														modif: 0,
+														delete: 0,
+														selectProdu: 0,
+														selectOrdering: 0,
+														selectCate: 0,
+														selectCloture: 0,
+													});
+													// sort alpha order
+													this.products.sort(function(a, b) {
+														var productA = a.product.toUpperCase();
+														var productB = b.product.toUpperCase();
+
+														if (productA < productB) {
+															return -1;
+														}
+														if (productA > productB) {
+															return 1;
+														}
+														return 0;
+													});
+												});
+										});
+								});
+						}
+					});
+			}
+		},
+
+		//* Display list of ALL products
+		selectAllProducts: function() {
+			this.produSelected = "";
+			location.reload();
+		},
 	},
 };
 </script>
@@ -851,6 +945,12 @@ h3 {
 	margin: 0;
 	font-size: 12px;
 	margin-top: 0.2rem;
+}
+#selection {
+	display: flex;
+	width: 80%;
+	justify-content: center;
+	margin-bottom: 1rem;
 }
 #productsTable {
 	display: flex;
@@ -978,5 +1078,19 @@ table {
 }
 ::v-deep(.p-dropdown) {
 	background-color: #fbc02d;
+}
+#toBottom {
+	margin-left: 5rem;
+}
+#selProd {
+	background-color: #a3d7a5;
+	margin-left: 2rem;
+	margin-right: 0.3rem;
+	width: 20rem;
+	text-align: left;
+}
+#selAll {
+	background-color: #a3d7a5;
+	color: rgb(92, 91, 91);
 }
 </style>

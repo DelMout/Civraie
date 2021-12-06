@@ -1,7 +1,13 @@
 <template>
 	<div>
 		<div id="conteneur">
-			<Button icon="pi pi-chevron-left" class="buttgo p-button-rounded" @click="goLeft" />
+			<Button
+				v-if="indice > 0"
+				icon="pi pi-chevron-left"
+				class="buttgo p-button-rounded"
+				@click="goLeft"
+			/>
+			<div v-if="indice === 0"></div>
 			<div id="sousCont">
 				<Card>
 					<template #title>
@@ -50,7 +56,13 @@
 					</template>
 				</Card>
 			</div>
-			<Button icon="pi pi-chevron-right" class="buttgo p-button-rounded" @click="goRight" />
+			<Button
+				v-if="indice < 19"
+				icon="pi pi-chevron-right"
+				class="buttgo p-button-rounded"
+				@click="goRight"
+			/>
+			<div v-if="indice === 19"></div>
 		</div>
 	</div>
 </template>

@@ -43,24 +43,6 @@
 							class=" p-button-rounded p-button-danger "
 							@click="wantDelete($event, us)"
 						/>
-						<!-- <button
-							v-if="!us.delete"
-							style="background-color:red;color:white;"
-							class="modif"
-							type="button"
-							@click="wantDelete($event, us)"
-						>
-							Sup
-						</button>
-						<button
-							v-if="us.delete"
-							style="background-color:white;color:red;"
-							class="modif"
-							type="button"
-							@click="deleteUser($event, us)"
-						>
-							Supprimer cet utilisateur
-						</button> -->
 					</td>
 					<td>
 						<p>{{ us.nom }}</p>
@@ -132,6 +114,7 @@ export default {
 		this.users = [];
 	},
 	created: function() {
+		this.$store.state.inPages = true;
 		//* All users
 		axios.get(process.env.VUE_APP_API + "user/allusers").then((user) => {
 			this.length = user.data.length;

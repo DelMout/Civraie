@@ -99,6 +99,11 @@
 					@click="wantNewPassword"
 				/>
 			</div>
+			<div>
+				<a href="https://www.facebook.com/Fermedelacivraie/" target="_blank"
+					><span class="pi pi-facebook facebook"></span
+				></a>
+			</div>
 		</div>
 		<div style="width:30vw">
 			<Toast position="center">
@@ -383,5 +388,9 @@ label {
 .creaforget {
 	margin-right: 1rem;
 	margin-left: 1rem;
+}
+.facebook {
+	font-size: 1.8rem;
+	margin-left: 2rem;
 }
 </style>

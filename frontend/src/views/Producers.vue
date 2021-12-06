@@ -216,6 +216,7 @@ export default {
 		this.producers = [];
 	},
 	created: function() {
+		this.$store.state.inPages = true;
 		//* All producers
 		axios.get(process.env.VUE_APP_API + "producer").then((prod) => {
 			this.length = prod.data.length;

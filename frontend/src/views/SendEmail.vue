@@ -93,7 +93,9 @@ export default {
 			let open = document.getElementById("openhours");
 			open.innerHTML = rep.data;
 		});
+		this.$store.state.inPages = true;
 	},
+
 	methods: {
 		...mapActions(["checkConnect"]),
 
