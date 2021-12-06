@@ -5,13 +5,10 @@
 				Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
 			</p>
 		</h4>
-		<!-- A afficher si non connecté -->
-		<!-- <h2>Pour pouvoir commander, vous devez vous connecter à votre compte</h2>-->
 
 		<!-- Display categories products -->
 		<div>
 			<!-- V-for -->
-
 			<div class="categories">
 				<div v-for="cate in categories" :key="cate.id">
 					<div :id="cate.class" class="category_card " @click="selectCat($event, cate)">
@@ -331,7 +328,7 @@ h3 {
 	margin: 0;
 	/* margin: 4px; */
 	padding: 0;
-	height: 17rem;
+	height: 18rem;
 	display: flex;
 	flex-direction: column;
 	border-radius: 8px;
@@ -349,7 +346,7 @@ h3 {
 	font-size: 1rem;
 	width: 100%;
 	margin: 0;
-	height: 4rem;
+	height: 5rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -359,12 +356,15 @@ h3 {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin-top: 0.5rem;
 }
 ::v-deep(.p-card .p-card-footer) {
 	height: auto;
 	display: flex;
 	justify-content: center;
 	margin-bottom: 0;
+	padding-top: 0.7rem;
+
 	/* align-items: flex-end; */
 }
 
@@ -395,7 +395,7 @@ img {
 
 .category_card {
 	display: flex;
-	padding: 0rem 0.9rem 0rem 0.9rem;
+	padding: 0rem 0.4rem 0rem 0.4rem;
 	margin: 0 1rem 1rem 1rem;
 	border-radius: 10px;
 	box-shadow: 5px 5px 5px white;
@@ -455,6 +455,11 @@ img {
 #bovine {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/vache.jpg");
+	background-size: 100%;
+}
+#autruche {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
+		url("../assets/autruche.jpg");
 	background-size: 100%;
 }
 #porcine {
