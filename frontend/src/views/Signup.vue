@@ -99,7 +99,7 @@
 					@click="wantNewPassword"
 				/>
 			</div>
-			<div>
+			<div v-if="!(creation || forgot || logged)">
 				<a href="https://www.facebook.com/Fermedelacivraie/" target="_blank"
 					><span class="pi pi-facebook facebook"></span
 				></a>
@@ -393,5 +393,35 @@ label {
 	font-size: 1.8rem;
 	margin-left: 2rem;
 	margin-top: 0.5rem;
+}
+
+/* MEDIA QUERIES */
+
+@media only screen and (max-width: 768px) {
+	/*mobiles et tablettes*/
+	.cells {
+		width: 30%;
+	}
+}
+@media only screen and (max-width: 576px) {
+	/*mobiles */
+	#logoAccueil {
+		width: 50%;
+	}
+	.produ {
+		width: 90%;
+		margin: auto;
+	}
+	.cells {
+		width: 50%;
+	}
+	.creaforget {
+		padding: 0.2rem 0.2rem 0.2rem 0.2rem;
+		margin-left: 0.3rem;
+		margin-right: 0.3rem;
+	}
+	.facebook {
+		margin-left: 0.3rem;
+	}
 }
 </style>
