@@ -22,13 +22,6 @@
 		<!-- info producer when hover on product name -->
 		<div id="conteneur" v-if="card_products">
 			<div id="sousCont" v-for="prod in displayProd" :key="prod.product">
-				<OverlayPanel ref="op" class="overlay" style="textAlign:center;borderRadius:8px">
-					<i>
-						<u>Producteur</u> :<br />
-						{{ prod.producer }}<br />
-						{{ prod.producer_address }}
-					</i>
-				</OverlayPanel>
 				<Card @mouseover="overlay">
 					<template #header>
 						<img
@@ -67,6 +60,13 @@
 						</p>
 					</template>
 				</Card>
+				<OverlayPanel ref="op" class="overlay" style="textAlign:center;borderRadius:8px">
+					<i>
+						<u>Producteur</u> :<br />
+						{{ prod.producer }}<br />
+						{{ prod.producer_address }}
+					</i>
+				</OverlayPanel>
 			</div>
 
 			<p v-if="noProduct">Pas de produits en vente actuellement dans cette catégorie.</p>
@@ -156,6 +156,20 @@ export default {
 					id: catego.data[c].id,
 					category: catego.data[c].category.toUpperCase(),
 					class: catego.data[c].class,
+					priority: catego.data[c].priority,
+				});
+				// sort proority order
+				this.categories.sort(function(a, b) {
+					var prioA = a.priority;
+					var prioB = b.priority;
+
+					if (prioA < prioB) {
+						return -1;
+					}
+					if (prioA > prioB) {
+						return 1;
+					}
+					return 0;
 				});
 			}
 		});
@@ -395,7 +409,7 @@ img {
 
 .category_card {
 	display: flex;
-	padding: 0rem 0.4rem 0rem 0.4rem;
+	padding: 0rem 0rem 0rem 0rem;
 	margin: 0 1rem 1rem 1rem;
 	border-radius: 10px;
 	box-shadow: 5px 5px 5px white;
@@ -474,7 +488,27 @@ img {
 }
 #sale {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
+		url("../assets/sale_facebook.jpg");
+	background-size: 100%;
+}
+#pate {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/pasta.jpg");
+	background-size: 100%;
+}
+#escargot {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
+		url("../assets/escargot_free.jpg");
+	background-size: 100%;
+}
+#sec {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
+		url("../assets/chiche_free.jpg");
+	background-size: 100%;
+}
+#poisson {
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
+		url("../assets/fish_free.jpg");
 	background-size: 100%;
 }
 #huile {

@@ -392,5 +392,6 @@ label {
 .facebook {
 	font-size: 1.8rem;
 	margin-left: 2rem;
+	margin-top: 0.5rem;
 }
 </style>

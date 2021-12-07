@@ -139,7 +139,7 @@
 						<img
 							class="photo"
 							v-if="prod.photo"
-							style="width:80px;"
+							style="max-width:5rem;max-height:5rem;width:auto;"
 							:src="prod.photo"
 							alt="product photo"
 						/>
@@ -178,13 +178,6 @@
 							class="p-button-raised  valButton p-button-danger"
 							@click="wantDelete($event, prod)"
 						/>
-						<!-- <Button
-							v-if="prod.delete"
-							id="toDelete"
-							label="Supprimer ce produit"
-							class="p-button-raised  valButton p-button-danger p-button-text"
-							@click="Delete($event, prod)"
-						/> -->
 					</td>
 				</tr>
 
@@ -688,7 +681,11 @@ export default {
 		//* Close Dialog
 		closeCreated: function() {
 			this.dialog = false;
-			location.reload();
+			if (this.produSelected != 0) {
+				this.displayProdProdu();
+			} else {
+				location.reload();
+			}
 		},
 
 		//* Want to modify a product
@@ -747,7 +744,11 @@ export default {
 						item.selectCate = 0;
 						item.selectCloture = 0;
 					});
-					location.reload();
+					if (this.produSelected != 0) {
+						this.displayProdProdu();
+					} else {
+						location.reload();
+					}
 				})
 				.catch((err) => {
 					console.log(err);

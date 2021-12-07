@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
+			priority: {
+				type: DataTypes.TINYINT,
+				allowNull: false,
+			},
 		},
 		{
 			timestamps: false,

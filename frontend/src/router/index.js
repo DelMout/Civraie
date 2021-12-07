@@ -19,7 +19,7 @@ const routes = [
 		name: "Signup",
 		component: Signup,
 		meta: {
-			title: "Ferme La Civraie",
+			title: "Magasin Civraie",
 		},
 	},
 	{
@@ -27,7 +27,7 @@ const routes = [
 		name: "Password",
 		component: Password,
 		meta: {
-			title: "Ferme La Civraie / Initialisation mot de passe",
+			title: "Magasin Civraie / Initialisation mot de passe",
 		},
 	},
 	// {
@@ -43,7 +43,7 @@ const routes = [
 		name: "Panier",
 		component: Panier,
 		meta: {
-			title: "Ferme La Civraie / Mon Panier",
+			title: "Magasin Civraie / Mon Panier",
 		},
 	},
 
@@ -52,7 +52,7 @@ const routes = [
 		name: "ProdOrder",
 		component: ProdOrder,
 		meta: {
-			title: "Ferme La Civraie / Produits commande",
+			title: "Magasin Civraie / Produits commande",
 		},
 	},
 	{
@@ -60,7 +60,7 @@ const routes = [
 		name: "Producteurs",
 		component: ProducersCarousel,
 		meta: {
-			title: "Ferme La Civraie / Producteurs",
+			title: "Magasin Civraie / Producteurs",
 		},
 	},
 	{
@@ -68,7 +68,7 @@ const routes = [
 		name: "SendEmail",
 		component: SendEmail,
 		meta: {
-			title: "Ferme La Civraie / Envoi email",
+			title: "Magasin Civraie / Envoi email",
 		},
 		//TODO Limiter l'accès au proprio
 	},
@@ -77,7 +77,7 @@ const routes = [
 		name: "Products",
 		component: Products,
 		meta: {
-			title: "Ferme La Civraie / Tous Produits",
+			title: "Magasin Civraie / Tous Produits",
 		},
 		//TODO Limiter l'accès au proprio
 	},
@@ -86,7 +86,7 @@ const routes = [
 		name: "Producers",
 		component: Producers,
 		meta: {
-			title: "Ferme La Civraie / Liste Producteurs",
+			title: "Magasin Civraie / Liste Producteurs",
 		},
 		//TODO Limiter l'accès au proprio
 	},
@@ -95,7 +95,7 @@ const routes = [
 		name: "Users",
 		component: Users,
 		meta: {
-			title: "Ferme La Civraie / Utilisateurs",
+			title: "Magasin Civraie / Utilisateurs",
 		},
 		//TODO Limiter l'accès au proprio
 	},
@@ -104,7 +104,7 @@ const routes = [
 		name: "Orders",
 		component: Orders,
 		meta: {
-			title: "Ferme La Civraie / Commandes",
+			title: "Magasin Civraie / Commandes",
 		},
 		//TODO Limiter l'accès au proprio
 	},
@@ -113,7 +113,7 @@ const routes = [
 		name: "OpeningHours",
 		component: OpeningHours,
 		meta: {
-			title: "Ferme La Civraie / Horaires ouverture",
+			title: "Magasin Civraie / Horaires ouverture",
 		},
 		//TODO Limiter l'accès au proprio
 	},
