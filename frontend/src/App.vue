@@ -11,11 +11,11 @@
 			<p></p>
 		</div>
 		<div id="connected" v-if="logged">
-			<div class="panier_connect">
+			<div class="panier_connect bag">
 				<p v-if="total > 0">
 					<a
 						href="http://localhost:8080/panier"
-						class="pi pi-shopping-bag p-mr-4"
+						class="pi pi-shopping-bag p-mr-4 "
 						style="font-size:1.5rem;"
 						v-badge="total"
 					></a>
@@ -23,7 +23,7 @@
 				<p v-if="total == 0">
 					<a
 						href="http://localhost:8080/panier"
-						class="pi pi-shopping-bag p-mr-4"
+						class="pi pi-shopping-bag p-mr-4 "
 						style="font-size:1.5rem;"
 					></a>
 				</p>
@@ -177,5 +177,22 @@ a {
 .link {
 	margin-right: 1rem;
 	margin-left: 1rem;
+}
+
+@media only screen and (max-width: 576px) {
+	/*mobiles */
+	#connected {
+		font-size: 0.6rem;
+		margin-right: 0.2rem;
+	}
+	.link {
+		font-size: 0.8rem;
+	}
+	.panier_connect {
+		margin-right: 0.2rem;
+	}
+	.bag {
+		width: 1.8rem;
+	}
 }
 </style>

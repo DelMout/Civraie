@@ -1,9 +1,7 @@
 <template>
 	<div>
 		<h4>
-			<p>
-				Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
-			</p>
+			Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
 		</h4>
 
 		<!-- Display categories products -->
@@ -60,19 +58,19 @@
 						</p>
 					</template>
 				</Card>
-				<OverlayPanel ref="op" class="overlay" style="textAlign:center;borderRadius:8px">
+				<!-- <OverlayPanel ref="op" class="overlay" style="textAlign:center;borderRadius:8px">
 					<i>
 						<u>Producteur</u> :<br />
 						{{ prod.producer }}<br />
 						{{ prod.producer_address }}
 					</i>
-				</OverlayPanel>
+				</OverlayPanel> -->
 			</div>
 
 			<p v-if="noProduct">Pas de produits en vente actuellement dans cette catégorie.</p>
 		</div>
 		<div style="width:30vw">
-			<Toast position="center">
+			<Toast position="center" :breakpoints="{ '500px': { width: '90%' } }">
 				<template #message="slotProps">
 					<div class="p-d-flex ">
 						<div class="p-text-center">
@@ -310,7 +308,7 @@ export default {
 };
 </script>
 <style scoped>
-h3 {
+h4 {
 	margin-top: 0;
 }
 
@@ -318,9 +316,6 @@ h3 {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
-
-	/* align-content: space-between; */
-	/* align-content: flex-start; */
 	margin: auto;
 	padding-right: auto;
 	padding-left: auto;
@@ -331,16 +326,11 @@ h3 {
 	display: flex;
 	justify-content: center;
 	margin-bottom: 1rem;
-	/* flex-wrap: wrap; */
-	/* align-content: space-between; */
-	/* background-color: greenyellow; */
 }
 ::v-deep(.p-card) {
-	/* border: 2px solid #125e1c; */
 	box-shadow: 5px 5px 5px white;
 	width: 10rem;
 	margin: 0;
-	/* margin: 4px; */
 	padding: 0;
 	height: 18rem;
 	display: flex;
@@ -349,7 +339,6 @@ h3 {
 }
 ::v-deep(.p-card .p-card-header) {
 	height: 7rem;
-	/* margin: 0; */
 }
 .vignette {
 	max-height: 100%;
@@ -378,8 +367,6 @@ h3 {
 	justify-content: center;
 	margin-bottom: 0;
 	padding-top: 0.7rem;
-
-	/* align-items: flex-end; */
 }
 
 img {
@@ -544,6 +531,75 @@ img {
 	}
 	#conteneur {
 		width: 80%;
+	}
+}
+@media only screen and (max-width: 768px) {
+	/*mobiles et tablettes*/
+	.categories {
+		width: 100%;
+	}
+	.category_card {
+		width: 5rem;
+		height: 2rem;
+		font-size: 0.7rem;
+		margin: 0 0.5rem 1rem 0.5rem;
+	}
+	#conteneur {
+		width: 100%;
+	}
+	#sousCont {
+		width: 9rem;
+		/* margin-bottom: 1rem; */
+	}
+	::v-deep(.p-card) {
+		/* box-shadow: 5px 5px 5px white; */
+		width: 8rem;
+		height: 12.5rem;
+	}
+	::v-deep(.p-card .p-card-header) {
+		height: 4rem;
+	}
+	::v-deep(.p-card .p-card-title) {
+		font-size: 0.6rem;
+		height: 3rem;
+	}
+	::v-deep(.p-card .p-card-content) {
+		/* height: 2rem; */
+		font-size: 0.6rem;
+		/* margin-top: 0.5rem; */
+	}
+	::v-deep(.p-card .p-card-footer) {
+		height: auto;
+		padding-top: 0.4rem;
+		font-size: 0.8rem;
+	}
+	.addsub {
+		/* padding: 0 2px 5px 2px; */
+		/* line-height: 10px; */
+		/* font-size: 1px; */
+		/* margin-inline: 10px; */
+		margin: 0;
+	}
+	#qty {
+		margin: 0px 6px 0px 6px;
+	}
+}
+@media only screen and (max-width: 576px) {
+	/*mobiles */
+	#sousCont {
+		width: 8rem;
+		/* margin-bottom: 1rem; */
+	}
+	::v-deep(.p-card) {
+		/* box-shadow: 5px 5px 5px white; */
+		width: 7rem;
+		height: 12.5rem;
+	}
+	h4 {
+		width: 90%;
+		margin: auto;
+		margin-bottom: 0.6rem;
+		font-size: 0.8rem;
 	}
 }
 </style>
