@@ -3,6 +3,7 @@
 		<div id="conteneur">
 			<Button
 				v-if="indice > 0"
+				id="leftButt"
 				icon="pi pi-chevron-left"
 				class="buttgo p-button-rounded"
 				@click="goLeft"
@@ -25,7 +26,7 @@
 							/>
 							<img
 								v-if="imageDeux"
-								class="imageUn"
+								class="imageUn imageDeux"
 								alt="photo"
 								:src="require('../assets/' + imageDeux)"
 							/>
@@ -58,6 +59,7 @@
 			</div>
 			<Button
 				v-if="indice < 19"
+				id="rightButt"
 				icon="pi pi-chevron-right"
 				class="buttgo p-button-rounded"
 				@click="goRight"
@@ -83,7 +85,7 @@ export default {
 					name: "Ferme de La Civraie",
 					city: "49 - Noyant",
 					text:
-						"Adrien et Céline Pichon vous accueillent sur la Ferme de la Civraie. Producteurs depuis	le 1<sup>er</sup> novembre 2010, nous produisons sur la ferme du lait de vaches de race mixte et des œufs de poules pondeuses plein air. Ayant créé l’atelier vente directe en 2013, nous aimons le contact avec les clients, rencontrer de nouvelles personnes et répondre au mieux à leurs besoins. Nous avons créé le magasin Civraie, Si Frais en septembre 2020. Nous sommes maintenant près de 20 producteurs réunis à la ferme !!<br/>Pour le lait cru, apportez vos bouteilles, nous vendons le lait en vrac.",
+						"Adrien et Céline Pichon vous accueillent sur la Ferme de la Civraie. Producteurs depuis le 1<sup>er</sup> novembre 2010, nous produisons sur la ferme du lait de vaches de race mixte et des œufs de poules pondeuses plein air. Ayant créé l’atelier vente directe en 2013, nous aimons le contact avec les clients, rencontrer de nouvelles personnes et répondre au mieux à leurs besoins. Nous avons créé le magasin Civraie, Si Frais en septembre 2020. Nous sommes maintenant près de 20 producteurs réunis à la ferme&nbsp!!<br/>Pour le lait cru, apportez vos bouteilles, nous vendons le lait en vrac.",
 					imageDeux: "logocivraie.jpg",
 				},
 				{
@@ -142,7 +144,7 @@ export default {
 					name: "Ferme Bio du Point du Jour",
 					city: "49 - Jarzé",
 					text:
-						"La ferme Bio du Point du Jour vous propose une gamme de pâtes semi-complète fabriquées à la ferme avec leurs propres céréales. Les céréales sont cultivées en agriculture biologiques, récoltées, stockées et transformées chez eux dans leur atelier.",
+						"La ferme Bio du Point du Jour vous propose une gamme de pâtes semi-complètes fabriquées à la ferme avec leurs propres céréales. Les céréales sont cultivées en agriculture biologiques, récoltées, stockées et transformées chez eux dans leur atelier.",
 					imageUn: "pointjour.jpg",
 					imageDeux: "ABlogo.png",
 				},
@@ -206,7 +208,7 @@ export default {
 					name: "Vignoble le Gros Caillou",
 					city: "37 - Saint-Nicolas-de-Bourgueil",
 					text:
-						"Patrice a découvert le métier de viticulteur dès sa plus tendre enfance grâce à ses parents, des personnes passionnées par leur profession. Il est très vite tombé amoureux de la vigne et du vin. Et depuis, grâce aux conseils avisés de ses parents, il est devenu à son tour viticulteur. Son domaine familial depuis trois générations se situe au cœur de l’appellation Saint-Nicolas-de-Bourgueil. Il s’étend sur 18 hectares, 16 hectares en Saint-Nicolas-de-Bourgueil et 2 hectares en Bourgueil. Il produit essentiellement du vin rouge, des cuvées «Tradition », « Vieilles Vignes » et «en fût de chêne ». Ses vins sont légers, souples et fruités de cépage 100% cabernet franc. Ils se marient très bien avec tous les mets. Depuis 2020, son exploitation est devenue HVE (Haute Valeur Environnementale).",
+						"Patrice a découvert le métier de viticulteur dès sa plus tendre enfance grâce à ses parents, des personnes passionnées par leur profession. Il est très vite tombé amoureux de la vigne et du vin. Et depuis, grâce aux conseils avisés de ses parents, il est devenu à son tour viticulteur. Son domaine familial depuis trois générations se situe au cœur de l’appellation Saint-Nicolas-de-Bourgueil. Il s’étend sur 18 hectares, 16 hectares en Saint-Nicolas-de-Bourgueil et 2 hectares en Bourgueil. Il produit essentiellement du vin rouge, des cuvées «&nbspTradition&nbsp», «&nbspVieilles Vignes&nbsp» et «&nbspen fût de chêne&nbsp». Ses vins sont légers, souples et fruités de cépage 100% cabernet franc. Ils se marient très bien avec tous les mets. Depuis 2020, son exploitation est devenue HVE (Haute Valeur Environnementale).",
 					imageDeux: "HVE.jpg",
 				},
 				{
@@ -219,7 +221,7 @@ export default {
 					name: "Atelier de Mamour Kymaey",
 					city: "49 - Noyant",
 					text:
-						"Passionnée de couture, Laure vous propose une gamme de produits nous aidant à devenir plus responsable de nos déchets. Vous aimerez ces couleurs pep’s, attirantes, modernes. <br/>Actuellement en congé maternité, notre maman couturière reviendra très vite avec ses produits !! Ils seront disponibles à partir de fin janvier 2021 au magasin Civraie, Si Frais.",
+						"Passionnée de couture, Laure vous propose une gamme de produits nous aidant à devenir plus responsable de nos déchets. Vous aimerez ces couleurs pep’s, attirantes, modernes. <br/>Actuellement en congé maternité, notre maman couturière reviendra très vite avec ses produits&nbsp!! Ils seront disponibles à partir de fin janvier 2021 au magasin Civraie, Si Frais.",
 					imageDeux: "mamour.png",
 				},
 			],
@@ -443,5 +445,69 @@ td {
 	width: 80%;
 	margin: auto;
 	margin-top: 1rem;
+}
+@media only screen and (max-width: 1200px) {
+	#images {
+		width: 100%;
+	}
+	.imageUn {
+		width: 23%;
+		margin-left: 2%;
+		margin-right: 2%;
+	}
+	#content {
+		width: 95%;
+	}
+	table {
+		font-size: 1.4rem;
+	}
+}
+@media only screen and (max-width: 768px) {
+	/*mobiles et tablettes*/
+	#sousCont {
+		width: 80%;
+	}
+	#content {
+		margin-top: 0.5rem;
+	}
+	.imageUn {
+		margin-left: 0%;
+		margin-right: 0%;
+	}
+	.imageDeux {
+		margin-left: 13%;
+		margin-right: 13%;
+	}
+}
+
+@media only screen and (max-width: 576px) {
+	/*mobiles */
+	#leftButt {
+		width: 1.2rem;
+		height: 1.2rem;
+	}
+	#rightButt {
+		width: 1.2rem;
+		height: 1.2rem;
+	}
+	.imageUn {
+		width: 30%;
+	}
+	.imageDeux {
+		margin-left: 5%;
+		margin-right: 5%;
+	}
+	#title {
+		font-size: 1.6rem;
+	}
+	#subtitle {
+		font-size: 1.5rem;
+	}
+	#content {
+		font-size: 1.2rem;
+	}
+	table {
+		font-size: 1.2rem;
+	}
 }
 </style>
