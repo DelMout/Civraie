@@ -267,9 +267,6 @@ td {
 	margin: auto;
 	margin-top: 1rem;
 }
-#total {
-	font-weight: bold;
-}
 #butAddSub {
 	margin: 0;
 }
@@ -282,5 +279,29 @@ td {
 }
 .sub {
 	padding: 0px 5px 5px 5px;
+}
+@media only screen and (max-width: 768px) {
+	/*mobiles et tablettes*/
+	.valid {
+		width: 20vw;
+	}
+	table {
+		font-size: 0.8rem;
+	}
+	.addsub {
+		font-size: 18px;
+		margin-inline: 5px;
+	}
+	.sub {
+		padding: 0px 6px 5px 6px;
+	}
+}
+
+@media only screen and (max-width: 576px) {
+	/*mobiles */
+	.valid {
+		width: 50vw;
+		font-size: 0.8rem;
+	}
 }
 </style>
