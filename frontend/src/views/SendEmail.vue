@@ -85,7 +85,7 @@ export default {
 		};
 	},
 	beforeMount: function() {
-		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page
+		this.$store.dispatch("checkConnect");
 	},
 	created: function() {
 		//*Pick up opening hours

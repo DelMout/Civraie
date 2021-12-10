@@ -12,6 +12,7 @@ import SendEmail from "../views/SendEmail.vue";
 import OpeningHours from "../views/OpeningHours.vue";
 import ProducersCarousel from "../views/ProducersCarousel.vue";
 import NotFound from "../views/NotFound.vue";
+import store from "../store/index.js";
 
 const routes = [
 	{
@@ -30,20 +31,14 @@ const routes = [
 			title: "Magasin Civraie / Initialisation mot de passe",
 		},
 	},
-	// {
-	// 	path: "/produits_vente_magasin",
-	// 	name: "ProdShop",
-	// 	component: ProdShop,
-	// 	meta: {
-	// 		title: "Ferme La Civraie / Produits magasin",
-	// 	},
-	// },
+
 	{
 		path: "/panier",
 		name: "Panier",
 		component: Panier,
 		meta: {
 			title: "Magasin Civraie / Mon Panier",
+			requiresAuth: true,
 		},
 	},
 
@@ -70,7 +65,18 @@ const routes = [
 		meta: {
 			title: "Magasin Civraie / Envoi email",
 		},
-		//TODO Limiter l'accès au proprio
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
 	},
 	{
 		path: "/tous_produits",
@@ -79,7 +85,18 @@ const routes = [
 		meta: {
 			title: "Magasin Civraie / Tous Produits",
 		},
-		//TODO Limiter l'accès au proprio
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
 	},
 	{
 		path: "/producteurs_liste",
@@ -88,7 +105,18 @@ const routes = [
 		meta: {
 			title: "Magasin Civraie / Liste Producteurs",
 		},
-		//TODO Limiter l'accès au proprio
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
 	},
 	{
 		path: "/utilisateurs",
@@ -97,7 +125,18 @@ const routes = [
 		meta: {
 			title: "Magasin Civraie / Utilisateurs",
 		},
-		//TODO Limiter l'accès au proprio
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
 	},
 	{
 		path: "/commandes",
@@ -106,7 +145,18 @@ const routes = [
 		meta: {
 			title: "Magasin Civraie / Commandes",
 		},
-		//TODO Limiter l'accès au proprio
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
 	},
 	{
 		path: "/horaires_ouverture",
@@ -115,7 +165,18 @@ const routes = [
 		meta: {
 			title: "Magasin Civraie / Horaires ouverture",
 		},
-		//TODO Limiter l'accès au proprio
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
 	},
 
 	{
@@ -135,6 +196,19 @@ const router = createRouter({
 
 router.afterEach((to) => {
 	document.title = to.meta.title;
+});
+
+router.beforeEach((to, from, next) => {
+	store.dispatch("checkConnect");
+	if (to.meta.requiresAuth) {
+		if (!store.state.connected) {
+			next({ name: "Signup" });
+		} else {
+			next();
+		}
+	} else {
+		next();
+	}
 });
 
 export default router;
