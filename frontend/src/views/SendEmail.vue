@@ -41,7 +41,7 @@
 			<div v-if="!emailSent">
 				<Button
 					label="Envoyer l'email"
-					class="p-button-raised p-button-primary"
+					class="p-button-raised p-button-primary envoi"
 					@click="sendEmail"
 				/>
 			</div>
@@ -168,5 +168,8 @@ h4 {
 }
 img {
 	width: 20vw;
+}
+.envoi {
+	margin-bottom: 2rem;
 }
 </style>

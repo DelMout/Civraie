@@ -106,7 +106,7 @@
 			</div>
 		</div>
 		<div style="width:30vw">
-			<Toast position="center">
+			<Toast position="center" :breakpoints="{ '400px': { width: '95%' } }">
 				<template #message="slotProps">
 					<div class="p-d-flex p-flex-row">
 						<div class="p-text-center">

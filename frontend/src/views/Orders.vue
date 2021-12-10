@@ -19,12 +19,6 @@
 				@click="downloadX"
 			/>
 		</div>
-		<!-- <div v-if="client">
-			<button @click="downloadClient">Télécharger Excel / CLIENT</button>
-		</div>
-		<div v-if="produit">
-			<button @click="downloadProduit">Télécharger Excel / PRODUIT</button>
-		</div> -->
 
 		<!-- Tableau des commandes reçues -->
 		<div id="tableau">
@@ -95,13 +89,8 @@ export default {
 			produit: false,
 			client: false,
 			linkOpenExcel: "",
-			json: {
-				dataSource: [{ name: "delphine", phone: "5555", email: "huh@ihji" }],
-				head: ["name", "phone", "email"],
-				fileName: "json.xlsx",
-			},
 			inQtyProd: false,
-			custProd: "Afficher par PRODUIT",
+			custProd: "Afficher par PRODUCTEUR",
 			download: "Télécharger Excel par CLIENT",
 		};
 	},
@@ -207,12 +196,12 @@ export default {
 		},
 		//* Choose display
 		display: function() {
-			if (this.custProd === "Afficher par PRODUIT") {
+			if (this.custProd === "Afficher par PRODUCTEUR") {
 				this.custProd = "Afficher par CLIENT";
-				this.download = "Télécharger Excel par PRODUIT";
-				this.displayByProduct();
+				this.download = "Télécharger Excel par PRODUCTEUR";
+				this.displayByProducer();
 			} else {
-				this.custProd = "Afficher par PRODUIT";
+				this.custProd = "Afficher par PRODUCTEUR";
 				this.download = "Télécharger Excel par CLIENT";
 				this.displayByCustomer();
 			}
@@ -225,8 +214,8 @@ export default {
 			this.alterColor();
 		},
 
-		//* Display of orders by product
-		displayByProduct: function() {
+		//* Display of orders by producer
+		displayByProducer: function() {
 			console.log("coucou");
 			this.qtyProd = [];
 			this.produit = true;
@@ -281,8 +270,21 @@ export default {
 											}
 											return 0;
 										});
-										for (let j = 1; j < this.qtyProd.length; j = j + 2) {
-											this.qtyProd[j].color = "line_impair";
+										let p = 0;
+										for (let j = 1; j < this.qtyProd.length; j++) {
+											if (
+												this.qtyProd[j].producer !=
+												this.qtyProd[j - 1].producer
+											) {
+												p++;
+												if (p % 2 == 0) {
+													this.qtyProd[j].color = "line_pair";
+												} else {
+													this.qtyProd[j].color = "line_impair";
+												}
+											} else {
+												this.qtyProd[j].color = this.qtyProd[j - 1].color;
+											}
 										}
 									});
 							});
@@ -302,11 +304,11 @@ export default {
 		},
 		//* Choose download
 		downloadX: function() {
-			if (this.download === "Télécharger Excel par PRODUIT") {
+			if (this.download === "Télécharger Excel par PRODUCTEUR") {
 				// this.download = "Télécharger Excel par CLIENT";
 				this.downloadProduit();
 			} else {
-				// this.download = "Télécharger Excel par PRODUIT";
+				// this.download = "Télécharger Excel par PRODUCTEUR";
 				this.downloadClient();
 			}
 		},
@@ -318,8 +320,8 @@ export default {
 		},
 		// //* Downloading Excel By Product
 		downloadProduit: function() {
-			var xls = new XlsExport(this.qtyProd, "Par_Produit");
-			xls.exportToXLS("commandes_Produit_" + this.deliveryDate + ".xls");
+			var xls = new XlsExport(this.qtyProd, "Par_Producteur");
+			xls.exportToXLS("commandes_Producteur_" + this.deliveryDate + ".xls");
 		},
 	},
 };

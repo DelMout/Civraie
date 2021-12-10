@@ -63,13 +63,14 @@ export default createStore({
 				return 6;
 			} else {
 				if (5 - getters.dayNow == 0) {
-					return 7;
+					return 0;
 				} else {
 					return 5 - getters.dayNow;
 				}
 			}
 		},
 		deliveryDate(state, getters) {
+			// Change delivery date at the friday night
 			let res = new Date(getters.dateNow);
 			res.setDate(res.getDate() + getters.gapDays);
 			moment.locale("fr");
