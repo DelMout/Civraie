@@ -68,7 +68,7 @@
 import axios from "axios";
 import moment from "moment";
 import XlsExport from "xlsexport";
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
 	data() {
@@ -93,6 +93,9 @@ export default {
 			custProd: "Afficher par PRODUCTEUR",
 			download: "Télécharger Excel par CLIENT",
 		};
+	},
+	beforeMount: function() {
+		this.$store.dispatch("checkConnect");
 	},
 	beforeCreate: function() {
 		this.orders = [];
@@ -173,6 +176,8 @@ export default {
 		...mapState(["inPages"]),
 	},
 	methods: {
+		...mapActions(["checkConnect"]),
+
 		//* Format French date
 		dateFr: function(date) {
 			moment.locale("fr");
@@ -420,5 +425,8 @@ img {
 }
 .dates {
 	cursor: pointer;
+}
+table {
+	margin-bottom: 2rem;
 }
 </style>

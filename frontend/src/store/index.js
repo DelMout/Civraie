@@ -10,7 +10,7 @@ export default createStore({
 		products: [],
 		order: [],
 		total: localStorage.getItem("Total"),
-		logged: false,
+		connected: false,
 		token: null,
 		infoHome: "",
 		inPages: true,
@@ -42,10 +42,10 @@ export default createStore({
 			state.infoHome = "Ta session a expiré.";
 		},
 		IS_TRUE(state) {
-			state.logged = true;
+			state.connected = true;
 		},
 		IS_FALSE(state) {
-			state.logged = false;
+			state.connected = false;
 		},
 	},
 	getters: {

@@ -98,7 +98,6 @@ export default {
 
 	methods: {
 		...mapActions(["checkConnect"]),
-
 		//* Send Email
 		sendEmail: function() {
 			if (this.object === "") {

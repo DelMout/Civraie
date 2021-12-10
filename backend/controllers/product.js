@@ -158,7 +158,6 @@ exports.modifProduct = (req, res) => {
 };
 
 //* Delete a product
-//! Rajouter suppression photo
 exports.deleteProduct = (req, res) => {
 	product
 		.findOne({ where: { id: req.params.productid } })
@@ -205,7 +204,7 @@ exports.changeActive = (req, res) => {
 		});
 };
 
-//! * Check if product must become inactive (after clotureday)
+// * Check if product must become inactive (after clotureday)
 exports.checkActive = (req, res) => {
 	product
 		.findAll({

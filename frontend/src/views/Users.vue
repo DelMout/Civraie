@@ -88,6 +88,7 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import { mapActions } from "vuex";
 
 export default {
 	data() {
@@ -109,6 +110,9 @@ export default {
 			index: "",
 			dialog: false,
 		};
+	},
+	beforeMount: function() {
+		this.$store.dispatch("checkConnect");
 	},
 	beforeCreate: function() {
 		this.users = [];
@@ -148,6 +152,7 @@ export default {
 		});
 	},
 	methods: {
+		...mapActions(["checkConnect"]),
 		//* Want to modify a comment
 		modifComment: function(event, us) {
 			us.modif = true;
@@ -269,6 +274,7 @@ tr {
 table {
 	border-collapse: collapse;
 	margin: auto;
+	margin-bottom: 2rem;
 }
 #validMod {
 	border: 0px solid;

@@ -184,7 +184,9 @@ export default {
 		this.creation = false;
 		this.forgot = false;
 		this.logged = false;
-		localStorage.clear(); //! A modifier qd user en fonction !
+		if (!this.connected) {
+			localStorage.clear();
+		}
 		//Update Active=0 for products with cloture_day in the past
 		axios.put(process.env.VUE_APP_API + "product/checkactive/putinactive");
 	},
@@ -200,7 +202,7 @@ export default {
 	},
 
 	computed: {
-		...mapState(["infoHome", "token", "userId", "isAdmin", "logged", "inPages", "newUser"]),
+		...mapState(["infoHome", "token", "userId", "isAdmin", "connected", "inPages", "newUser"]),
 	},
 	methods: {
 		...mapMutations(["setUserId", "setToken", "setAdmin", "setNewUser"]),

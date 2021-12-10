@@ -8,7 +8,7 @@
 		</div>
 
 		<div id="commande" v-if="total > 0">
-			<h5>Votre commande pour une livraison le {{ deliveryDate }}.</h5>
+			<h5>Votre commande sera livrée le {{ deliveryDate }}.</h5>
 
 			<table>
 				<caption>
@@ -88,7 +88,7 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate"]),
-		...mapState(["order", "userId", "logged", "inPages"]),
+		...mapState(["order", "userId", "connected", "inPages"]),
 	},
 	created: function() {
 		this.$store.dispatch("checkConnect");

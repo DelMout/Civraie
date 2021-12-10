@@ -121,7 +121,7 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate", "dayNow"]),
-		...mapState(["products", "order", "total", "inPages", "logged", "newUser"]),
+		...mapState(["products", "order", "total", "inPages", "connected", "newUser"]),
 	},
 	mounted: function() {
 		if (this.$store.state.newUser) {
@@ -251,8 +251,8 @@ export default {
 
 		//* Add product to the order
 		addQty: function(event, prod) {
-			//! if logged null, alors message pour "se connecter pour commander"
-			if (this.$store.state.logged) {
+			//! if connected null, alors message pour "se connecter pour commander"
+			if (this.$store.state.connected) {
 				if (localStorage === null) {
 					localStorage.setItem("Total", 1);
 					localStorage.setItem(prod.id, 1);

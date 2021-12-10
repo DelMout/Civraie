@@ -182,12 +182,14 @@
 						/>
 					</td>
 				</tr>
+				<p><i>* Champs obligatoires</i></p>
 			</table>
 		</div>
 	</div>
 </template>
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
 
 export default {
 	data() {
@@ -196,11 +198,11 @@ export default {
 			producers: [],
 			length: "",
 			lengthPc: "",
-			entreprise: "*Producteur",
-			nom: "*Nom",
+			entreprise: "* Producteur",
+			nom: "* Nom",
 			prenom: "Prénom",
-			produits: "*Produits proposés",
-			adresse: "*Adresse",
+			produits: "* Produits proposés",
+			adresse: "* Adresse",
 			telephone: "Téléphone",
 			email: "Email",
 			site: "Site web",
@@ -211,6 +213,9 @@ export default {
 			index: "",
 			dialog: false,
 		};
+	},
+	beforeMount: function() {
+		this.$store.dispatch("checkConnect");
 	},
 	beforeCreate: function() {
 		this.producers = [];
@@ -252,9 +257,9 @@ export default {
 		});
 	},
 	methods: {
+		...mapActions(["checkConnect"]),
 		// //* Create a producer
 		validateCreate: function() {
-			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
 			axios
 				.post(process.env.VUE_APP_API + "producer/createproducer", {
 					nom: this.nom,
@@ -412,6 +417,7 @@ tr {
 table {
 	border-collapse: collapse;
 	margin: auto;
+	margin-bottom: 2rem;
 }
 .create,
 .valCreate {

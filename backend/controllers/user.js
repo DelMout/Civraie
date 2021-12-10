@@ -1,5 +1,4 @@
 const { user } = require("../models");
-const { date } = require("../models");
 const { information } = require("../models");
 // const { publication } = require("../models");
 const fs = require("fs"); // handle files
@@ -17,12 +16,7 @@ schemaPassword.is().min(8).has().uppercase().has().lowercase().has().digits();
 exports.signup = (req, res) => {
 	if (!schemaPassword.validate(req.body.password)) {
 		return res.status(401).send("password not enough strong");
-		// .send(
-		// 	"password not enough strong, missing :" +
-		// 		schemaPassword.validate(req.body.password, { list: true })
-		// );
 	} else {
-		// create 'jeton' for link when user forgot password
 		const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		let jeton = "";
 		for (let i = 0; i < 25; i++) {
@@ -175,8 +169,6 @@ exports.updatePassword = (req, res) => {
 
 // * Delete user
 exports.delete = (req, res) => {
-	// user.findOne({ where: { id: req.params.userid } })
-	// .then((resp) => {
 	user.destroy({ where: { id: req.params.userid } })
 		.then(() => {
 			res.send("user deleted");
@@ -184,8 +176,6 @@ exports.delete = (req, res) => {
 		.catch((err) => {
 			res.send(err);
 		});
-	// })
-	// .catch((err) => res.status(500).json({ err }));
 };
 
 //* Find user from jeton
@@ -268,54 +258,7 @@ exports.emailPassword = (req, res) => {
 				.catch((err) => res.status(401).send(err));
 		})
 		.catch((err) => res.status(401).send(err));
-	// .catch((err) => res.status(401).send("bad request"));
 };
-
-// //! * Send an email to all users for ordering
-// exports.emailOrder = (req, res) => {
-// 	let transporter = nodemailer.createTransport({
-// 		host: "source.o2switch.net",
-// 		port: 465,
-// 		secure: true, // true for 465, false for other ports
-// 		tls: {
-// 			rejectUnauthorized: false,
-// 		},
-// 		auth: {
-// 			user: process.env.FROM_EMAIL,
-// 			pass: process.env.PASS_EMAIL,
-// 		},
-// 	});
-// 	//TODO Remplacer les 2 dates en faisant un get dans tableau "dates"
-// 	// List of users non isAdmin
-// 	user.findAndCountAll({ where: { isAdmin: 0 } })
-// 		.then((users) => {
-// 			// res.send(users);
-// 			const count = users.count;
-// 			for (let i = 0; i < count; i++) {
-// 				// Message for each user
-// 				transporter.sendMail(
-// 					{
-// 						from: "Le magasin de la ferme de la Civraie <lacivraie@delmout.com>",
-// 						to: users.rows[i].email,
-// 						subject: "[La Civraie] A vos commandes !",
-// 						html:
-// 							"<p>Bonjour " +
-// 							users.rows[i].prenom +
-// 							" " +
-// 							users.rows[i].nom +
-// 							",</p></br><p>Vous pouvez dès à présent créer une commande sur notre site. Vous avez jusqu'au 22/07/2021 pour saisir votre commande. Les produits seront ensuite livrés au magasin le 26/07/2021.</p></br><p>Par ici pour votre commande !</p><a href='http://localhost:8080>Le magasin de La Civraie'</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin de la ferme de la Civraie.</p>",
-// 					},
-// 					(error, info) => {
-// 						if (error) {
-// 							return res.status(401).send(error);
-// 						}
-// 						res.status(200).send("email envoyé !");
-// 					}
-// 				);
-// 			}
-// 		})
-// 		.catch((err) => res.status(401).send("bad request"));
-// };
 
 // * Send an email to all users for specific information
 exports.emailInfo = (req, res) => {

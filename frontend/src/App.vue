@@ -10,7 +10,7 @@
 			/>
 			<p></p>
 		</div>
-		<div id="connected" v-if="logged">
+		<div id="connected" v-if="connected">
 			<div class="panier_connect bag">
 				<p v-if="total > 0">
 					<a
@@ -76,7 +76,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(["logged", "isAdmin", "total", "inPages"]),
+		...mapState(["connected", "isAdmin", "total", "inPages"]),
 	},
 	beforeMount: function() {
 		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page

@@ -2,7 +2,7 @@
 	<div id="productsTable">
 		<div id="entete">
 			<h3>Liste des produits</h3>
-			<p id="number">Attention, "Actif" à faire qu'à partir du Dimanche !</p>
+			<p id="number">* Attention, "Actif" à faire qu'à partir du Samedi ou Dimanche !</p>
 		</div>
 		<div id="selection">
 			<Button
@@ -53,7 +53,7 @@
 					<th>Unité vente</th>
 					<th>Support vente</th>
 					<th class="photo">Photo</th>
-					<th class="numb">Actif</th>
+					<th class="numb">Actif *</th>
 				</tr>
 				<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
 					<td @click="modifProd($event, prod)" :class="prod.modif">
@@ -287,6 +287,7 @@
 </template>
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
 
 export default {
 	data() {
@@ -345,6 +346,9 @@ export default {
 			infoProd: "",
 			tamponId: "",
 		};
+	},
+	beforeMount: function() {
+		this.$store.dispatch("checkConnect");
 	},
 	beforeCreate: function() {
 		this.products = [];
@@ -428,6 +432,7 @@ export default {
 		this.displayOrdering();
 	},
 	methods: {
+		...mapActions(["checkConnect"]),
 		//* Display all producers (when creation product)
 		displayProducers: function() {
 			this.producers = [];

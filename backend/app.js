@@ -12,7 +12,6 @@ const productRoutes = require("./routes/product");
 const producerRoutes = require("./routes/producer");
 const categoryRoutes = require("./routes/category");
 const orderRoutes = require("./routes/order");
-const dateRoutes = require("./routes/date");
 const infoRoutes = require("./routes/information");
 
 // Models
@@ -21,10 +20,9 @@ const { product } = require("./models");
 const { producer } = require("./models");
 const { category } = require("./models");
 const { order } = require("./models");
-const { date } = require("./models");
 const { information } = require("./models");
 
-//association tables user/order et product/order et date/order
+//association tables user/order et product/order
 order.belongsTo(user);
 module.exports = { user, order };
 order.belongsTo(product);
@@ -56,9 +54,6 @@ app.use("/api/category", categoryRoutes);
 
 // * Order
 app.use("/api/order", orderRoutes);
-
-// * Date
-app.use("/api/date", dateRoutes);
 
 // * Information
 app.use("/api/information", infoRoutes);

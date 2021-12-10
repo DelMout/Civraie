@@ -38,6 +38,7 @@
 </template>
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
 
 export default {
 	data() {
@@ -47,6 +48,9 @@ export default {
 			modifSent: false,
 			dialog: false,
 		};
+	},
+	beforeMount: function() {
+		this.$store.dispatch("checkConnect");
 	},
 	created: function() {
 		this.$store.state.inPages = true;
@@ -61,6 +65,7 @@ export default {
 			});
 	},
 	methods: {
+		...mapActions(["checkConnect"]),
 		//* Save modifications of opening hours
 		modifOpenHours: function() {
 			this.modifSent = true;

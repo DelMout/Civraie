@@ -1,7 +1,6 @@
 const { order } = require("../models");
 const { user } = require("../models");
 const { information } = require("../models");
-const { date } = require("../models");
 const fs = require("fs");
 const { Op } = require("sequelize");
 const nodemailer = require("nodemailer");
@@ -132,16 +131,9 @@ exports.emailConfirm = (req, res) => {
 							res.status(200).send("email envoyé !");
 						}
 					);
-					// res.status(200).send(prenom);
-					// })
-					// .catch((err) => res.status(401).send(err));
-					// })
-					// .catch((err) => res.status(401).send(err));
 				})
 				.catch((err) => res.status(401).send(err));
 		})
 
 		.catch((err) => res.status(401).send(err));
-
-	// .catch((err) => res.status(401).send("bad request"));
 };
