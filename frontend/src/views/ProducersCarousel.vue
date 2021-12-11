@@ -86,7 +86,9 @@ export default {
 					city: "49 - Noyant",
 					text:
 						"Adrien et Céline Pichon vous accueillent sur la Ferme de la Civraie. Producteurs depuis le 1<sup>er</sup> novembre 2010, nous produisons sur la ferme du lait de vaches de race mixte et des œufs de poules pondeuses plein air. Ayant créé l’atelier vente directe en 2013, nous aimons le contact avec les clients, rencontrer de nouvelles personnes et répondre au mieux à leurs besoins. Nous avons créé le magasin Civraie, Si Frais en septembre 2020. Nous sommes maintenant près de 20 producteurs réunis à la ferme&nbsp!!<br/>Pour le lait cru, apportez vos bouteilles, nous vendons le lait en vrac.",
+					imageUn: "vaches_civraie.jpg",
 					imageDeux: "logocivraie.jpg",
+					imageTrois: "poules_civraie.jpg",
 				},
 				{
 					name: "SCEA La Bécassière",

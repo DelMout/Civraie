@@ -287,7 +287,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
 	data() {
@@ -357,8 +357,13 @@ export default {
 	created: function() {
 		this.$store.state.inPages = true;
 		//* All products
-		axios.get(process.env.VUE_APP_API + "product").then((prod) => {
-			// console.log(products);
+		axios({
+			method: "get",
+			url: process.env.VUE_APP_API + "product",
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
+		}).then((prod) => {
 			this.length = prod.data.length;
 			for (let i = 0; i < this.length; i++) {
 				axios
@@ -430,6 +435,9 @@ export default {
 		this.displayProducers();
 		this.displayCategories();
 		this.displayOrdering();
+	},
+	computed: {
+		...mapState(["token"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
@@ -670,10 +678,15 @@ export default {
 			formData.append("image", this.image);
 			formData.append("active", this.active);
 
-			axios
-				.post(process.env.VUE_APP_API + "product/createproduct", formData)
+			axios({
+				method: "post",
+				url: process.env.VUE_APP_API + "product/createproduct",
+				data: formData,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
 				.then(() => {
-					//! Afficher boites de dialog
 					this.dialog = true;
 					this.infoProd = "Produit créé !";
 					this.producerId = "";
@@ -732,12 +745,14 @@ export default {
 			formData.append("unite_vente", prod.unite_vente);
 			formData.append("ordering", this.orderingModel);
 			formData.append("image", this.image);
-			axios
-				.put(process.env.VUE_APP_API + "product/modif/" + id, formData)
-				// headers: {
-				// 	Authorization: `Bearer ${this.token}`,
-				// },
-
+			axios({
+				method: "put",
+				url: process.env.VUE_APP_API + "product/modif/" + id,
+				data: formData,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
 				.then(() => {
 					prod.modif = false;
 					this.orderingSelected = "";
@@ -784,12 +799,13 @@ export default {
 		//* Delete product
 		Delete: function(event, prod) {
 			const id = prod.id;
-			axios
-				.delete(process.env.VUE_APP_API + "product/delete/" + id)
-				// headers: {
-				// 	Authorization: `Bearer ${this.token}`,
-				// },
-
+			axios({
+				method: "delete",
+				url: process.env.VUE_APP_API + "product/delete/" + id,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
 				.then(() => {
 					this.dialog = true;
 					this.infoProd = "Le produit a été supprimé.";
@@ -802,9 +818,13 @@ export default {
 		//* Active or inactive the product (in list of products)
 		activeInactive: function(event, prod) {
 			if (prod.active === 1) {
-				axios
-					.put(process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/0")
-
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/0",
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				})
 					.then(() => {
 						prod.active = 0;
 					})
@@ -813,9 +833,13 @@ export default {
 					});
 			} else {
 				if (prod.active === 0) {
-					axios
-						.put(process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/1")
-
+					axios({
+						method: "put",
+						url: process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/1",
+						headers: {
+							Authorization: `Bearer ${this.token}`,
+						},
+					})
 						.then(() => {
 							prod.active = 1;
 							console.log("OK !");
@@ -848,80 +872,84 @@ export default {
 			console.log(this.produSelected);
 			if (this.produSelected != "") {
 				this.products = [];
-				axios
-					.get(process.env.VUE_APP_API + "product/producerid/" + this.produSelected)
-					.then((prod) => {
-						// console.log(products);
-						this.length = prod.data.length;
-						for (let i = 0; i < this.length; i++) {
-							axios
-								.get(
-									process.env.VUE_APP_API +
-										"producer/getproducer/" +
-										this.produSelected
-								)
-								.then((producer) => {
-									axios
-										.get(
-											process.env.VUE_APP_API +
-												"information/supportvente/" +
-												prod.data[i].ordering
-										)
-										.then((ordering) => {
-											axios
-												.get(
-													process.env.VUE_APP_API +
-														"category/getcategory/" +
-														prod.data[i].categoryId
-												)
-												.then((cate) => {
-													this.products.push({
-														id: prod.data[i].id,
-														product: prod.data[i].product,
-														producerId: prod.data[i].producerId,
-														producer: producer.data.entreprise,
-														price: prod.data[i].price,
-														unite_vente: prod.data[i].unite_vente,
-														price_unite_vente:
-															prod.data[i].price_unite_vente,
-														stock_init: prod.data[i].stock_init,
-														stock_updated: prod.data[i].stock_updated,
-														alert_stock: prod.data[i].alert_stock,
-														photo: prod.data[i].photo,
-														alert:
-															prod.data[i].stock_updated -
-															prod.data[i].alert_stock,
-														ordering: prod.data[i].ordering,
-														categoryId: prod.data[i].categoryId,
-														category: cate.data.category,
-														cloturedayId: prod.data[i].cloturedayId,
-														support: ordering.data,
-														active: prod.data[i].active,
-														modif: 0,
-														delete: 0,
-														selectProdu: 0,
-														selectOrdering: 0,
-														selectCate: 0,
-														selectCloture: 0,
-													});
-													// sort alpha order
-													this.products.sort(function(a, b) {
-														var productA = a.product.toUpperCase();
-														var productB = b.product.toUpperCase();
-
-														if (productA < productB) {
-															return -1;
-														}
-														if (productA > productB) {
-															return 1;
-														}
-														return 0;
-													});
+				axios({
+					method: "get",
+					url: process.env.VUE_APP_API + "product/producerid/" + this.produSelected,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then((prod) => {
+					// console.log(products);
+					this.length = prod.data.length;
+					for (let i = 0; i < this.length; i++) {
+						axios
+							.get(
+								process.env.VUE_APP_API +
+									"producer/getproducer/" +
+									this.produSelected
+							)
+							.then((producer) => {
+								axios
+									.get(
+										process.env.VUE_APP_API +
+											"information/supportvente/" +
+											prod.data[i].ordering
+									)
+									.then((ordering) => {
+										axios
+											.get(
+												process.env.VUE_APP_API +
+													"category/getcategory/" +
+													prod.data[i].categoryId
+											)
+											.then((cate) => {
+												this.products.push({
+													id: prod.data[i].id,
+													product: prod.data[i].product,
+													producerId: prod.data[i].producerId,
+													producer: producer.data.entreprise,
+													price: prod.data[i].price,
+													unite_vente: prod.data[i].unite_vente,
+													price_unite_vente:
+														prod.data[i].price_unite_vente,
+													stock_init: prod.data[i].stock_init,
+													stock_updated: prod.data[i].stock_updated,
+													alert_stock: prod.data[i].alert_stock,
+													photo: prod.data[i].photo,
+													alert:
+														prod.data[i].stock_updated -
+														prod.data[i].alert_stock,
+													ordering: prod.data[i].ordering,
+													categoryId: prod.data[i].categoryId,
+													category: cate.data.category,
+													cloturedayId: prod.data[i].cloturedayId,
+													support: ordering.data,
+													active: prod.data[i].active,
+													modif: 0,
+													delete: 0,
+													selectProdu: 0,
+													selectOrdering: 0,
+													selectCate: 0,
+													selectCloture: 0,
 												});
-										});
-								});
-						}
-					});
+												// sort alpha order
+												this.products.sort(function(a, b) {
+													var productA = a.product.toUpperCase();
+													var productB = b.product.toUpperCase();
+
+													if (productA < productB) {
+														return -1;
+													}
+													if (productA > productB) {
+														return 1;
+													}
+													return 0;
+												});
+											});
+									});
+							});
+					}
+				});
 			}
 		},
 

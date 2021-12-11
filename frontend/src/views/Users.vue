@@ -88,7 +88,7 @@
 <script>
 import axios from "axios";
 import moment from "moment";
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
 	data() {
@@ -120,7 +120,13 @@ export default {
 	created: function() {
 		this.$store.state.inPages = true;
 		//* All users
-		axios.get(process.env.VUE_APP_API + "user/allusers").then((user) => {
+		axios({
+			method: "get",
+			url: process.env.VUE_APP_API + "user/allusers",
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
+		}).then((user) => {
 			this.length = user.data.length;
 			for (let i = 0; i < this.length; i++) {
 				this.users.push({
@@ -151,6 +157,9 @@ export default {
 			}
 		});
 	},
+	computed: {
+		...mapState(["token"]),
+	},
 	methods: {
 		...mapActions(["checkConnect"]),
 		//* Want to modify a comment
@@ -160,16 +169,16 @@ export default {
 		// //* Validation comment
 		validComment: function(event, us) {
 			const id = us.id;
-			axios
-				.put(process.env.VUE_APP_API + "user/comment/" + id, {
-					comment: us.comment,
-				})
-				// headers: {
-				// 	Authorization: `Bearer ${this.token}`,
-				// },
-				.then(() => {
-					us.modif = false;
-				});
+			axios({
+				method: "put",
+				url: process.env.VUE_APP_API + "user/comment/" + id,
+				data: { comment: us.comment },
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then(() => {
+				us.modif = false;
+			});
 		},
 		// //* Want delete a user
 		wantDelete: function(event, us) {
@@ -190,14 +199,15 @@ export default {
 		//* Delete user
 		deleteUser: function(event, us) {
 			const id = us.id;
-			axios
-				.delete(process.env.VUE_APP_API + "user/delete/" + id)
-				// headers: {
-				// 	Authorization: `Bearer ${this.token}`,
-				// },
-				.then(() => {
-					this.dialog = true;
-				});
+			axios({
+				method: "delete",
+				url: process.env.VUE_APP_API + "user/delete/" + id,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then(() => {
+				this.dialog = true;
+			});
 		},
 
 		//* Close Dialog

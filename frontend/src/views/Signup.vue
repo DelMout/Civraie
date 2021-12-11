@@ -105,6 +105,11 @@
 				></a>
 			</div>
 		</div>
+		<div id="copyright">
+			<a href="https://www.delmout.com" target="_blank"
+				><p><i>&#xA9; Site créé par Delphine Moutault</i></p></a
+			>
+		</div>
 		<div style="width:30vw">
 			<Toast position="center" :breakpoints="{ '400px': { width: '95%' } }">
 				<template #message="slotProps">
@@ -252,8 +257,13 @@ export default {
 					this.$store.dispatch("checkConnect");
 					console.log("connected !");
 					// Update last-connect and jeton
-					axios
-						.put(process.env.VUE_APP_API + "user/login/" + this.email)
+					axios({
+						method: "put",
+						url: process.env.VUE_APP_API + "user/login/" + this.email,
+						headers: {
+							Authorization: `Bearer ${this.token}`,
+						},
+					})
 						.then(() => {
 							console.log("last_conn updated");
 						})
@@ -386,6 +396,7 @@ label {
 #createForget {
 	display: flex;
 	justify-content: center;
+	margin-bottom: 2rem;
 }
 .creaforget {
 	margin-right: 1rem;
@@ -395,6 +406,18 @@ label {
 	font-size: 1.8rem;
 	margin-left: 2rem;
 	margin-top: 0.5rem;
+}
+a {
+	text-decoration: none;
+}
+#copyright {
+	text-align: left;
+	margin-left: 1rem;
+	position: fixed;
+	bottom: 0px;
+}
+#copyright a {
+	color: #4caf50;
 }
 
 /* MEDIA QUERIES */

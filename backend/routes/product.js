@@ -8,36 +8,36 @@ const auth = require("../middleware/auth"); // Request authentification
 const admin = require("../middleware/isAdmin"); // Request authentification for admin
 
 // * Create a product
-router.post("/createproduct", multer, productCtrl.createProduct); //! Retiré admin
+router.post("/createproduct", admin, multer, productCtrl.createProduct);
 
 // * See all products
-router.get("/", productCtrl.getAllProducts); //! Retiré admin
+router.get("/", admin, productCtrl.getAllProducts);
 
-// * See products according to ordering
-router.get("/:ordering", productCtrl.getProductsOrdering); //! accès without authorisation
+// // * See products according to ordering
+// router.get("/:ordering", productCtrl.getProductsOrdering);
 
 // * See products according to producerId
-router.get("/producerid/:producerid", productCtrl.getProductsProducerid); //! accès without authorisation
+router.get("/producerid/:producerid", admin, productCtrl.getProductsProducerid);
 
 // * See all products actived
-router.get("/getproducts/actived", productCtrl.getProductsActived); //! retiré auth
+router.get("/getproducts/actived", auth, productCtrl.getProductsActived);
 
 // * See products according to ordering=1 and 2 AND category AND active=1
-router.get("/category/:category", productCtrl.getProductsCategory); //! retiré auth
+router.get("/category/:category", productCtrl.getProductsCategory);
 
 // * See datas of product
-router.get("/datas/:productid", productCtrl.getDatasProduct); //! Retiré auth
+router.get("/datas/:productid", admin, productCtrl.getDatasProduct);
 
 // * Modify a product
-router.put("/modif/:productid", multer, productCtrl.modifProduct); //! retiré admin
+router.put("/modif/:productid", admin, multer, productCtrl.modifProduct);
 
 // * Change "active" of a product
-router.put("/changeactive/:productid/:active", productCtrl.changeActive); //! retiré admin
+router.put("/changeactive/:productid/:active", admin, productCtrl.changeActive);
 
 // * Check if product must become inactive (after clotureday)
 router.put("/checkactive/putinactive", productCtrl.checkActive);
 
 // * Delete a product
-router.delete("/delete/:productid", multer, productCtrl.deleteProduct); //! retiré admin
+router.delete("/delete/:productid", admin, multer, productCtrl.deleteProduct);
 
 module.exports = router;

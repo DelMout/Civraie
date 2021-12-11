@@ -73,7 +73,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
 	data() {
@@ -95,7 +95,9 @@ export default {
 		});
 		this.$store.state.inPages = true;
 	},
-
+	computed: {
+		...mapState(["token"]),
+	},
 	methods: {
 		...mapActions(["checkConnect"]),
 		//* Send Email
@@ -117,7 +119,17 @@ export default {
 					});
 				} else {
 					this.emailSent = true;
-					axios
+					axios({
+						method: "post",
+						url: process.env.VUE_APP_API + "user/emailinfo",
+						data: {
+							title: this.object,
+							content: this.body,
+						},
+						headers: {
+							Authorization: `Bearer ${this.token}`,
+						},
+					})
 						.post(process.env.VUE_APP_API + "user/emailinfo", {
 							title: this.object,
 							content: this.body,

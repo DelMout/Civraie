@@ -156,7 +156,7 @@ export default {
 					class: catego.data[c].class,
 					priority: catego.data[c].priority,
 				});
-				// sort proority order
+				// sort priority order
 				this.categories.sort(function(a, b) {
 					var prioA = a.priority;
 					var prioB = b.priority;
@@ -251,7 +251,6 @@ export default {
 
 		//* Add product to the order
 		addQty: function(event, prod) {
-			//! if connected null, alors message pour "se connecter pour commander"
 			if (this.$store.state.connected) {
 				if (localStorage === null) {
 					localStorage.setItem("Total", 1);

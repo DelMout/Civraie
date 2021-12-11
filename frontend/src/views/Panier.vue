@@ -88,7 +88,7 @@ export default {
 	},
 	computed: {
 		...mapGetters(["deliveryDate"]),
-		...mapState(["order", "userId", "connected", "inPages"]),
+		...mapState(["order", "userId", "connected", "inPages", "token"]),
 	},
 	created: function() {
 		this.$store.dispatch("checkConnect");
@@ -96,7 +96,13 @@ export default {
 		console.log("hey !!");
 		console.log(this.$store.state.userId);
 		//*Select all products actived
-		axios.get(process.env.VUE_APP_API + "product/getproducts/actived").then((prod) => {
+		axios({
+			method: "get",
+			url: process.env.VUE_APP_API + "product/getproducts/actived",
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
+		}).then((prod) => {
 			console.log(prod);
 			for (let c = 0; c < prod.data.length; c++) {
 				this.products.push({
@@ -123,7 +129,13 @@ export default {
 		validOrder: function() {
 			this.ordered = true;
 			// Save in database
-			axios.get(process.env.VUE_APP_API + "product/getproducts/actived").then((prod) => {
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "product/getproducts/actived",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((prod) => {
 				for (let i = 0; i < prod.data.length; i++) {
 					if (this.products[i].qty > 0) {
 						this.tablMail =
