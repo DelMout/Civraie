@@ -8,20 +8,12 @@ const auth = require("../middleware/auth"); // Request authentification
 const admin = require("../middleware/isAdmin"); // Request authentification for admin
 
 // * Create an order
-router.post("/createorder/:userid/:delivery_date", orderCtrl.createOrder); //! Retiré auth
+router.post("/createorder/:userid/:delivery_date", auth, orderCtrl.createOrder);
 
 // * See order according to delivery date
-router.get("/getallorders/:delivery_date", orderCtrl.getAllOrders); //! Retiré admin
-
-// * Sort orders by user
-//! Revoir dateId
-router.get("/getorders/:dateid/user", orderCtrl.getOrdersByUser); //! retiré admin
-
-// * Sort orders by product
-//! Revoir dateId
-router.get("/getorders/:dateid/product", orderCtrl.getOrdersByProd); //! retiré admin
+router.get("/getallorders/:delivery_date", admin, orderCtrl.getAllOrders);
 
 // * Send email for order confirmation
-router.post("/emailconf/:userid/:delivery_date/:contenu", orderCtrl.emailConfirm); //! Retiré auth
+router.post("/emailconf/:userid/:delivery_date/:contenu", auth, orderCtrl.emailConfirm);
 
 module.exports = router;

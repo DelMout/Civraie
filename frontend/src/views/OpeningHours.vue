@@ -38,7 +38,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
 	data() {
@@ -64,16 +64,28 @@ export default {
 				console.log(err);
 			});
 	},
+	computed: {
+		...mapState(["token"]),
+	},
 	methods: {
 		...mapActions(["checkConnect"]),
 		//* Save modifications of opening hours
 		modifOpenHours: function() {
 			this.modifSent = true;
 			this.hoursFormed = this.hours.replace(/<p>/g, "<p style='margin:0'>");
-			axios
-				.put(process.env.VUE_APP_API + "information/openhours/modification", {
+			axios({
+				method: "put",
+				url: process.env.VUE_APP_API + "information/openhours/modification",
+				data: {
 					content: this.hoursFormed,
-				})
+				},
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
+				// .put(process.env.VUE_APP_API + "information/openhours/modification", {
+				// 	content: this.hoursFormed,
+				// })
 				.then(() => {
 					this.dialog = true;
 					this.modifSent = false;

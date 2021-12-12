@@ -38,30 +38,6 @@ exports.getAllOrders = (req, res) => {
 		});
 };
 
-// * Get orders according to delivery date (dateId) and sorted by user
-exports.getOrdersByUser = (req, res) => {
-	order
-		.findAll({
-			where: { dateid: req.params.dateid },
-			order: [["userid", "ASC"]],
-		})
-		.then((obj) => {
-			res.send(obj);
-		});
-};
-
-// * Get orders according to delivery date (dateId) and sorted by product
-exports.getOrdersByProd = (req, res) => {
-	order
-		.findAll({
-			where: { dateid: req.params.dateid },
-			order: [["productid", "ASC"]],
-		})
-		.then((obj) => {
-			res.send(obj);
-		});
-};
-
 // * Send an email for order confirmation
 exports.emailConfirm = (req, res) => {
 	let transporter = nodemailer.createTransport({

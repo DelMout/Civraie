@@ -3,6 +3,7 @@
 		<div id="entete">
 			<h3>Liste des producteurs</h3>
 			<p id="number">Nombre producteurs = {{ length }}</p>
+			<p id="suppProd">Supprimer un producteur engendre la suppression des produits.</p>
 		</div>
 
 		<ConfirmPopup></ConfirmPopup>
@@ -189,7 +190,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
 	data() {
@@ -223,7 +224,13 @@ export default {
 	created: function() {
 		this.$store.state.inPages = true;
 		//* All producers
-		axios.get(process.env.VUE_APP_API + "producer").then((prod) => {
+		axios({
+			method: "get",
+			url: process.env.VUE_APP_API + "producer",
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
+		}).then((prod) => {
 			this.length = prod.data.length;
 			for (let i = 0; i < this.length; i++) {
 				this.producers.push({
@@ -256,12 +263,17 @@ export default {
 			}
 		});
 	},
+	computed: {
+		...mapState(["token"]),
+	},
 	methods: {
 		...mapActions(["checkConnect"]),
 		// //* Create a producer
 		validateCreate: function() {
-			axios
-				.post(process.env.VUE_APP_API + "producer/createproducer", {
+			axios({
+				method: "post",
+				url: process.env.VUE_APP_API + "producer/createproducer",
+				data: {
 					nom: this.nom,
 					prenom: this.prenom,
 					entreprise: this.entreprise,
@@ -270,7 +282,11 @@ export default {
 					phone: this.telephone,
 					email: this.email,
 					site_web: this.site,
-				})
+				},
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
 				.then(() => {
 					this.dialog = true;
 					this.infoProd = "Producteur créé !";
@@ -294,24 +310,33 @@ export default {
 		//* Validation modifications
 		validMod: function(event, prod) {
 			const id = prod.id;
+			const formData = new FormData();
+			formData.append("nom", prod.nom);
+			formData.append("prenom", prod.prenom);
+			formData.append("entreprise", prod.entreprise);
+			formData.append("products", prod.products);
+			formData.append("address", prod.address);
+			formData.append("phone", prod.phone);
+			formData.append("email", prod.email);
+			formData.append("site_web", prod.site_web);
+			console.log(prod.address);
+			// axios({
+			// 	method: "put",
+			// 	url: process.env.VUE_APP_API + "producer/modif/" + id,
+			// 	data: formData,
+			// 	headers: {
+			// 		Authorization: `Bearer ${this.token}`,
+			// 	},
+			// })
 			axios
-				.put(process.env.VUE_APP_API + "producer/modif/" + id, {
-					nom: prod.nom,
-					prenom: prod.prenom,
-					entreprise: prod.entreprise,
-					products: prod.produits,
-					address: prod.adresse,
-					phone: prod.telephone,
-					email: prod.email,
-					site_web: prod.site,
-				})
-				// headers: {
-				// 	Authorization: `Bearer ${this.token}`,
-				// },
-
-				.then(() => {
+				.put(process.env.VUE_APP_API + "producer/modif/" + id, formData)
+				.then((rep) => {
 					prod.modif = false;
-				});
+					console.log(rep);
+					console.log("heu hooo !!" + id);
+					//! Y a porbleme ici !!!
+				})
+				.catch((err) => console.log(err));
 		},
 
 		//* Want delete a product
@@ -334,16 +359,16 @@ export default {
 		//* Delete product
 		Delete: function(event, prod) {
 			const id = prod.id;
-			axios
-				.delete(process.env.VUE_APP_API + "producer/delete/" + id)
-				// headers: {
-				// 	Authorization: `Bearer ${this.token}`,
-				// },
-
-				.then(() => {
-					this.dialog = true;
-					this.infoProd = "La ligne du producteur a été supprimée.";
-				});
+			axios({
+				method: "delete",
+				url: process.env.VUE_APP_API + "producer/delete/" + id,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then(() => {
+				this.dialog = true;
+				this.infoProd = "La ligne du producteur a été supprimée.";
+			});
 		},
 
 		//* Close Dialog
@@ -372,6 +397,12 @@ h3 {
 	margin: 0;
 	font-size: 12px;
 	margin-top: 0.2rem;
+}
+#suppProd {
+	margin: 0;
+	font-size: 12px;
+	margin-top: 0.2rem;
+	margin-left: 1rem;
 }
 #producersTable {
 	display: flex;

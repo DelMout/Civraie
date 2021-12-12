@@ -3,15 +3,13 @@ const router = express.Router();
 
 const producerCtrl = require("../controllers/producer");
 
-const multer = require("../middleware/multer-config"); //Upload files
-const auth = require("../middleware/auth"); // Request authentification
 const admin = require("../middleware/isAdmin"); // Request authentification for admin
 
 // * Create a producer
-router.post("/createproducer", producerCtrl.createProducer); //! Retiré admin
+router.post("/createproducer", admin, producerCtrl.createProducer);
 
 // * See all producers
-router.get("/", producerCtrl.getAllProducers); //! Retiré admin
+router.get("/", admin, producerCtrl.getAllProducers);
 
 // * See a producer via id
 router.get("/getproducer/:producerid", producerCtrl.getProducer);
@@ -20,9 +18,9 @@ router.get("/getproducer/:producerid", producerCtrl.getProducer);
 router.get("/getproducerid/:entreprise", producerCtrl.getProducerId);
 
 // * Modify a producer
-router.put("/modif/:producerid", producerCtrl.modifProducer); //! retiré admin
+router.put("/modif/:producerid", producerCtrl.modifProducer); //TODO  admin. Ne fonctionne pas. Voir si fonctionnalité à supprimer !
 
 // * Delete a product
-router.delete("/delete/:producerid", producerCtrl.deleteProducer); //! retiré admin
+router.delete("/delete/:producerid", admin, producerCtrl.deleteProducer);
 
 module.exports = router;

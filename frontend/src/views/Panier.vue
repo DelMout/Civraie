@@ -132,9 +132,6 @@ export default {
 			axios({
 				method: "get",
 				url: process.env.VUE_APP_API + "product/getproducts/actived",
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
 			}).then((prod) => {
 				for (let i = 0; i < prod.data.length; i++) {
 					if (this.products[i].qty > 0) {
@@ -149,32 +146,41 @@ export default {
 
 						localStorage.removeItem(this.products[i].id);
 
-						axios
-							.post(
+						axios({
+							method: "post",
+							url:
 								process.env.VUE_APP_API +
-									"order/createorder/" +
-									this.userId +
-									"/" +
-									this.deliveryDate,
-								{
-									productId: this.products[i].id,
-									quantity: this.products[i].qty,
-									order_date: Date.now(),
-								}
-							)
+								"order/createorder/" +
+								this.userId +
+								"/" +
+								this.deliveryDate,
+							data: {
+								productId: this.products[i].id,
+								quantity: this.products[i].qty,
+								order_date: Date.now(),
+							},
+							headers: {
+								Authorization: `Bearer ${this.token}`,
+							},
+						})
 							.then(() => {
 								console.log("order saved !");
 								//send email confirmation
-								axios
-									.post(
+								axios({
+									method: "post",
+									url:
 										process.env.VUE_APP_API +
-											"order/emailconf/" +
-											this.userId +
-											"/" +
-											this.deliveryDate +
-											"/" +
-											this.tablMail
-									)
+										"order/emailconf/" +
+										this.userId +
+										"/" +
+										this.deliveryDate +
+										"/" +
+										this.tablMail,
+
+									headers: {
+										Authorization: `Bearer ${this.token}`,
+									},
+								})
 									.then(() => {
 										this.products = [];
 										// localStorage.clear();

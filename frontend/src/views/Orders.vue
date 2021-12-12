@@ -105,8 +105,13 @@ export default {
 		this.client = true;
 		this.$store.state.inPages = true;
 
-		axios
-			.get(process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate)
+		axios({
+			method: "get",
+			url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate,
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
+		})
 			.then((order) => {
 				for (let i = 0; i < order.data.length; i++) {
 					axios({
@@ -232,8 +237,13 @@ export default {
 			this.qtyProd = [];
 			this.produit = true;
 			this.client = false;
-			axios
-				.get(process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate)
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
 				.then((order) => {
 					console.log(order.data.length);
 					for (let i = 0; i < order.data.length; i++) {
