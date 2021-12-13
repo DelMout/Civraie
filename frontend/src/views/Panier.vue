@@ -187,10 +187,10 @@ export default {
 								.then(() => {
 									console.log("order saved !");
 									this.counter++;
-									console.log(this.total);
+									console.log(JSON.parse(localStorage.getItem("Total")));
 									console.log(this.counter);
 									//send email confirmation
-									if (this.counter == this.total) {
+									if (this.counter == JSON.parse(localStorage.getItem("Total"))) {
 										axios({
 											method: "post",
 											url:
