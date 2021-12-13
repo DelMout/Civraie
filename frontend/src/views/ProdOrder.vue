@@ -299,10 +299,10 @@ export default {
 			}
 			this.$store.commit("setTotal", localStorage.getItem("Total"));
 		},
-		//* Display producer of product
-		overlay(event) {
-			this.$refs.op.toggle(event);
-		},
+		// //* Display producer of product
+		// overlay(event) {
+		// 	this.$refs.op.toggle(event);
+		// },
 	},
 };
 </script>

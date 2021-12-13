@@ -25,7 +25,10 @@
 				<tr v-for="prod in products" :key="prod.id">
 					<td v-if="prod.qty > 0">{{ prod.product }}</td>
 					<td v-if="prod.qty > 0">{{ prod.qty }}</td>
-					<td v-if="prod.qty > 0">{{ prod.unity }}</td>
+					<td v-if="prod.qty > 0 && !prod.unity">
+						<span>{{ prod.unity_kg }}</span>
+					</td>
+					<td v-if="prod.qty > 0 && prod.unity">{{ prod.unity }}</td>
 					<td v-if="prod.qty > 0">
 						<p id="butAddSub">
 							<Button
@@ -84,6 +87,8 @@ export default {
 			info: "Votre panier est actuellement vide.",
 			dialog: false,
 			ordered: false,
+			unitee: "",
+			counter: 0,
 		};
 	},
 	computed: {
@@ -112,7 +117,8 @@ export default {
 						id: prod.data[c].id,
 						product: prod.data[c].product,
 						price_kg: prod.data[c].price_kg,
-						unity: prod.data[c].unite_vente,
+						unity_kg: prod.data[c].unite_vente,
+						unity: prod.data[c].unity,
 						price_unity: prod.data[c].price_unite_vente,
 						qty: localStorage.getItem(prod.data[c].id),
 					});
@@ -145,6 +151,11 @@ export default {
 				}).then((prod) => {
 					for (let i = 0; i < prod.data.length; i++) {
 						if (this.products[i].qty > 0) {
+							if (this.products[i].unity) {
+								this.unitee = this.products[i].unity;
+							} else {
+								this.unitee = this.products[i].unity_kg;
+							}
 							this.tablMail =
 								this.tablMail +
 								"<tr style='text-align:center'><td style='border: 1px solid black;width:100px;height:50px;'>" +
@@ -152,7 +163,7 @@ export default {
 								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
 								this.products[i].qty +
 								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-								this.products[i].unity;
+								this.unitee;
 
 							localStorage.removeItem(this.products[i].id);
 
@@ -175,33 +186,38 @@ export default {
 							})
 								.then(() => {
 									console.log("order saved !");
+									this.counter++;
+									console.log(this.total);
+									console.log(this.counter);
 									//send email confirmation
-									axios({
-										method: "post",
-										url:
-											process.env.VUE_APP_API +
-											"order/emailconf/" +
-											this.userId +
-											"/" +
-											this.deliveryDate +
-											"/" +
-											this.tablMail,
+									if (this.counter == this.total) {
+										axios({
+											method: "post",
+											url:
+												process.env.VUE_APP_API +
+												"order/emailconf/" +
+												this.userId +
+												"/" +
+												this.deliveryDate +
+												"/" +
+												this.tablMail,
 
-										headers: {
-											Authorization: `Bearer ${this.token}`,
-										},
-									})
-										.then(() => {
-											this.products = [];
-											// localStorage.clear();
-											this.total = 0;
-											localStorage.removeItem("Total");
-											this.dialog = true;
+											headers: {
+												Authorization: `Bearer ${this.token}`,
+											},
 										})
-										.catch((err) => {
-											// this.infoOrder = err;
-											console.log(err);
-										});
+											.then(() => {
+												this.products = [];
+												// localStorage.clear();
+												this.total = 0;
+												localStorage.removeItem("Total");
+												this.dialog = true;
+											})
+											.catch((err) => {
+												// this.infoOrder = err;
+												console.log(err);
+											});
+									}
 								})
 								.catch((err) => {
 									console.log(err);

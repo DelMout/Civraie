@@ -84,8 +84,14 @@ export default {
 							this.setAdmin(isAdmin);
 							this.$store.dispatch("checkConnect");
 							// MAJ last_connect + jeton
-							axios
-								.put(process.env.VUE_APP_API + "user/login/" + this.email)
+							axios({
+								method: "put",
+								url: process.env.VUE_APP_API + "user/login/" + this.email,
+								headers: {
+									Authorization: `Bearer ${this.token}`,
+								},
+							})
+								// .put(process.env.VUE_APP_API + "user/login/" + this.email)
 								.then(() => {
 									this.$router.push("/produits_vente_commande");
 								});

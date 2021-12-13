@@ -50,6 +50,7 @@
 					<th>Catégorie</th>
 					<th>Jour clôture</th>
 					<th class="numb">Prix</th>
+					<th>Unité / prix</th>
 					<th>Unité vente</th>
 					<th>Support vente</th>
 					<th class="photo">Photo</th>
@@ -69,7 +70,6 @@
 						<p v-if="!prod.modif || prod.delete">{{ prod.producer }}</p>
 						<Dropdown
 							v-if="prod.modif && !prod.delete"
-							@click="selProducer"
 							class="dropclass"
 							v-model="producerModel"
 							:options="producers"
@@ -114,12 +114,25 @@
 						/>
 					</td>
 					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">{{ prod.unite_vente }}</p>
+						<p v-if="!prod.modif || prod.delete">
+							{{ prod.unite_vente }}
+						</p>
 						<input
 							v-if="prod.modif && !prod.delete"
 							class="create "
 							type="text"
 							v-model="prod.unite_vente"
+						/>
+					</td>
+					<td @click="modifProd($event, prod)" :class="prod.modif">
+						<p v-if="!prod.modif || prod.delete">
+							{{ prod.unity }}
+						</p>
+						<input
+							v-if="prod.modif && !prod.delete"
+							class="create "
+							type="text"
+							v-model="prod.unity"
 						/>
 					</td>
 
@@ -187,6 +200,7 @@
 					<th>Catégorie</th>
 					<th>Jour clôture</th>
 					<th class="numb">Prix</th>
+					<th>Unité / prix</th>
 					<th>Unité vente</th>
 					<th>Support vente</th>
 					<th class="photo">Photo</th>
@@ -233,6 +247,9 @@
 					</td>
 					<td class="createProd">
 						<input class="createProd " type="text" id="qtymini" v-model="qtyMini" />
+					</td>
+					<td class="createProd">
+						<input class="createProd " type="text" id="unity" v-model="unity" />
 					</td>
 					<td class="createProd">
 						<Dropdown
@@ -299,6 +316,7 @@ export default {
 			name: "",
 			price: "",
 			qtyMini: "",
+			unity: "",
 			PriceQtyMini: "",
 			stockInit: "",
 			stockLimit: "",
@@ -345,6 +363,7 @@ export default {
 			modifInProgress: false,
 			infoProd: "",
 			tamponId: "",
+			unitee: "",
 		};
 	},
 	beforeMount: function() {
@@ -392,6 +411,7 @@ export default {
 											producer: producer.data.entreprise,
 											price: prod.data[i].price,
 											unite_vente: prod.data[i].unite_vente,
+											unity: prod.data[i].unity,
 											price_unite_vente: prod.data[i].price_unite_vente,
 											stock_init: prod.data[i].stock_init,
 											stock_updated: prod.data[i].stock_updated,
@@ -445,16 +465,24 @@ export default {
 		displayProducers: function() {
 			this.producers = [];
 			//* All producers
-			axios.get(process.env.VUE_APP_API + "producer").then((prodc) => {
-				this.lengthPc = prodc.data.length;
-				for (let i = 0; i < this.lengthPc; i++) {
-					this.producers.push({
-						entreprise: prodc.data[i].entreprise,
-						id: prodc.data[i].id,
-					});
-				}
-				// console.log(prodc);
-			});
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "producer",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
+				// .get(process.env.VUE_APP_API + "producer")
+				.then((prodc) => {
+					this.lengthPc = prodc.data.length;
+					for (let i = 0; i < this.lengthPc; i++) {
+						this.producers.push({
+							entreprise: prodc.data[i].entreprise,
+							id: prodc.data[i].id,
+						});
+					}
+					// console.log(prodc);
+				});
 		},
 
 		//* Display all producers (when modif product)
@@ -674,6 +702,7 @@ export default {
 			formData.append("cloturedayId", this.clotureToSelect);
 			formData.append("price", this.price);
 			formData.append("unite_vente", this.qtyMini);
+			formData.append("unity", this.unity);
 			formData.append("ordering", this.ordering);
 			formData.append("image", this.image);
 			formData.append("active", this.active);
@@ -731,6 +760,11 @@ export default {
 		//* Validation modifications
 		validModif: function(event, prod) {
 			const id = prod.id;
+			if (prod.unity) {
+				this.unitee = prod.unity;
+			} else {
+				this.unitee = "";
+			}
 			console.log(id);
 			console.log(this.producerModel);
 			console.log(this.categoryModel);
@@ -743,6 +777,7 @@ export default {
 			formData.append("cloturedayId", this.clotureModel);
 			formData.append("price", prod.price);
 			formData.append("unite_vente", prod.unite_vente);
+			formData.append("unity", this.unitee);
 			formData.append("ordering", this.orderingModel);
 			formData.append("image", this.image);
 			axios({
@@ -910,6 +945,7 @@ export default {
 													producer: producer.data.entreprise,
 													price: prod.data[i].price,
 													unite_vente: prod.data[i].unite_vente,
+													unity: prod.data[i].unity,
 													price_unite_vente:
 														prod.data[i].price_unite_vente,
 													stock_init: prod.data[i].stock_init,

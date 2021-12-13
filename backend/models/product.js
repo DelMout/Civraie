@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
 					notEmpty: true,
 				},
 			},
+			unity: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
 			price_unite_vente: {
 				type: DataTypes.DECIMAL,
 				allowNull: true,
