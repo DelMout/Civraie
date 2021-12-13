@@ -17,7 +17,7 @@ router.get("/", admin, productCtrl.getAllProducts);
 // router.get("/:ordering", productCtrl.getProductsOrdering);
 
 // * See products according to producerId
-router.get("/producerid/:producerid", admin, productCtrl.getProductsProducerid);
+router.get("/producerid/:producerid", productCtrl.getProductsProducerid); //! No need Admin
 
 // * See all products actived
 router.get("/getproducts/actived", productCtrl.getProductsActived); //! No auth

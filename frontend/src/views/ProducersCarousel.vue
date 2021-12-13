@@ -246,7 +246,6 @@ export default {
 	created: function() {
 		this.$store.state.inPages = true;
 	},
-
 	methods: {
 		//* Number format
 		numFr: function(num) {
@@ -344,14 +343,6 @@ export default {
 };
 </script>
 <style scoped>
-@font-face {
-	font-family: "RougeScript";
-	src: url("../assets/RougeScript-Regular.ttf") format("truetype");
-}
-@font-face {
-	font-family: "Aguafina";
-	src: url("../assets/AguafinaScript-Regular.ttf") format("truetype");
-}
 @font-face {
 	font-family: "dancing";
 	src: url("../assets/dancingscript-regular-webfont.ttf") format("truetype");

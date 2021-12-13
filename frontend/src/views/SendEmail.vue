@@ -129,15 +129,10 @@ export default {
 						headers: {
 							Authorization: `Bearer ${this.token}`,
 						},
-					})
-						.post(process.env.VUE_APP_API + "user/emailinfo", {
-							title: this.object,
-							content: this.body,
-						})
-						.then(() => {
-							this.emailSent = false;
-							this.dialog = true;
-						});
+					}).then(() => {
+						this.emailSent = false;
+						this.dialog = true;
+					});
 				}
 			}
 		},

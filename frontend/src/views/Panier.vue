@@ -92,30 +92,34 @@ export default {
 	},
 	created: function() {
 		this.$store.dispatch("checkConnect");
-		this.$store.state.inPages = true;
-		console.log("hey !!");
-		console.log(this.$store.state.userId);
-		//*Select all products actived
-		axios({
-			method: "get",
-			url: process.env.VUE_APP_API + "product/getproducts/actived",
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-			},
-		}).then((prod) => {
-			console.log(prod);
-			for (let c = 0; c < prod.data.length; c++) {
-				this.products.push({
-					id: prod.data[c].id,
-					product: prod.data[c].product,
-					price_kg: prod.data[c].price_kg,
-					unity: prod.data[c].unite_vente,
-					price_unity: prod.data[c].price_unite_vente,
-					qty: localStorage.getItem(prod.data[c].id),
-				});
-			}
-			console.log(this.products);
-		});
+		if (!this.connected) {
+			this.$router.push("/");
+		} else {
+			this.$store.state.inPages = true;
+			console.log("hey !!");
+			console.log(this.$store.state.userId);
+			//*Select all products actived
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "product/getproducts/actived",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((prod) => {
+				console.log(prod);
+				for (let c = 0; c < prod.data.length; c++) {
+					this.products.push({
+						id: prod.data[c].id,
+						product: prod.data[c].product,
+						price_kg: prod.data[c].price_kg,
+						unity: prod.data[c].unite_vente,
+						price_unity: prod.data[c].price_unite_vente,
+						qty: localStorage.getItem(prod.data[c].id),
+					});
+				}
+				console.log(this.products);
+			});
+		}
 	},
 	methods: {
 		//* Number format
@@ -127,114 +131,143 @@ export default {
 
 		//* Validation order
 		validOrder: function() {
-			this.ordered = true;
-			// Save in database
-			axios({
-				method: "get",
-				url: process.env.VUE_APP_API + "product/getproducts/actived",
-			}).then((prod) => {
-				for (let i = 0; i < prod.data.length; i++) {
-					if (this.products[i].qty > 0) {
-						this.tablMail =
-							this.tablMail +
-							"<tr style='text-align:center'><td style='border: 1px solid black;width:100px;height:50px;'>" +
-							this.products[i].product +
-							"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-							this.products[i].qty +
-							"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-							this.products[i].unity;
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				localStorage.setItem("disconnect", "disconnected");
 
-						localStorage.removeItem(this.products[i].id);
+				this.$router.push("/");
+			} else {
+				this.ordered = true;
+				// Save in database
+				axios({
+					method: "get",
+					url: process.env.VUE_APP_API + "product/getproducts/actived",
+				}).then((prod) => {
+					for (let i = 0; i < prod.data.length; i++) {
+						if (this.products[i].qty > 0) {
+							this.tablMail =
+								this.tablMail +
+								"<tr style='text-align:center'><td style='border: 1px solid black;width:100px;height:50px;'>" +
+								this.products[i].product +
+								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+								this.products[i].qty +
+								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+								this.products[i].unity;
 
-						axios({
-							method: "post",
-							url:
-								process.env.VUE_APP_API +
-								"order/createorder/" +
-								this.userId +
-								"/" +
-								this.deliveryDate,
-							data: {
-								productId: this.products[i].id,
-								quantity: this.products[i].qty,
-								order_date: Date.now(),
-							},
-							headers: {
-								Authorization: `Bearer ${this.token}`,
-							},
-						})
-							.then(() => {
-								console.log("order saved !");
-								//send email confirmation
-								axios({
-									method: "post",
-									url:
-										process.env.VUE_APP_API +
-										"order/emailconf/" +
-										this.userId +
-										"/" +
-										this.deliveryDate +
-										"/" +
-										this.tablMail,
+							localStorage.removeItem(this.products[i].id);
 
-									headers: {
-										Authorization: `Bearer ${this.token}`,
-									},
-								})
-									.then(() => {
-										this.products = [];
-										// localStorage.clear();
-										this.total = 0;
-										localStorage.removeItem("Total");
-										this.dialog = true;
-									})
-									.catch((err) => {
-										// this.infoOrder = err;
-										console.log(err);
-									});
+							axios({
+								method: "post",
+								url:
+									process.env.VUE_APP_API +
+									"order/createorder/" +
+									this.userId +
+									"/" +
+									this.deliveryDate,
+								data: {
+									productId: this.products[i].id,
+									quantity: this.products[i].qty,
+									order_date: Date.now(),
+								},
+								headers: {
+									Authorization: `Bearer ${this.token}`,
+								},
 							})
-							.catch((err) => {
-								console.log(err);
-							});
+								.then(() => {
+									console.log("order saved !");
+									//send email confirmation
+									axios({
+										method: "post",
+										url:
+											process.env.VUE_APP_API +
+											"order/emailconf/" +
+											this.userId +
+											"/" +
+											this.deliveryDate +
+											"/" +
+											this.tablMail,
+
+										headers: {
+											Authorization: `Bearer ${this.token}`,
+										},
+									})
+										.then(() => {
+											this.products = [];
+											// localStorage.clear();
+											this.total = 0;
+											localStorage.removeItem("Total");
+											this.dialog = true;
+										})
+										.catch((err) => {
+											// this.infoOrder = err;
+											console.log(err);
+										});
+								})
+								.catch((err) => {
+									console.log(err);
+								});
+						}
 					}
-				}
-			});
+				});
+			}
 		},
 		//* Add product to the order
 		addQty: function(event, prod) {
-			if (localStorage === null) {
-				localStorage.setItem("Total", 1);
-				localStorage.setItem(prod.id, 1);
-				prod.qty = 1;
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
 			} else {
-				if (localStorage.getItem(prod.id) !== null) {
-					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) + 1);
-					prod.qty = localStorage.getItem(prod.id);
-				} else {
+				if (localStorage === null) {
+					localStorage.setItem("Total", 1);
 					localStorage.setItem(prod.id, 1);
-					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) + 1);
 					prod.qty = 1;
+				} else {
+					if (localStorage.getItem(prod.id) !== null) {
+						localStorage.setItem(
+							prod.id,
+							JSON.parse(localStorage.getItem(prod.id)) + 1
+						);
+						prod.qty = localStorage.getItem(prod.id);
+					} else {
+						localStorage.setItem(prod.id, 1);
+						localStorage.setItem(
+							"Total",
+							JSON.parse(localStorage.getItem("Total")) + 1
+						);
+						prod.qty = 1;
+					}
 				}
+				this.$store.commit("setTotal", localStorage.getItem("Total"));
 			}
-			this.$store.commit("setTotal", localStorage.getItem("Total"));
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
-			console.log("g appuyé sur sub");
-			if (localStorage.getItem(prod.id) !== null) {
-				if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
-					localStorage.removeItem(prod.id);
-					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) - 1);
-					prod.qty = 0;
-				} else {
-					console.log("je dois décrémenter !");
-					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
-					prod.qty = localStorage.getItem(prod.id);
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				console.log("g appuyé sur sub");
+				if (localStorage.getItem(prod.id) !== null) {
+					if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
+						localStorage.removeItem(prod.id);
+						localStorage.setItem(
+							"Total",
+							JSON.parse(localStorage.getItem("Total")) - 1
+						);
+						prod.qty = 0;
+					} else {
+						console.log("je dois décrémenter !");
+						localStorage.setItem(
+							prod.id,
+							JSON.parse(localStorage.getItem(prod.id)) - 1
+						);
+						prod.qty = localStorage.getItem(prod.id);
+					}
 				}
-			}
-			this.$store.commit("setTotal", localStorage.getItem("Total"));
-			if (localStorage.getItem("Total") == 0) {
-				location.reload();
+				this.$store.commit("setTotal", localStorage.getItem("Total"));
+				if (localStorage.getItem("Total") == 0) {
+					location.reload();
+				}
 			}
 		},
 		//* Close Dialog

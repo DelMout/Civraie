@@ -1,6 +1,6 @@
 <template>
 	<div id="usersTable">
-		<div id="entete">
+		<div id="title">
 			<h3>Liste des utilisateurs</h3>
 			<p id="number">Nombre utilisateurs = {{ length }}</p>
 		</div>
@@ -230,7 +230,7 @@ h3 {
 	text-align: right;
 	margin-left: 5rem;
 }
-#entete {
+#title {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 0rem;

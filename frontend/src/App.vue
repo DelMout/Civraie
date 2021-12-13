@@ -11,8 +11,10 @@
 			<p></p>
 		</div>
 		<div id="connected" v-if="connected">
-			<div class="panier_connect bag">
+			<div class="panier_connect ">
 				<p v-if="total > 0">
+					<a href="http://localhost:8080/panier" class="monpanier ">Mon Panier</a>
+
 					<a
 						href="http://localhost:8080/panier"
 						class="pi pi-shopping-bag p-mr-4 "
@@ -21,16 +23,17 @@
 					></a>
 				</p>
 				<p v-if="total == 0">
-					<a
+					<a href="http://localhost:8080/panier" class="monpanier ">Mon Panier</a
+					><a
 						href="http://localhost:8080/panier"
 						class="pi pi-shopping-bag p-mr-4 "
 						style="font-size:1.5rem;"
 					></a>
 				</p>
 			</div>
-			<div class="panier_connect" style="margin-top:0.7rem;">
+			<!-- <div class="panier_connect" style="margin-top:0.7rem;">
 				<p><i>Vous êtes connecté(e)</i></p>
-			</div>
+			</div> -->
 			<div style="margin-top:0.7rem;">
 				<p><a @click="disconnect">Déconnexion</a></p>
 			</div>
@@ -124,6 +127,7 @@ export default {
 	padding: 30px;
 	padding-top: 0;
 	justify-content: center;
+	margin-top: 5rem;
 }
 a {
 	color: white;
@@ -152,11 +156,18 @@ a {
 #entete {
 	display: flex;
 	justify-content: space-between;
+	position: fixed;
+	top: 0rem;
+	background-color: #122f1c;
+	z-index: 20;
+	padding-top: 0.5rem;
+	padding-bottom: 0;
+	width: 100%;
 }
 #logo {
 	margin-left: 2rem;
 	display: flex;
-	width: 20%;
+	width: 10%;
 }
 
 #connected {
@@ -165,6 +176,8 @@ a {
 	font-size: 0.8rem;
 	margin-bottom: 0;
 	margin-right: 2rem;
+	position: fixed;
+	right: 0;
 }
 #logoEntete {
 	width: 50%;
@@ -178,8 +191,27 @@ a {
 	margin-right: 1rem;
 	margin-left: 1rem;
 }
+.monpanier {
+	margin-right: 0.5rem;
+	font-size: 1rem;
+}
+@media only screen and (max-width: 1280px) {
+	#logo {
+		width: 12%;
+	}
+}
+@media only screen and (max-width: 1024px) {
+	#logo {
+		width: 15%;
+	}
+}
+@media only screen and (max-width: 768px) {
+	#logo {
+		width: 18%;
+	}
+}
 
-@media only screen and (max-width: 576px) {
+@media only screen and (max-width: 640px) {
 	/*mobiles */
 	#connected {
 		font-size: 0.6rem;
@@ -190,9 +222,13 @@ a {
 	}
 	.panier_connect {
 		margin-right: 0.2rem;
+		/* width: 5rem; */
 	}
-	.bag {
-		width: 1.8rem;
+	.monpanier {
+		font-size: 0.6rem;
+	}
+	#logo {
+		width: 20%;
 	}
 }
 </style>

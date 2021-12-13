@@ -189,6 +189,16 @@ export default {
 		this.creation = false;
 		this.forgot = false;
 		this.logged = false;
+		// this.$store.dispatch("checkConnect");
+		// if (localStorage.getItem("disconnect") != null) {
+		// 	this.$toast.add({
+		// 		severity: "error",
+		// 		detail: "boum boum",
+		// 		closable: false,
+		// 		life: 4000,
+		// 	});
+		// }
+		//! Voir si on raffiche la suite
 		if (!this.connected) {
 			localStorage.clear();
 		}

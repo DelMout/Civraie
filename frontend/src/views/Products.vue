@@ -1,6 +1,6 @@
 <template>
 	<div id="productsTable">
-		<div id="entete">
+		<div id="title">
 			<h3>Liste des produits</h3>
 			<p id="number">* Attention, "Actif" à faire qu'à partir du Samedi ou Dimanche !</p>
 		</div>
@@ -875,9 +875,9 @@ export default {
 				axios({
 					method: "get",
 					url: process.env.VUE_APP_API + "product/producerid/" + this.produSelected,
-					headers: {
-						Authorization: `Bearer ${this.token}`,
-					},
+					// headers: {
+					// 	Authorization: `Bearer ${this.token}`,
+					// },
 				}).then((prod) => {
 					// console.log(products);
 					this.length = prod.data.length;
@@ -968,7 +968,7 @@ h3 {
 	text-align: right;
 	margin-left: 5rem;
 }
-#entete {
+#title {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 0rem;

@@ -1,6 +1,6 @@
 <template>
 	<div id="producersTable">
-		<div id="entete">
+		<div id="title">
 			<h3>Liste des producteurs</h3>
 			<p id="number">Nombre producteurs = {{ length }}</p>
 			<p id="suppProd">Supprimer un producteur engendre la suppression des produits.</p>
@@ -386,7 +386,7 @@ h3 {
 	text-align: right;
 	margin-left: 5rem;
 }
-#entete {
+#title {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 0rem;
