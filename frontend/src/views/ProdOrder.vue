@@ -331,7 +331,7 @@ h4 {
 	width: 10rem;
 	margin: 0;
 	padding: 0;
-	height: 18rem;
+	height: 21rem;
 	display: flex;
 	flex-direction: column;
 	border-radius: 8px;
@@ -342,13 +342,14 @@ h4 {
 .vignette {
 	max-height: 100%;
 	width: auto;
+	max-width: 100%;
 }
 ::v-deep(.p-card .p-card-title) {
 	font-weight: bold;
 	font-size: 1rem;
 	width: 100%;
 	margin: 0;
-	height: 5rem;
+	height: 8rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;

@@ -30,6 +30,12 @@
 				class="p-button-raised   p-button-warning"
 				@click="downPage"
 			/>
+			<Button
+				id="allactived"
+				label="Tous actifs"
+				class="p-button-raised   p-button on"
+				@click="putAllActived"
+			/>
 		</div>
 
 		<ConfirmPopup></ConfirmPopup>
@@ -819,7 +825,7 @@ export default {
 			// prod.modif = false;
 			this.$confirm.require({
 				target: event.currentTarget,
-				message: "Souhaitez-vous supprimer ce producteur ?",
+				message: "Souhaitez-vous supprimer ce produit ?",
 				icon: "pi pi-info-circle",
 				acceptClass: "p-button-danger",
 				accept: () => {
@@ -1142,9 +1148,13 @@ table {
 }
 .on {
 	background-color: greenyellow;
+	color: black;
 }
 .off {
 	background-color: grey;
+}
+#allactived {
+	margin-left: 5rem;
 }
 ::v-deep(.p-dropdown) {
 	background-color: #fbc02d;

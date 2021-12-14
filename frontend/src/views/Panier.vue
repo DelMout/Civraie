@@ -159,11 +159,11 @@ export default {
 							this.tablMail =
 								this.tablMail +
 								"<tr style='text-align:center'><td style='border: 1px solid black;width:100px;height:50px;'>" +
-								this.products[i].product +
+								encodeURIComponent(this.products[i].product) +
 								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
 								this.products[i].qty +
 								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-								this.unitee;
+								encodeURIComponent(this.unitee);
 
 							localStorage.removeItem(this.products[i].id);
 

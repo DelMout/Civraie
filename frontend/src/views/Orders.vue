@@ -39,7 +39,8 @@
 					<td :class="ord.color">{{ dateFr(ord.order_date) }}</td>
 					<td :class="ord.color">{{ ord.product }}</td>
 					<td :class="ord.color">{{ ord.quantity }}</td>
-					<td :class="ord.color">{{ ord.unite_vente }}</td>
+					<td :class="ord.color" v-if="!ord.unity">{{ ord.unite_kg }}</td>
+					<td :class="ord.color" v-if="ord.unity">{{ ord.unity }}</td>
 				</tr>
 			</table>
 
@@ -58,7 +59,8 @@
 					<td :class="pro.color">{{ pro.producer }}</td>
 					<td :class="pro.color">{{ pro.product }}</td>
 					<td :class="pro.color">{{ pro.quantity }}</td>
-					<td :class="pro.color">{{ pro.unity }}</td>
+					<td :class="pro.color" v-if="!pro.unity">{{ pro.unity_kg }}</td>
+					<td :class="pro.color" v-if="pro.unity">{{ pro.unity }}</td>
 				</tr>
 			</table>
 		</div>
@@ -138,7 +140,8 @@ export default {
 								userFirstName: user.data.prenom,
 								product: product.data.product,
 								producerId: product.data.producerId,
-								unite_vente: product.data.unite_vente,
+								unite_kg: product.data.unite_vente,
+								unity: product.data.unity,
 								quantity: order.data[i].quantity,
 								order_date: order.data[i].order_date,
 								color: "line_pair",
@@ -278,7 +281,8 @@ export default {
 											producer: producer.data.entreprise,
 											product: product.data.product,
 											quantity: order.data[i].quantity,
-											unity: product.data.unite_vente,
+											unity_kg: product.data.unite_vente,
+											unity: product.data.unity,
 											color: "line_pair",
 										});
 									}

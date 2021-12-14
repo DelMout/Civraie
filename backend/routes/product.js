@@ -20,7 +20,7 @@ router.get("/", admin, productCtrl.getAllProducts);
 router.get("/producerid/:producerid", productCtrl.getProductsProducerid); //! No need Admin
 
 // * See all products actived
-router.get("/getproducts/actived", productCtrl.getProductsActived); //! No auth
+router.get("/getproducts/actived", productCtrl.getProductsActived); //! No need auth
 
 // * See products according to ordering=1 and 2 AND category AND active=1
 router.get("/category/:category", productCtrl.getProductsCategory);
@@ -33,6 +33,9 @@ router.put("/modif/:productid", admin, multer, productCtrl.modifProduct);
 
 // * Change "active" of a product
 router.put("/changeactive/:productid/:active", admin, productCtrl.changeActive);
+
+// * Put all products on "active"
+router.put("/putallproducts/actived", productCtrl.putProductsActived); //! Put admin
 
 // * Check if product must become inactive (after clotureday)
 router.put("/checkactive/putinactive", productCtrl.checkActive);
