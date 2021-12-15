@@ -35,7 +35,7 @@ router.put("/modif/:productid", admin, multer, productCtrl.modifProduct);
 router.put("/changeactive/:productid/:active", admin, productCtrl.changeActive);
 
 // * Put all products on "active"
-router.put("/putallproducts/actived", productCtrl.putProductsActived); //! Put admin
+router.put("/putallproducts/actived", admin, productCtrl.putProductsActived);
 
 // * Check if product must become inactive (after clotureday)
 router.put("/checkactive/putinactive", productCtrl.checkActive);

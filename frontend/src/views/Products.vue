@@ -343,8 +343,8 @@ export default {
 				{ id: 2, cloture_day: "Mardi" },
 				{ id: 3, cloture_day: "Mercredi" },
 				{ id: 4, cloture_day: "Jeudi" },
-				{ id: 5, cloture_day: "Vendredi" },
-				{ id: 6, cloture_day: "Samedi" },
+				// { id: 5, cloture_day: "Vendredi" },
+				// { id: 6, cloture_day: "Samedi" },
 			],
 			categoryId: "",
 			orderingItem: "",
@@ -1000,6 +1000,23 @@ export default {
 			this.produSelected = "";
 			location.reload();
 		},
+		//* Put all products actived
+		putAllActived: function() {
+			axios({
+				method: "put",
+				url: process.env.VUE_APP_API + "product/putallproducts/actived",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
+				.then(() => {
+					console.log("All products put actived");
+					location.reload();
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
 	},
 };
 </script>
@@ -1145,13 +1162,14 @@ table {
 	height: 1.5rem;
 	border-radius: 50%;
 	margin-left: 0;
+	cursor: pointer;
 }
 .on {
 	background-color: greenyellow;
 	color: black;
 }
 .off {
-	background-color: grey;
+	background-color: red;
 }
 #allactived {
 	margin-left: 5rem;

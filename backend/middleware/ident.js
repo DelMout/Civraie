@@ -1,4 +1,4 @@
-const { publication } = require("../models");
+// const { publication } = require("../models");
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {

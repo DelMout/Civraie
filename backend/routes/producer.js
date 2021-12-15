@@ -20,7 +20,7 @@ router.get("/getproducerid/:entreprise", producerCtrl.getProducerId);
 // * Modify a producer
 router.put("/modif/:producerid", producerCtrl.modifProducer); //TODO  admin. Ne fonctionne pas. Voir si fonctionnalité à supprimer !
 
-// * Delete a product
-router.delete("/delete/:producerid", admin, producerCtrl.deleteProducer);
+// // * Delete a producer
+// router.delete("/delete/:producerid", admin, producerCtrl.deleteProducer);
 
 module.exports = router;

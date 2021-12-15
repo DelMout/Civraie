@@ -10,8 +10,12 @@ module.exports = (req, res, next) => {
 		if (isAdmin === 0) {
 			throw "Not Admin";
 		} else {
-			if (isAdmin === 1 && userId !== parseInt(process.env.ID_ADMIN)) {
-				throw "Invalid user admin";
+			if (isAdmin === 1 && userId !== parseInt(process.env.ID_ADMINBIS)) {
+				if (isAdmin === 1 && userId !== parseInt(process.env.ID_ADMIN)) {
+					throw "Invalid user admin";
+				} else {
+					next();
+				}
 			} else {
 				next();
 			}

@@ -3,10 +3,9 @@
 		<div id="title">
 			<h3>Liste des producteurs</h3>
 			<p id="number">Nombre producteurs = {{ length }}</p>
-			<p id="suppProd">Supprimer un producteur engendre la suppression des produits.</p>
 		</div>
 
-		<ConfirmPopup></ConfirmPopup>
+		<!-- <ConfirmPopup></ConfirmPopup>
 		<ConfirmPopup group="demo">
 			<template #message="slotProps">
 				<div class="p-d-flex p-p-4">
@@ -14,7 +13,7 @@
 					<p class="p-pl-2">{{ slotProps.message.message }}</p>
 				</div>
 			</template>
-		</ConfirmPopup>
+		</ConfirmPopup> -->
 
 		<div>
 			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
@@ -48,7 +47,6 @@
 					<th class="">Adresse</th>
 					<th class="">Téléphone</th>
 					<th class="">Email</th>
-					<th>Site web</th>
 				</tr>
 				<tr v-for="prod in producers" :key="prod.id" :id="prod.delete">
 					<td @click="modifProd($event, prod)">
@@ -96,6 +94,7 @@
 						<input
 							v-if="prod.modif && !prod.delete"
 							class="create "
+							style="background-color:blue;"
 							type="text"
 							v-model="prod.address"
 						/>
@@ -118,15 +117,6 @@
 							v-model="prod.email"
 						/>
 					</td>
-					<td class="" @click="modifProd($event, prod)">
-						<p v-if="!prod.modif || prod.delete">{{ prod.site_web }}</p>
-						<input
-							v-if="prod.modif && !prod.delete"
-							class="create "
-							type="text"
-							v-model="prod.site_web"
-						/>
-					</td>
 
 					<td v-if="prod.modif" id="sup">
 						<Button
@@ -137,13 +127,13 @@
 							@click="validMod($event, prod)"
 						/>
 
-						<Button
+						<!-- <Button
 							v-if="prod.modif"
 							id="trash"
 							icon="pi pi-trash"
 							class=" p-button-rounded p-button-danger butt"
 							@click="wantDelete($event, prod)"
-						/>
+						/> -->
 					</td>
 				</tr>
 				<!-- Row for creating new producer -->
@@ -169,9 +159,6 @@
 					</td>
 					<td class="">
 						<input class="create " type="text" id="email" v-model="email" />
-					</td>
-					<td class="">
-						<input class="create " type="text" id="site" v-model="site" />
 					</td>
 
 					<td id="creer">
@@ -242,7 +229,6 @@ export default {
 					address: prod.data[i].address,
 					phone: prod.data[i].phone,
 					email: prod.data[i].email,
-					site_web: prod.data[i].site_web,
 					modif: 0,
 					delete: 0,
 				});
@@ -292,6 +278,7 @@ export default {
 					this.infoProd = "Producteur créé !";
 				})
 				.catch(() => {
+					console.log("pas correct !");
 					this.$toast.add({
 						severity: "error",
 						detail:
@@ -318,7 +305,6 @@ export default {
 			formData.append("address", prod.address);
 			formData.append("phone", prod.phone);
 			formData.append("email", prod.email);
-			formData.append("site_web", prod.site_web);
 			console.log(prod.address);
 			// axios({
 			// 	method: "put",
@@ -339,37 +325,37 @@ export default {
 				.catch((err) => console.log(err));
 		},
 
-		//* Want delete a product
-		wantDelete: function(event, prod) {
-			prod.delete = "red";
-			this.$confirm.require({
-				target: event.currentTarget,
-				message: "Souhaitez-vous supprimer ce producteur ?",
-				icon: "pi pi-info-circle",
-				acceptClass: "p-button-danger",
-				accept: () => {
-					this.Delete(event, prod);
-				},
-				reject: () => {
-					prod.delete = 0;
-				},
-			});
-		},
+		// //* Want delete a product
+		// wantDelete: function(event, prod) {
+		// 	prod.delete = "red";
+		// 	this.$confirm.require({
+		// 		target: event.currentTarget,
+		// 		message: "Souhaitez-vous supprimer ce producteur ?",
+		// 		icon: "pi pi-info-circle",
+		// 		acceptClass: "p-button-danger",
+		// 		accept: () => {
+		// 			this.Delete(event, prod);
+		// 		},
+		// 		reject: () => {
+		// 			prod.delete = 0;
+		// 		},
+		// 	});
+		// },
 
-		//* Delete product
-		Delete: function(event, prod) {
-			const id = prod.id;
-			axios({
-				method: "delete",
-				url: process.env.VUE_APP_API + "producer/delete/" + id,
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			}).then(() => {
-				this.dialog = true;
-				this.infoProd = "La ligne du producteur a été supprimée.";
-			});
-		},
+		// //* Delete product
+		// Delete: function(event, prod) {
+		// 	const id = prod.id;
+		// 	axios({
+		// 		method: "delete",
+		// 		url: process.env.VUE_APP_API + "producer/delete/" + id,
+		// 		headers: {
+		// 			Authorization: `Bearer ${this.token}`,
+		// 		},
+		// 	}).then(() => {
+		// 		this.dialog = true;
+		// 		this.infoProd = "La ligne du producteur a été supprimée.";
+		// 	});
+		// },
 
 		//* Close Dialog
 		close: function() {
@@ -397,12 +383,6 @@ h3 {
 	margin: 0;
 	font-size: 12px;
 	margin-top: 0.2rem;
-}
-#suppProd {
-	margin: 0;
-	font-size: 12px;
-	margin-top: 0.2rem;
-	margin-left: 1rem;
 }
 #producersTable {
 	display: flex;
@@ -471,7 +451,7 @@ table {
 	background-color: #122f1c;
 }
 .butt {
-	margin-right: 5px;
+	margin-right: 50px;
 }
 .validModif {
 	background-color: pink;
