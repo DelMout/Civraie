@@ -294,33 +294,30 @@ export default {
 			prod.modif = true;
 		},
 
-		//* Validation modifications
+		// //* Validation modifications
 		validMod: function(event, prod) {
 			const id = prod.id;
-			const formData = new FormData();
-			formData.append("nom", prod.nom);
-			formData.append("prenom", prod.prenom);
-			formData.append("entreprise", prod.entreprise);
-			formData.append("products", prod.products);
-			formData.append("address", prod.address);
-			formData.append("phone", prod.phone);
-			formData.append("email", prod.email);
-			console.log(prod.address);
-			// axios({
-			// 	method: "put",
-			// 	url: process.env.VUE_APP_API + "producer/modif/" + id,
-			// 	data: formData,
-			// 	headers: {
-			// 		Authorization: `Bearer ${this.token}`,
-			// 	},
-			// })
-			axios
-				.put(process.env.VUE_APP_API + "producer/modif/" + id, formData)
+
+			axios({
+				method: "put",
+				url: "http://localhost:3001/api/producer/modif/" + id,
+				data: {
+					nom: prod.nom,
+					prenom: prod.prenom,
+					entreprise: prod.entreprise,
+					products: prod.products,
+					address: prod.address,
+					phone: prod.phone,
+					email: prod.email,
+				},
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			})
 				.then((rep) => {
 					prod.modif = false;
 					console.log(rep);
 					console.log("heu hooo !!" + id);
-					//! Y a porbleme ici !!!
 				})
 				.catch((err) => console.log(err));
 		},
@@ -342,7 +339,7 @@ export default {
 		// 	});
 		// },
 
-		// //* Delete product
+		// //* Delete producer
 		// Delete: function(event, prod) {
 		// 	const id = prod.id;
 		// 	axios({

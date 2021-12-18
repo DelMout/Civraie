@@ -6,7 +6,7 @@ export default createStore({
 	state: {
 		userId: null,
 		isAdmin: 0,
-		deliveryDate: null,
+		// deliveryDate: null,
 		products: [],
 		order: [],
 		total: localStorage.getItem("Total"),
@@ -26,9 +26,9 @@ export default createStore({
 		setAdmin(state, isAdmin) {
 			state.isAdmin = isAdmin;
 		},
-		setDeliveryDate(state, deliveryDate) {
-			state.deliveryDate = deliveryDate;
-		},
+		// setDeliveryDate(state, deliveryDate) {
+		// 	state.deliveryDate = deliveryDate;
+		// },
 		setProducts(state, products) {
 			state.products = products;
 		},
@@ -63,16 +63,24 @@ export default createStore({
 				return 6;
 			} else {
 				if (5 - getters.dayNow == 0) {
-					return 0;
+					return 7;
 				} else {
 					return 5 - getters.dayNow;
 				}
 			}
 		},
 		deliveryDate(state, getters) {
-			// Change delivery date at the friday night
+			// Change delivery date at the Thursday night
 			let res = new Date(getters.dateNow);
 			res.setDate(res.getDate() + getters.gapDays);
+			moment.locale("fr");
+			return "Vendredi " + moment(res).format("D MMMM YYYY");
+		},
+		deliveryDateNextW(state, getters) {
+			// Date of Friday in following week
+			// Change delivery date at the Thursday night
+			let res = new Date(getters.dateNow);
+			res.setDate(res.getDate() + getters.gapDays + 7);
 			moment.locale("fr");
 			return "Vendredi " + moment(res).format("D MMMM YYYY");
 		},

@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
+			cloture_day: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
 			class: {
 				type: DataTypes.STRING,
 				allowNull: false,

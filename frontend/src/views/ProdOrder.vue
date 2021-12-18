@@ -1,7 +1,13 @@
 <template>
 	<div>
-		<h4>
+		<h4 v-if="categoryClass != 'escargot'">
 			Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
+		</h4>
+		<h4 v-if="categoryClass == 'escargot'">
+			Prochaine livraison des commandes :
+			<b>
+				<span id="deliveryNextWeek">{{ deliveryDateNextW }} </span> pour les escargots</b
+			>
 		</h4>
 
 		<!-- Display categories products -->
@@ -13,14 +19,27 @@
 						<p>{{ cate.category }}</p>
 					</div>
 				</div>
+				<!-- Livraison possible jusquau -->
 			</div>
+		</div>
+		<div v-if="categorySel" class="categories" id="catePossible">
+			<p id="possible">
+				Commande possible de {{ categorySel }} jusqu'au
+				<span>{{ cloture_day }}</span>
+			</p>
 		</div>
 
 		<!-- Présentation produits sur petites cartes -->
 		<!-- info producer when hover on product name -->
 		<div id="conteneur" v-if="card_products">
-			<div id="sousCont" v-for="prod in displayProd" :key="prod.product">
-				<Card @mouseover="overlay">
+			<div
+				id="sousCont"
+				v-for="prod in displayProd"
+				:key="prod.product"
+				:class="categoryClass"
+			>
+				<Card>
+					<!-- <Card @mouseover="overlay"> -->
 					<template #header>
 						<img
 							class="vignette"
@@ -101,8 +120,8 @@ export default {
 				{ id: 2, cloture_day: "Mardi" },
 				{ id: 3, cloture_day: "Mercredi" },
 				{ id: 4, cloture_day: "Jeudi" },
-				{ id: 5, cloture_day: "Vendredi" },
-				{ id: 6, cloture_day: "Samedi" },
+				// { id: 5, cloture_day: "Vendredi" },
+				// { id: 6, cloture_day: "Samedi" },
 			],
 			total: 0, // Qty of products in panier
 			dateId: 10, //TODO Aller chercher la bonne info
@@ -112,6 +131,9 @@ export default {
 			tablMail: "",
 			card_products: false,
 			cateSelected: "",
+			categoryClass: "",
+			categorySel: "",
+			cloture_day: "", // cloture day of category selected
 			noProduct: false,
 			style: "",
 			beSelected: "",
@@ -120,7 +142,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(["deliveryDate", "dayNow"]),
+		...mapGetters(["deliveryDate", "deliveryDateNextW", "dayNow"]),
 		...mapState(["products", "order", "total", "inPages", "connected", "newUser"]),
 	},
 	mounted: function() {
@@ -155,6 +177,7 @@ export default {
 					category: catego.data[c].category.toUpperCase(),
 					class: catego.data[c].class,
 					priority: catego.data[c].priority,
+					cloture_day: catego.data[c].cloture_day,
 				});
 				// sort priority order
 				this.categories.sort(function(a, b) {
@@ -189,10 +212,18 @@ export default {
 			this.card_products = true;
 			console.log(cate.id);
 			this.cateSelected = cate.id;
+			this.categorySel = cate.category;
+			this.categoryClass = cate.class;
+			this.cloture_day = cate.cloture_day;
+			console.log(this.cloture_day);
+			if (document.getElementById("catePossible").classList.contains("catePossible")) {
+				document.getElementById("catePossible").classList.remove("catePossible");
+			}
 
 			axios
 				.get(process.env.VUE_APP_API + "product/category/" + this.cateSelected)
 				.then((prod) => {
+					document.getElementById("catePossible").classList.add("catePossible");
 					this.length = prod.data.length;
 					for (let i = 0; i < this.length; i++) {
 						axios
@@ -241,6 +272,7 @@ export default {
 					}
 					console.log(this.displayProd);
 					console.log("blavla");
+
 					// this.$store.commit("setProducts", this.products);
 					// console.log(this.$store.state.products);
 					if (this.length === 0) {
@@ -307,8 +339,40 @@ export default {
 };
 </script>
 <style scoped>
+@keyframes alternate {
+	0% {
+		opacity: 0;
+	}
+	20% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	25% {
+		transform: rotate(2deg);
+	}
+	75% {
+		transform: rotate(-2deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
 h4 {
 	margin-top: 0;
+}
+#deliveryNextWeek {
+	background-color: yellow;
+	color: black;
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
+	animation: 1s alternate 4 ease-in;
 }
 
 #conteneur {
@@ -326,12 +390,37 @@ h4 {
 	justify-content: center;
 	margin-bottom: 1rem;
 }
+.escargot {
+	--height-card: 21rem;
+	--height-title: 8rem;
+}
+.legume,
+.lait,
+.fruit,
+.volaille,
+.bovine,
+.porcine,
+.lapin,
+.autruche,
+.sucre,
+.sale,
+.oeuf,
+.huile,
+.boisson,
+.garni,
+.divers,
+.sec,
+.poisson,
+.pate {
+	--height-card: 17rem;
+	--height-title: 4rem;
+}
 ::v-deep(.p-card) {
 	box-shadow: 5px 5px 5px white;
 	width: 10rem;
 	margin: 0;
 	padding: 0;
-	height: 21rem;
+	height: var(--height-card);
 	display: flex;
 	flex-direction: column;
 	border-radius: 8px;
@@ -349,7 +438,7 @@ h4 {
 	font-size: 1rem;
 	width: 100%;
 	margin: 0;
-	height: 8rem;
+	height: var(--height-title);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -384,6 +473,19 @@ img {
 }
 #butAddSub {
 	margin-top: 0;
+}
+#possible {
+	background-color: white;
+	color: green;
+	font-weight: bold;
+	padding: 1rem 1rem 1rem 1rem;
+	margin-bottom: 1rem;
+	margin-top: 0.5rem;
+	border-radius: 6px;
+}
+
+.catePossible {
+	animation: 1s rotation 6 linear;
 }
 .categories {
 	display: flex;
@@ -556,6 +658,7 @@ img {
 		width: 8rem;
 		height: 12.5rem;
 	}
+
 	::v-deep(.p-card .p-card-header) {
 		height: 4rem;
 	}
