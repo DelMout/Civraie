@@ -120,6 +120,7 @@ export default {
 						unity_kg: prod.data[c].unite_vente,
 						unity: prod.data[c].unity,
 						price_unity: prod.data[c].price_unite_vente,
+						producerId: prod.data[c].producerId,
 						qty: localStorage.getItem(prod.data[c].id),
 					});
 				}
@@ -237,6 +238,12 @@ export default {
 					localStorage.setItem("Total", 1);
 					localStorage.setItem(prod.id, 1);
 					prod.qty = 1;
+					if (prod.producerId === 16) {
+						// If escargots selected
+						localStorage.setItem("escarg", 1);
+					} else {
+						localStorage.setItem("other_escarg", 1);
+					}
 				} else {
 					if (localStorage.getItem(prod.id) !== null) {
 						localStorage.setItem(
@@ -251,6 +258,17 @@ export default {
 							JSON.parse(localStorage.getItem("Total")) + 1
 						);
 						prod.qty = 1;
+					}
+					if (prod.producerId === 16) {
+						localStorage.setItem(
+							"escarg",
+							JSON.parse(localStorage.getItem("escarg")) + 1
+						);
+					} else {
+						localStorage.setItem(
+							"other_escarg",
+							JSON.parse(localStorage.getItem("other_escarg")) + 1
+						);
 					}
 				}
 				this.$store.commit("setTotal", localStorage.getItem("Total"));
@@ -271,6 +289,17 @@ export default {
 							JSON.parse(localStorage.getItem("Total")) - 1
 						);
 						prod.qty = 0;
+						if (prod.producerId === 16) {
+							localStorage.setItem(
+								"escarg",
+								JSON.parse(localStorage.getItem("escarg")) - 1
+							);
+						} else {
+							localStorage.setItem(
+								"other_escarg",
+								JSON.parse(localStorage.getItem("other_escarg")) - 1
+							);
+						}
 					} else {
 						console.log("je dois décrémenter !");
 						localStorage.setItem(
@@ -278,6 +307,17 @@ export default {
 							JSON.parse(localStorage.getItem(prod.id)) - 1
 						);
 						prod.qty = localStorage.getItem(prod.id);
+						if (prod.producerId === 16) {
+							localStorage.setItem(
+								"escarg",
+								JSON.parse(localStorage.getItem("escarg")) - 1
+							);
+						} else {
+							localStorage.setItem(
+								"other_escarg",
+								JSON.parse(localStorage.getItem("other_escarg")) - 1
+							);
+						}
 					}
 				}
 				this.$store.commit("setTotal", localStorage.getItem("Total"));

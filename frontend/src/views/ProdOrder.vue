@@ -1,10 +1,10 @@
 <template>
 	<div>
 		<h4 v-if="categoryClass != 'escargot'">
-			Prochaine livraison des commandes : <b> {{ deliveryDate }}</b>
+			Prochaine livraison de commandes : <b> {{ deliveryDate }}</b>
 		</h4>
 		<h4 v-if="categoryClass == 'escargot'">
-			Prochaine livraison des commandes :
+			Prochaine livraison de commandes :
 			<b>
 				<span id="deliveryNextWeek">{{ deliveryDateNextW }} </span> pour les escargots</b
 			>
@@ -23,8 +23,26 @@
 			</div>
 		</div>
 		<div v-if="categorySel" class="categories" id="catePossible">
-			<p id="possible">
-				Commande possible de {{ categorySel }} jusqu'au
+			<p
+				id="possible"
+				v-if="
+					categoryClass != 'oeuf' &&
+						categoryClass != 'huile' &&
+						categoryClass != 'escargot'
+				"
+			>
+				Commande possible de {{ categorySel }} jusqu'à
+				<span>{{ cloture_day }}</span>
+			</p>
+			<p
+				id="possible"
+				v-if="
+					categoryClass === 'oeuf' ||
+						categoryClass === 'huile' ||
+						categoryClass === 'escargot'
+				"
+			>
+				Commande possible d'{{ categorySel }} jusqu'à
 				<span>{{ cloture_day }}</span>
 			</p>
 		</div>
@@ -139,6 +157,7 @@ export default {
 			beSelected: "",
 			seeProducer: false,
 			qtyDisplay: 0,
+			counter: 0,
 		};
 	},
 	computed: {
@@ -207,6 +226,7 @@ export default {
 		},
 		//* Display products according to the category selected
 		selectCat: function(event, cate) {
+			this.counter++;
 			this.displayProd = [];
 			this.noProduct = false;
 			this.card_products = true;
@@ -216,8 +236,10 @@ export default {
 			this.categoryClass = cate.class;
 			this.cloture_day = cate.cloture_day;
 			console.log(this.cloture_day);
-			if (document.getElementById("catePossible").classList.contains("catePossible")) {
-				document.getElementById("catePossible").classList.remove("catePossible");
+			if (this.counter > 1) {
+				if (document.getElementById("catePossible").classList.contains("catePossible")) {
+					document.getElementById("catePossible").classList.remove("catePossible");
+				}
 			}
 
 			axios
@@ -244,6 +266,7 @@ export default {
 								this.displayProd.push({
 									id: prod.data[i].id,
 									product: prod.data[i].product,
+									producerId: prod.data[i].producerId,
 									producer: producer.data.entreprise,
 									producer_address: producer.data.address,
 									cloturedayId: prod.data[i].cloturedayId,
@@ -288,6 +311,12 @@ export default {
 					localStorage.setItem("Total", 1);
 					localStorage.setItem(prod.id, 1);
 					prod.qty = 1;
+					if (prod.producerId === 16) {
+						// If escargots selected
+						localStorage.setItem("escarg", 1);
+					} else {
+						localStorage.setItem("other_escarg", 1);
+					}
 				} else {
 					if (localStorage.getItem(prod.id) !== null) {
 						localStorage.setItem(
@@ -302,6 +331,17 @@ export default {
 							JSON.parse(localStorage.getItem("Total")) + 1
 						);
 						prod.qty = 1;
+					}
+					if (prod.producerId === 16) {
+						localStorage.setItem(
+							"escarg",
+							JSON.parse(localStorage.getItem("escarg")) + 1
+						);
+					} else {
+						localStorage.setItem(
+							"other_escarg",
+							JSON.parse(localStorage.getItem("other_escarg")) + 1
+						);
 					}
 				}
 				this.$store.commit("setTotal", localStorage.getItem("Total"));
@@ -323,10 +363,32 @@ export default {
 					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) - 1);
 					prod.qty = 0;
 					// prod.selected = "";
+					if (prod.producerId === 16) {
+						localStorage.setItem(
+							"escarg",
+							JSON.parse(localStorage.getItem("escarg")) - 1
+						);
+					} else {
+						localStorage.setItem(
+							"other_escarg",
+							JSON.parse(localStorage.getItem("other_escarg")) - 1
+						);
+					}
 				} else {
 					console.log("je dois décrémenter !");
 					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
 					prod.qty = localStorage.getItem(prod.id);
+					if (prod.producerId === 16) {
+						localStorage.setItem(
+							"escarg",
+							JSON.parse(localStorage.getItem("escarg")) - 1
+						);
+					} else {
+						localStorage.setItem(
+							"other_escarg",
+							JSON.parse(localStorage.getItem("other_escarg")) - 1
+						);
+					}
 				}
 			}
 			this.$store.commit("setTotal", localStorage.getItem("Total"));
@@ -485,7 +547,7 @@ img {
 }
 
 .catePossible {
-	animation: 1s rotation 6 linear;
+	animation: 0.8s rotation 6 linear;
 }
 .categories {
 	display: flex;
