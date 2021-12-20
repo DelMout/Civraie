@@ -7,6 +7,7 @@ import Products from "../views/Products.vue";
 import Producers from "../views/Producers.vue";
 import Users from "../views/Users.vue";
 import Orders from "../views/Orders.vue";
+import Snails from "../views/Snails.vue";
 import Panier from "../views/Panier.vue";
 import SendEmail from "../views/SendEmail.vue";
 import OpeningHours from "../views/OpeningHours.vue";
@@ -144,6 +145,26 @@ const routes = [
 		component: Orders,
 		meta: {
 			title: "Magasin Civraie / Commandes",
+		},
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
+	},
+	{
+		path: "/escargots",
+		name: "Snails",
+		component: Snails,
+		meta: {
+			title: "Magasin Civraie / Escargots",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");

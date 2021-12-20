@@ -1,8 +1,8 @@
 <template id="ordersTable">
 	<div>
 		<h3>
-			Commandes reçues pour livraison :<br />
-			{{ deliveryDate }}
+			Commandes reçues d'Escargots pour livraison :<br />
+			{{ deliveryDateNextW }}
 		</h3>
 		<!-- Dropdown -->
 		<div></div>
@@ -92,7 +92,7 @@ export default {
 			client: false,
 			linkOpenExcel: "",
 			inQtyProd: false,
-			custProd: "Afficher par PRODUCTEUR",
+			custProd: "Afficher par PRODUIT",
 			download: "Télécharger Excel par CLIENT",
 		};
 	},
@@ -109,7 +109,7 @@ export default {
 
 		axios({
 			method: "get",
-			url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate,
+			url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -134,20 +134,18 @@ export default {
 								Authorization: `Bearer ${this.token}`,
 							},
 						}).then((product) => {
-							if (product.data.producerId != 16) {
-								this.orders.push({
-									userId: order.data[i].userId,
-									userName: user.data.nom.toUpperCase(),
-									userFirstName: user.data.prenom,
-									product: product.data.product,
-									producerId: product.data.producerId,
-									unite_kg: product.data.unite_vente,
-									unity: product.data.unity,
-									quantity: order.data[i].quantity,
-									order_date: order.data[i].order_date,
-									color: "line_pair",
-								});
-							}
+							this.orders.push({
+								userId: order.data[i].userId,
+								userName: user.data.nom.toUpperCase(),
+								userFirstName: user.data.prenom,
+								product: product.data.product,
+								producerId: product.data.producerId,
+								unite_kg: product.data.unite_vente,
+								unity: product.data.unity,
+								quantity: order.data[i].quantity,
+								order_date: order.data[i].order_date,
+								color: "line_pair",
+							});
 							// sort alpha order
 							this.orders.sort(function(a, b) {
 								var orderA = a.userId;
@@ -192,7 +190,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(["deliveryDate"]),
+		...mapGetters(["deliveryDateNextW"]),
 		...mapState(["inPages", "token"]),
 	},
 	methods: {
@@ -221,12 +219,12 @@ export default {
 		},
 		//* Choose display
 		display: function() {
-			if (this.custProd === "Afficher par PRODUCTEUR") {
+			if (this.custProd === "Afficher par PRODUIT") {
 				this.custProd = "Afficher par CLIENT";
-				this.download = "Télécharger Excel par PRODUCTEUR";
+				this.download = "Télécharger Excel par PRODUIT";
 				this.displayByProducer();
 			} else {
-				this.custProd = "Afficher par PRODUCTEUR";
+				this.custProd = "Afficher par PRODUIT";
 				this.download = "Télécharger Excel par CLIENT";
 				this.displayByCustomer();
 			}
@@ -247,7 +245,7 @@ export default {
 			this.client = false;
 			axios({
 				method: "get",
-				url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate,
+				url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
 				headers: {
 					Authorization: `Bearer ${this.token}`,
 				},
@@ -282,16 +280,14 @@ export default {
 										}
 									}
 									if (!this.inQtyProd) {
-										if (product.data.producerId != 16) {
-											this.qtyProd.push({
-												producer: producer.data.entreprise,
-												product: product.data.product,
-												quantity: order.data[i].quantity,
-												unity_kg: product.data.unite_vente,
-												unity: product.data.unity,
-												color: "line_pair",
-											});
-										}
+										this.qtyProd.push({
+											producer: producer.data.entreprise,
+											product: product.data.product,
+											quantity: order.data[i].quantity,
+											unity_kg: product.data.unite_vente,
+											unity: product.data.unity,
+											color: "line_pair",
+										});
 									}
 
 									// sort alpha order
@@ -340,7 +336,7 @@ export default {
 		},
 		//* Choose download
 		downloadX: function() {
-			if (this.download === "Télécharger Excel par PRODUCTEUR") {
+			if (this.download === "Télécharger Excel par PRODUIT") {
 				// this.download = "Télécharger Excel par CLIENT";
 				this.downloadProduit();
 			} else {
@@ -352,12 +348,12 @@ export default {
 		//* Downloading Excel By Customer
 		downloadClient: function() {
 			var xls = new XlsExport(this.orders, "Par_Client");
-			xls.exportToXLS("commandes_Client_" + this.deliveryDate + ".xls");
+			xls.exportToXLS("commandes_Client_" + this.deliveryDateNextW + ".xls");
 		},
 		// //* Downloading Excel By Product
 		downloadProduit: function() {
 			var xls = new XlsExport(this.qtyProd, "Par_Producteur");
-			xls.exportToXLS("commandes_Producteur_" + this.deliveryDate + ".xls");
+			xls.exportToXLS("commandes_Producteur_" + this.deliveryDateNextW + ".xls");
 		},
 	},
 };

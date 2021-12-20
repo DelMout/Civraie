@@ -910,6 +910,7 @@ export default {
 
 		//* Display list of products according to the producer selected
 		displayProdProdu: function() {
+			this.modifInProgress = false;
 			console.log(this.produSelected);
 			if (this.produSelected != "") {
 				this.products = [];

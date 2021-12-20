@@ -53,6 +53,9 @@
 			<router-link class="link jo " v-if="isAdminApp === 1" to="/commandes"
 				>* Commandes *</router-link
 			>
+			<router-link class="link jo " v-if="isAdminApp === 1" to="/escargots"
+				>* Escargots *</router-link
+			>
 			<router-link class="link" v-if="isAdminApp === 1" to="/tous_produits"
 				>* Produits *</router-link
 			>
