@@ -205,6 +205,9 @@ export default {
 		//Update Active=0 for products with cloture_day in the past
 		axios.put(process.env.VUE_APP_API + "product/checkactive/putinactive");
 	},
+	mounted: function() {
+		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
+	},
 	created: function() {
 		this.$store.state.inPages = false;
 		axios.get(process.env.VUE_APP_API + "information/openhours").then((rep) => {
@@ -220,7 +223,7 @@ export default {
 		...mapState(["infoHome", "token", "userId", "isAdmin", "connected", "inPages", "newUser"]),
 	},
 	methods: {
-		...mapMutations(["setUserId", "setToken", "setAdmin", "setNewUser"]),
+		...mapMutations(["setUserId", "setToken", "setAdmin", "setNewUser", "setTotal"]),
 		...mapActions(["checkConnect"]),
 		//* Create a user
 		signup: function() {

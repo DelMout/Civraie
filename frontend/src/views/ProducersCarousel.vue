@@ -70,6 +70,7 @@
 </template>
 <script>
 import axios from "axios";
+import { mapMutations } from "vuex";
 
 export default {
 	data() {
@@ -242,11 +243,14 @@ export default {
 		this.imageUn = this.producers[this.indice].imageUn;
 		this.imageDeux = this.producers[this.indice].imageDeux;
 		this.imageTrois = this.producers[this.indice].imageTrois;
+		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
 	},
 	created: function() {
 		this.$store.state.inPages = true;
 	},
 	methods: {
+		...mapMutations(["setProducts", "setTotal"]),
+
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(

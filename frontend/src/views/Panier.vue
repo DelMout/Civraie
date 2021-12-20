@@ -6,31 +6,31 @@
 				{{ info }}
 			</p>
 		</div>
-
-		<div id="commande" v-if="total > 0">
-			<h5>Votre commande sera livrée le {{ deliveryDate }}.</h5>
+		<!-- Table for other than escargots -->
+		<div class="commande" v-if="total > 0 && other_escarg > 0">
+			<h5>Vos articles seront livrés le {{ deliveryDate }}.</h5>
 
 			<table>
-				<caption>
+				<!-- <caption>
 					Votre commande
-				</caption>
+				</caption> -->
 				<tr>
 					<th>Produit</th>
 					<th>Quantité</th>
 					<th>Unité</th>
-					<!-- <th>Prix/unité</th>
-					<th>Prix</th> -->
 					<th>Modification</th>
 				</tr>
 				<tr v-for="prod in products" :key="prod.id">
-					<td v-if="prod.qty > 0">{{ prod.product }}</td>
-					<td v-if="prod.qty > 0">{{ prod.qty }}</td>
-					<td v-if="prod.qty > 0 && !prod.unity">
+					<td v-if="prod.qty > 0 && prod.producerId != 16">{{ prod.product }}</td>
+					<td v-if="prod.qty > 0 && prod.producerId != 16">{{ prod.qty }}</td>
+					<td v-if="prod.qty > 0 && !prod.unity && prod.producerId != 16">
 						<span>{{ prod.unity_kg }}</span>
 					</td>
-					<td v-if="prod.qty > 0 && prod.unity">{{ prod.unity }}</td>
-					<td v-if="prod.qty > 0">
-						<p id="butAddSub">
+					<td v-if="prod.qty > 0 && prod.unity && prod.producerId != 16">
+						{{ prod.unity }}
+					</td>
+					<td v-if="prod.qty > 0 && prod.producerId != 16">
+						<p class="butAddSub">
 							<Button
 								label="-"
 								class="addsub sub p-button-raised p-button-danger"
@@ -47,14 +47,66 @@
 				</tr>
 			</table>
 
-			<div v-if="!ordered">
+			<div v-if="!ordered && escarg < 1">
 				<Button
 					label="Valider la commande"
 					class=" p-button-raised p-button-primary valid"
 					@click="validOrder"
 				/>
 			</div>
-			<div v-if="ordered">
+			<div v-if="ordered && escarg < 1">
+				<ProgressSpinner />
+			</div>
+		</div>
+		<!-- Table for only escargots -->
+		<div class="commande escar" v-if="total > 0 && escarg > 0">
+			<h5>Vos articles seront livrés le {{ deliveryDateNextW }}.</h5>
+
+			<table>
+				<!-- <caption>
+					Votre commande
+				</caption> -->
+				<tr>
+					<th>Produit</th>
+					<th>Quantité</th>
+					<th>Unité</th>
+					<th>Modification</th>
+				</tr>
+				<tr v-for="prod in products" :key="prod.id">
+					<td v-if="prod.qty > 0 && prod.producerId === 16">{{ prod.product }}</td>
+					<td v-if="prod.qty > 0 && prod.producerId === 16">{{ prod.qty }}</td>
+					<td v-if="prod.qty > 0 && !prod.unity && prod.producerId === 16">
+						<span>{{ prod.unity_kg }}</span>
+					</td>
+					<td v-if="prod.qty > 0 && prod.unity && prod.producerId === 16">
+						{{ prod.unity }}
+					</td>
+					<td v-if="prod.qty > 0 && prod.producerId === 16">
+						<p class="butAddSub">
+							<Button
+								label="-"
+								class="addsub sub p-button-raised p-button-danger"
+								@click="subQty($event, prod)"
+							/>
+
+							<Button
+								label="+"
+								class="addsub p-button-raised p-button-success"
+								@click="addQty($event, prod)"
+							/>
+						</p>
+					</td>
+				</tr>
+			</table>
+
+			<div v-if="!ordered && escarg > 0">
+				<Button
+					label="Valider la commande"
+					class=" p-button-raised p-button-primary valid"
+					@click="validOrder"
+				/>
+			</div>
+			<div v-if="ordered && escarg > 0">
 				<ProgressSpinner />
 			</div>
 		</div>
@@ -65,7 +117,7 @@
 				:breakpoints="{ '960px': '75vw', '640px': '100vw' }"
 				:style="{ width: '20vw' }"
 				><p>
-					Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.
+					{{ message }}
 				</p>
 				<template #footer>
 					<Button label="OK" @click="closeConfirm" autofocus />
@@ -82,17 +134,25 @@ export default {
 	data() {
 		return {
 			total: JSON.parse(localStorage.getItem("Total")),
+			escarg: JSON.parse(localStorage.getItem("escarg")),
+			other_escarg: JSON.parse(localStorage.getItem("other_escarg")),
 			products: [],
 			tablMail: "",
+			tablMail_escarg: "",
 			info: "Votre panier est actuellement vide.",
 			dialog: false,
 			ordered: false,
 			unitee: "",
 			counter: 0,
+			counter_escarg: 0,
+			counter_other: 0,
+			message:
+				"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.",
+			delivery_day_gene: "",
 		};
 	},
 	computed: {
-		...mapGetters(["deliveryDate"]),
+		...mapGetters(["deliveryDate", "deliveryDateNextW"]),
 		...mapState(["order", "userId", "connected", "inPages", "token"]),
 	},
 	created: function() {
@@ -145,7 +205,8 @@ export default {
 				this.$router.push("/");
 			} else {
 				this.ordered = true;
-				// Save in database
+				// Save in database and send 1 email for non escargots and 1 email for escargots
+
 				axios({
 					method: "get",
 					url: process.env.VUE_APP_API + "product/getproducts/actived",
@@ -157,15 +218,32 @@ export default {
 							} else {
 								this.unitee = this.products[i].unity_kg;
 							}
-							this.tablMail =
-								this.tablMail +
-								"<tr style='text-align:center'><td style='border: 1px solid black;width:100px;height:50px;'>" +
-								encodeURIComponent(this.products[i].product) +
-								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-								this.products[i].qty +
-								"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-								encodeURIComponent(this.unitee);
-
+							// if escargots ordered
+							if (this.products[i].producerId === 16) {
+								this.counter_escarg =
+									this.counter_escarg + JSON.parse(this.products[i].qty);
+								this.tablMail_escarg =
+									this.tablMail_escarg +
+									"<tr style='text-align:center'><td style='border: 1px solid black;width:150px;height:50px;'>" +
+									encodeURIComponent(this.products[i].product) +
+									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+									this.products[i].qty +
+									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+									encodeURIComponent(this.unitee);
+								this.delivery_day_gene = this.deliveryDateNextW;
+							} else {
+								this.counter_other =
+									this.counter_other + JSON.parse(this.products[i].qty);
+								this.tablMail =
+									this.tablMail +
+									"<tr style='text-align:center'><td style='border: 1px solid black;width:150px;height:50px;'>" +
+									encodeURIComponent(this.products[i].product) +
+									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+									this.products[i].qty +
+									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+									encodeURIComponent(this.unitee);
+								this.delivery_day_gene = this.deliveryDate;
+							}
 							localStorage.removeItem(this.products[i].id);
 
 							axios({
@@ -175,7 +253,7 @@ export default {
 									"order/createorder/" +
 									this.userId +
 									"/" +
-									this.deliveryDate,
+									this.delivery_day_gene,
 								data: {
 									productId: this.products[i].id,
 									quantity: this.products[i].qty,
@@ -186,12 +264,56 @@ export default {
 								},
 							})
 								.then(() => {
-									console.log("order saved !");
+									console.log("order  saved !");
 									this.counter++;
 									console.log(JSON.parse(localStorage.getItem("Total")));
-									console.log(this.counter);
 									//send email confirmation
-									if (this.counter == JSON.parse(localStorage.getItem("Total"))) {
+									//for escargots
+									if (
+										this.counter_escarg ===
+											JSON.parse(localStorage.getItem("escarg")) &&
+										this.counter === JSON.parse(localStorage.getItem("Total"))
+									) {
+										axios({
+											method: "post",
+											url:
+												process.env.VUE_APP_API +
+												"order/emailconf/" +
+												this.userId +
+												"/" +
+												this.deliveryDateNextW +
+												"/" +
+												this.tablMail_escarg,
+
+											headers: {
+												Authorization: `Bearer ${this.token}`,
+											},
+										})
+											.then(() => {
+												this.products = [];
+												this.total = 0;
+												localStorage.removeItem("Total");
+												localStorage.removeItem("escarg");
+												if (this.counter_other > 0) {
+													this.message =
+														"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
+													this.dialog = true;
+												} else {
+													this.message =
+														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+													this.dialog = true;
+												}
+											})
+											.catch((err) => {
+												console.log(err);
+											});
+									}
+									//for other_escargots
+									if (
+										this.counter_other ===
+											JSON.parse(localStorage.getItem("other_escarg")) &&
+										this.counter === JSON.parse(localStorage.getItem("Total"))
+									) {
 										axios({
 											method: "post",
 											url:
@@ -209,13 +331,20 @@ export default {
 										})
 											.then(() => {
 												this.products = [];
-												// localStorage.clear();
 												this.total = 0;
 												localStorage.removeItem("Total");
-												this.dialog = true;
+												localStorage.removeItem("other_escarg");
+												if (this.counter_escarg > 0) {
+													this.message =
+														"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
+													this.dialog = true;
+												} else {
+													this.message =
+														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+													this.dialog = true;
+												}
 											})
 											.catch((err) => {
-												// this.infoOrder = err;
 												console.log(err);
 											});
 									}
@@ -324,6 +453,9 @@ export default {
 				if (localStorage.getItem("Total") == 0) {
 					location.reload();
 				}
+				if (localStorage.getItem("escarg") == 0) {
+					location.reload();
+				}
 			}
 		},
 		//* Close Dialog
@@ -335,9 +467,15 @@ export default {
 };
 </script>
 <style scoped>
-#commande {
+.commande {
 	display: flex;
 	flex-direction: column;
+}
+.escar {
+	margin-top: 1rem;
+}
+h5 {
+	margin-bottom: 1rem;
 }
 td,
 th {
@@ -358,11 +496,11 @@ caption {
 	height: 5vh;
 	/* color: #122f1c; */
 }
-caption {
+/* caption {
 	font-weight: 800;
 	padding: 1vh;
 	background-color: #fbc02d;
-}
+} */
 td {
 	background-color: white;
 	color: #122f1c;
@@ -373,8 +511,9 @@ td {
 	width: 16vw;
 	margin: auto;
 	margin-top: 1rem;
+	margin-bottom: 2rem;
 }
-#butAddSub {
+.butAddSub {
 	margin: 0;
 }
 .addsub {
