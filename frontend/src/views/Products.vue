@@ -1,310 +1,325 @@
 <template>
-	<div id="productsTable">
-		<div id="title">
-			<h3>Liste des produits</h3>
-			<p id="number">* Attention, "Actif" à faire qu'à partir du Samedi ou Dimanche !</p>
-		</div>
-		<div id="selection">
-			<Button
-				id="selAll"
-				label="Tous les produits"
-				class="p-button-raised   p-button-primary"
-				@click="selectAllProducts"
-			/>
-			<Dropdown
-				id="selProd"
-				v-model="produSelected"
-				:options="producers"
-				optionLabel="entreprise"
-				optionValue="id"
-				placeholder="Sélection / Producteur"
-			/><Button
-				style="background-color:#a3d7a5;color:black;border:none"
-				icon="pi pi-check"
-				class="p-button-rounded"
-				@click="displayProdProdu"
-			/>
-			<Button
-				id="toBottom"
-				label="Créer un produit"
-				class="p-button-raised   p-button-warning"
-				@click="downPage"
-			/>
-			<Button
-				id="allactived"
-				label="Tous actifs"
-				class="p-button-raised   p-button on"
-				@click="putAllActived"
-			/>
-		</div>
+	<div>
+		<div id="productsTable">
+			<div id="title">
+				<h3>Liste des produits</h3>
+			</div>
+			<div id="selection">
+				<Button
+					id="selAll"
+					label="Tous les produits"
+					class="p-button-raised   p-button-primary"
+					@click="selectAllProducts"
+				/>
+				<Dropdown
+					id="selProd"
+					v-model="produSelected"
+					:options="producers"
+					optionLabel="entreprise"
+					optionValue="id"
+					placeholder="Sélection / Producteur"
+				/><Button
+					style="background-color:#a3d7a5;color:black;border:none"
+					icon="pi pi-check"
+					class="p-button-rounded"
+					@click="displayProdProdu"
+				/>
+				<Button
+					id="toBottom"
+					label="Créer un produit"
+					class="p-button-raised   p-button-warning"
+					@click="downPage"
+				/>
+				<Button
+					id="allactived"
+					label="Tous actifs"
+					class="p-button-raised   p-button on"
+					@click="putAllActived"
+				/>
+			</div>
 
-		<ConfirmPopup></ConfirmPopup>
-		<ConfirmPopup group="demo">
-			<template #message="slotProps">
-				<div class="p-d-flex p-p-4">
-					<i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
-					<p class="p-pl-2">{{ slotProps.message.message }}</p>
-				</div>
-			</template>
-		</ConfirmPopup>
-
-		<div id="tableau">
-			<table>
-				<tr>
-					<th>Produit</th>
-					<th>Producteur</th>
-					<th>Catégorie</th>
-					<th>Jour clôture</th>
-					<th class="numb">Prix</th>
-					<th>Unité / prix</th>
-					<th>Unité vente</th>
-					<th>Support vente</th>
-					<th class="photo">Photo</th>
-					<th class="numb">Actif *</th>
-				</tr>
-				<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
-					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
-						<input
-							v-if="prod.modif && !prod.delete"
-							class="create "
-							type="text"
-							v-model="prod.product"
-						/>
-					</td>
-					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">{{ prod.producer }}</p>
-						<Dropdown
-							v-if="prod.modif && !prod.delete"
-							class="dropclass"
-							v-model="producerModel"
-							:options="producers"
-							optionLabel="entreprise"
-							optionValue="id"
-							:placeholder="prod.producer"
-						/>
-					</td>
-
-					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">{{ prod.category }}</p>
-						<Dropdown
-							v-if="prod.modif && !prod.delete"
-							@click="displayCategories"
-							v-model="categoryModel"
-							:options="categories"
-							optionLabel="category"
-							optionValue="id"
-							:placeholder="prod.category"
-						/>
-					</td>
-					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">
-							{{ cloturedays[prod.cloturedayId].cloture_day }}
-						</p>
-						<Dropdown
-							v-if="prod.modif && !prod.delete"
-							v-model="clotureModel"
-							:options="cloturedays"
-							optionLabel="cloture_day"
-							optionValue="id"
-							:placeholder="cloturedays[prod.cloturedayId].cloture_day"
-						/>
-					</td>
-					<td class="numb" @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">{{ prod.price }} <span> €</span></p>
-						<input
-							v-if="prod.modif && !prod.delete"
-							class="create numb"
-							type="text"
-							v-model="prod.price"
-						/>
-					</td>
-					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">
-							{{ prod.unite_vente }}
-						</p>
-						<input
-							v-if="prod.modif && !prod.delete"
-							class="create "
-							type="text"
-							v-model="prod.unite_vente"
-						/>
-					</td>
-					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">
-							{{ prod.unity }}
-						</p>
-						<input
-							v-if="prod.modif && !prod.delete"
-							class="create "
-							type="text"
-							v-model="prod.unity"
-						/>
-					</td>
-
-					<td @click="modifProd($event, prod)" :class="prod.modif">
-						<p v-if="!prod.modif || prod.delete">{{ prod.support }}</p>
-						<Dropdown
-							v-if="prod.modif && !prod.delete"
-							@click="displayOrdering"
-							v-model="orderingModel"
-							:options="orderinginfo"
-							optionLabel="ordering"
-							optionValue="item"
-							:placeholder="prod.support"
-						/>
-					</td>
-					<td @click="modifProd($event, prod)" class="photo">
-						<img
-							class="photo"
-							v-if="prod.photo"
-							style="max-width:5rem;max-height:5rem;width:auto;"
-							:src="prod.photo"
-							alt="product photo"
-						/>
-
-						<div class="uploadFile" v-if="prod.modif && !prod.delete">
-							<button class="btn-upload">Choisir un fichier</button>
-							<input type="file" name="image" @change="onFileChange" />
-						</div>
-					</td>
-					<td class="numb">
-						<button
-							v-if="prod.active > 0"
-							class="active on"
-							type="button"
-							@click="activeInactive($event, prod)"
-						></button>
-						<button
-							v-if="prod.active === 0"
-							class="active off"
-							type="button"
-							@click="activeInactive($event, prod)"
-						></button>
-					</td>
-					<td v-if="prod.modif" class="valButton ">
-						<Button
-							v-if="prod.modif && !prod.delete"
-							id=""
-							label="Modifier"
-							class="p-button-raised validModif valButton p-button-warning"
-							@click="validModif($event, prod)"
-						/>
-						<Button
-							v-if="prod.modif"
-							id=""
-							label="Supprimer"
-							class="p-button-raised  valButton p-button-danger"
-							@click="wantDelete($event, prod)"
-						/>
-					</td>
-				</tr>
-
-				<tr>
-					<th>Produit</th>
-					<th>Producteur</th>
-					<th>Catégorie</th>
-					<th>Jour clôture</th>
-					<th class="numb">Prix</th>
-					<th>Unité / prix</th>
-					<th>Unité vente</th>
-					<th>Support vente</th>
-					<th class="photo">Photo</th>
-					<th class="numb">Actif</th>
-				</tr>
-
-				<!-- Row for creating new product -->
-				<tr class="create createProd">
-					<td class="createProd">
-						<input class="createProd" type="text" id="name" v-model="name" />
-					</td>
-
-					<td class="createProd">
-						<Dropdown
-							class="dropclass"
-							v-model="prodcToSelect"
-							:options="producers"
-							optionLabel="entreprise"
-							optionValue="id"
-							:placeholder="prodcToSelect"
-						/>
-					</td>
-					<td class="createProd">
-						<Dropdown
-							v-model="cateToSelect"
-							:options="categories"
-							optionLabel="category"
-							optionValue="id"
-							:placeholder="cateToSelect"
-						/>
-					</td>
-					<td class="createProd">
-						<Dropdown
-							v-model="clotureToSelect"
-							:options="cloturedays"
-							optionLabel="cloture_day"
-							optionValue="id"
-							:placeholder="clotureToSelect"
-						/>
-					</td>
-
-					<td class="numb createProd">
-						<input class="createProd numb" type="text" id="price" v-model="price" />
-					</td>
-					<td class="createProd">
-						<input class="createProd " type="text" id="qtymini" v-model="qtyMini" />
-					</td>
-					<td class="createProd">
-						<input class="createProd " type="text" id="unity" v-model="unity" />
-					</td>
-					<td class="createProd">
-						<Dropdown
-							v-model="ordering"
-							:options="orderinginfo"
-							optionLabel="ordering"
-							optionValue="item"
-							:placeholder="ordering"
-						/>
-					</td>
-					<td class="photo createProd">
-						<div class="uploadFile">
-							<button class="btn-upload">Choisir un fichier</button>
-							<input type="file" name="image" @change="onFileChange" />
-						</div>
-					</td>
-					<td class="createProd numb">
-						<button
-							v-if="active > 0"
-							class="active on"
-							type="button"
-							@click="createActive()"
-						></button>
-						<button
-							v-if="active === 0"
-							class="active off"
-							type="button"
-							@click="createActive()"
-						></button>
-					</td>
-					<td class=" valCreate valButton">
-						<Button
-							id="toCreate"
-							label="Créer"
-							class="p-button-raised validModif valButton p-button-warning"
-							@click="validateCreate"
-						/>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<!-- Info : product created or deleted -->
-		<div>
-			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
-				><p>{{ infoProd }}</p>
-				<template #footer>
-					<Button label="OK" @click="closeCreated" autofocus />
+			<ConfirmPopup></ConfirmPopup>
+			<ConfirmPopup group="demo">
+				<template #message="slotProps">
+					<div class="p-d-flex p-p-4">
+						<i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
+						<p class="p-pl-2">{{ slotProps.message.message }}</p>
+					</div>
 				</template>
-			</Dialog>
+			</ConfirmPopup>
+
+			<div id="tableau">
+				<table>
+					<tr>
+						<th>Produit</th>
+						<th>Producteur</th>
+						<th>Catégorie</th>
+						<th>Jour clôture</th>
+						<th class="numb">Prix</th>
+						<th>Unité / prix</th>
+						<th>Unité vente</th>
+						<th>Support vente</th>
+						<th class="photo">Photo</th>
+						<th class="numb">Actif</th>
+					</tr>
+					<tr v-for="prod in products" :key="prod.id" :id="prod.delete">
+						<td @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">{{ prod.product }}</p>
+							<input
+								v-if="prod.modif && !prod.delete"
+								class="create "
+								type="text"
+								v-model="prod.product"
+							/>
+						</td>
+						<td @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">{{ prod.producer }}</p>
+							<Dropdown
+								v-if="prod.modif && !prod.delete"
+								class="dropclass"
+								v-model="producerModel"
+								:options="producers"
+								optionLabel="entreprise"
+								optionValue="id"
+								:placeholder="prod.producer"
+							/>
+						</td>
+
+						<td @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">{{ prod.category }}</p>
+							<Dropdown
+								v-if="prod.modif && !prod.delete"
+								@click="displayCategories"
+								v-model="categoryModel"
+								:options="categories"
+								optionLabel="category"
+								optionValue="id"
+								:placeholder="prod.category"
+							/>
+						</td>
+						<td @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">
+								{{ cloturedays[prod.cloturedayId].cloture_day }}
+							</p>
+							<Dropdown
+								v-if="prod.modif && !prod.delete"
+								v-model="clotureModel"
+								:options="cloturedays"
+								optionLabel="cloture_day"
+								optionValue="id"
+								:placeholder="cloturedays[prod.cloturedayId].cloture_day"
+							/>
+						</td>
+						<td class="numb" @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">
+								{{ prod.price }} <span> €</span>
+							</p>
+							<input
+								v-if="prod.modif && !prod.delete"
+								class="create numb"
+								type="text"
+								v-model="prod.price"
+							/>
+						</td>
+						<td @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">
+								{{ prod.unite_vente }}
+							</p>
+							<input
+								v-if="prod.modif && !prod.delete"
+								class="create "
+								type="text"
+								v-model="prod.unite_vente"
+							/>
+						</td>
+						<td @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">
+								{{ prod.unity }}
+							</p>
+							<input
+								v-if="prod.modif && !prod.delete"
+								class="create "
+								type="text"
+								v-model="prod.unity"
+							/>
+						</td>
+
+						<td @click="modifProd($event, prod)" :class="prod.modif">
+							<p v-if="!prod.modif || prod.delete">{{ prod.support }}</p>
+							<Dropdown
+								v-if="prod.modif && !prod.delete"
+								@click="displayOrdering"
+								v-model="orderingModel"
+								:options="orderinginfo"
+								optionLabel="ordering"
+								optionValue="item"
+								:placeholder="prod.support"
+							/>
+						</td>
+						<td @click="modifProd($event, prod)" class="photo">
+							<img
+								class="photo"
+								v-if="prod.photo"
+								style="max-width:5rem;max-height:5rem;width:auto;"
+								:src="prod.photo"
+								alt="product photo"
+							/>
+
+							<div class="uploadFile" v-if="prod.modif && !prod.delete">
+								<button class="btn-upload">Choisir un fichier</button>
+								<input type="file" name="image" @change="onFileChange" />
+							</div>
+						</td>
+						<td class="numb">
+							<button
+								v-if="prod.active > 0"
+								class="active on"
+								type="button"
+								@click="activeInactive($event, prod)"
+							></button>
+							<button
+								v-if="prod.active === 0"
+								class="active off"
+								type="button"
+								@click="activeInactive($event, prod)"
+							></button>
+						</td>
+						<td v-if="prod.modif" class="valButton ">
+							<Button
+								v-if="prod.modif && !prod.delete"
+								id=""
+								label="Modifier"
+								class="p-button-raised validModif valButton p-button-warning"
+								@click="validModif($event, prod)"
+							/>
+							<Button
+								v-if="prod.modif"
+								id=""
+								label="Supprimer"
+								class="p-button-raised  valButton p-button-danger"
+								@click="wantDelete($event, prod)"
+							/>
+						</td>
+					</tr>
+
+					<tr>
+						<th>Produit</th>
+						<th>Producteur</th>
+						<th>Catégorie</th>
+						<th>Jour clôture</th>
+						<th class="numb">Prix</th>
+						<th>Unité / prix</th>
+						<th>Unité vente</th>
+						<th>Support vente</th>
+						<th class="photo">Photo</th>
+						<th class="numb">Actif</th>
+					</tr>
+
+					<!-- Row for creating new product -->
+					<tr class="create createProd">
+						<td class="createProd">
+							<input class="createProd" type="text" id="name" v-model="name" />
+						</td>
+
+						<td class="createProd">
+							<Dropdown
+								class="dropclass"
+								v-model="prodcToSelect"
+								:options="producers"
+								optionLabel="entreprise"
+								optionValue="id"
+								:placeholder="prodcToSelect"
+							/>
+						</td>
+						<td class="createProd">
+							<Dropdown
+								v-model="cateToSelect"
+								:options="categories"
+								optionLabel="category"
+								optionValue="id"
+								:placeholder="cateToSelect"
+							/>
+						</td>
+						<td class="createProd">
+							<Dropdown
+								v-model="clotureToSelect"
+								:options="cloturedays"
+								optionLabel="cloture_day"
+								optionValue="id"
+								:placeholder="clotureToSelect"
+							/>
+						</td>
+
+						<td class="numb createProd">
+							<input class="createProd numb" type="text" id="price" v-model="price" />
+						</td>
+						<td class="createProd">
+							<input class="createProd " type="text" id="qtymini" v-model="qtyMini" />
+						</td>
+						<td class="createProd">
+							<input class="createProd " type="text" id="unity" v-model="unity" />
+						</td>
+						<td class="createProd">
+							<Dropdown
+								v-model="ordering"
+								:options="orderinginfo"
+								optionLabel="ordering"
+								optionValue="item"
+								:placeholder="ordering"
+							/>
+						</td>
+						<td class="photo createProd">
+							<div class="uploadFile">
+								<button class="btn-upload">Choisir un fichier</button>
+								<input type="file" name="image" @change="onFileChange" />
+							</div>
+						</td>
+						<td class="createProd numb">
+							<button
+								v-if="active > 0"
+								class="active on"
+								type="button"
+								@click="createActive()"
+							></button>
+							<button
+								v-if="active === 0"
+								class="active off"
+								type="button"
+								@click="createActive()"
+							></button>
+						</td>
+						<td class=" valCreate valButton">
+							<Button
+								id="toCreate"
+								label="Créer"
+								class="p-button-raised validModif valButton p-button-warning"
+								@click="validateCreate"
+							/>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<!-- Info : product created or deleted -->
+			<div>
+				<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
+					><p>{{ infoProd }}</p>
+					<template #footer>
+						<Button label="OK" @click="closeCreated" autofocus />
+					</template>
+				</Dialog>
+			</div>
+		</div>
+		<div style="width:30vw">
+			<Toast position="center" :breakpoints="{ '400px': { width: '95%' } }">
+				<template #message="slotProps">
+					<div class="p-d-flex p-flex-row">
+						<div class="p-text-center">
+							<i class="pi pi-exclamation-triangle" style="font-size: 2rem"></i>
+							<p>{{ slotProps.message.detail }}</p>
+						</div>
+					</div>
+				</template>
+			</Toast>
 		</div>
 	</div>
 </template>
@@ -697,7 +712,6 @@ export default {
 
 		//* Create a product
 		validateCreate: function() {
-			// let img = document.getElementById("picture").files[0];
 			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
 
 			console.log("on y est !");
@@ -729,6 +743,13 @@ export default {
 				})
 				.catch((err) => {
 					console.log(err);
+					this.$toast.add({
+						severity: "error",
+						detail:
+							"Merci de renseigner : Nom du produit, Prix, Unité/prix, Producteur, Catégorie, Jour clôture et Support vente.",
+						closable: false,
+						life: 4000,
+					});
 				});
 		},
 		//* Close Dialog
@@ -1035,11 +1056,7 @@ h3 {
 	margin-bottom: 1rem;
 	margin-left: 5rem;
 }
-#number {
-	margin: 0;
-	font-size: 12px;
-	margin-top: 0.2rem;
-}
+
 #selection {
 	display: flex;
 	width: 80%;

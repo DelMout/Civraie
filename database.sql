@@ -60,6 +60,7 @@ stock_updated INT,
 alert_stock INT ,
 ordering TINYINT, 
 active TINYINT DEFAULT 0,
+active_date DATE ,
 photo VARCHAR(255),
 CONSTRAINT fk_producerId_product FOREIGN KEY (producerId) REFERENCES producers(id)
 ON DELETE CASCADE

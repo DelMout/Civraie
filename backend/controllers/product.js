@@ -1,6 +1,8 @@
 const { product } = require("../models");
 const fs = require("fs"); // handle files
 const { Op } = require("sequelize");
+const moment = require("moment");
+const { nextTick } = require("process");
 
 //* Create a new product
 exports.createProduct = (req, res) => {
@@ -192,6 +194,7 @@ exports.changeActive = (req, res) => {
 		.update(
 			{
 				active: req.params.active,
+				active_date: Date(),
 			},
 			{ where: { id: req.params.productid } }
 		)
@@ -229,11 +232,15 @@ exports.checkActive = (req, res) => {
 			where: { active: 1 },
 		})
 		.then((prod) => {
+			// res.send(prod[0].active_date === moment(new Date()).format("YYYY-MM-DD"));
+
 			const weekday = new Date().getDay();
+			const today = moment(new Date()).format("YYYY-MM-DD");
 			if (weekday < 6 && weekday > 0) {
 				// excepted Sunday & Saturday
 				for (let i = 0; i < prod.length; i++) {
-					if (weekday > prod[i].cloturedayId) {
+					if (weekday > prod[i].cloturedayId && prod[i].active_date != today) {
+						// && active_date != today
 						product
 							.update(
 								{
@@ -247,6 +254,10 @@ exports.checkActive = (req, res) => {
 							.catch((err) => {
 								res.status(401).send(err);
 							});
+						// } else {
+						// 	next();
+					} else {
+						res.send("no product to put inactived");
 					}
 				}
 			}

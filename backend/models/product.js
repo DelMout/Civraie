@@ -12,9 +12,29 @@ module.exports = (sequelize, DataTypes) => {
 					notEmpty: true,
 				},
 			},
+			producerId: {
+				type: DataTypes.TINYINT,
+				allowNull: false,
+				require,
+				validate: {
+					notEmpty: true,
+				},
+			},
+			categoryId: {
+				type: DataTypes.TINYINT,
+				allowNull: false,
+				require,
+				validate: {
+					notEmpty: true,
+				},
+			},
 			cloturedayId: {
 				type: DataTypes.TINYINT,
-				defaultValue: 0,
+				allowNull: false,
+				require,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			price: {
 				type: DataTypes.DECIMAL,
@@ -63,6 +83,10 @@ module.exports = (sequelize, DataTypes) => {
 			active: {
 				type: DataTypes.TINYINT,
 				defaultValue: 0,
+			},
+			active_date: {
+				type: DataTypes.DATEONLY,
+				allowNull: true,
 			},
 			photo: {
 				type: DataTypes.STRING,
