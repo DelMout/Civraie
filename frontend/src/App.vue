@@ -59,6 +59,9 @@
 			<router-link class="link" v-if="isAdminApp === 1" to="/tous_produits"
 				>* Produits *</router-link
 			>
+			<router-link class="link" v-if="isAdminApp === 1" to="/suivi_stock"
+				>* Stock *</router-link
+			>
 
 			<router-link class="link" v-if="isAdminApp === 1" to="/utilisateurs"
 				>* Utilisateurs *</router-link

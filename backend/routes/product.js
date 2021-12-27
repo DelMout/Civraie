@@ -34,6 +34,9 @@ router.put("/modif/:productid", admin, multer, productCtrl.modifProduct);
 // * Change "active" of a product
 router.put("/changeactive/:productid/:active", admin, productCtrl.changeActive);
 
+// * Change "stock_manag" of a product
+router.put("/changestockmanag/:productid/:stockmanag", admin, productCtrl.changeStockManag);
+
 // * Put all products on "active"
 router.put("/putallproducts/actived", admin, productCtrl.putProductsActived);
 

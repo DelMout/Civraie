@@ -59,6 +59,7 @@
 						<th>Unité / prix</th>
 						<th>Unité vente</th>
 						<th>Support vente</th>
+						<th class="numb">Stock</th>
 						<th class="photo">Photo</th>
 						<th class="numb">Actif</th>
 					</tr>
@@ -156,6 +157,20 @@
 								:placeholder="prod.support"
 							/>
 						</td>
+						<td class="numb">
+							<button
+								v-if="prod.stock_manag > 0"
+								class="stock on_stock"
+								type="button"
+								@click="changeStockManag($event, prod)"
+							></button>
+							<button
+								v-if="prod.stock_manag === 0"
+								class="stock off_stock"
+								type="button"
+								@click="changeStockManag($event, prod)"
+							></button>
+						</td>
 						<td @click="modifProd($event, prod)" class="photo">
 							<img
 								class="photo"
@@ -211,6 +226,7 @@
 						<th>Unité / prix</th>
 						<th>Unité vente</th>
 						<th>Support vente</th>
+						<th class="numb">Stock</th>
 						<th class="photo">Photo</th>
 						<th class="numb">Actif</th>
 					</tr>
@@ -267,6 +283,20 @@
 								optionValue="item"
 								:placeholder="ordering"
 							/>
+						</td>
+						<td class="createProd numb">
+							<button
+								v-if="stock_man > 0"
+								class="stock on_stock"
+								type="button"
+								@click="createStockManag()"
+							></button>
+							<button
+								v-if="stock_man === 0"
+								class="stock off_stock"
+								type="button"
+								@click="createStockManag()"
+							></button>
 						</td>
 						<td class="photo createProd">
 							<div class="uploadFile">
@@ -364,6 +394,7 @@ export default {
 			categoryId: "",
 			orderingItem: "",
 			active: 0,
+			stock_man: 0,
 			ordering: "Support vente ?",
 			prodcToSelect: "Producteur ?",
 			cateToSelect: "Categorie ?",
@@ -433,14 +464,14 @@ export default {
 											price: prod.data[i].price,
 											unite_vente: prod.data[i].unite_vente,
 											unity: prod.data[i].unity,
-											price_unite_vente: prod.data[i].price_unite_vente,
+											stock_manag: prod.data[i].stock_manag,
 											stock_init: prod.data[i].stock_init,
 											stock_updated: prod.data[i].stock_updated,
-											alert_stock: prod.data[i].alert_stock,
+											stock_in_date: prod.data[i].stock_in_date,
 											photo: prod.data[i].photo,
-											alert:
-												prod.data[i].stock_updated -
-												prod.data[i].alert_stock,
+											// alert:
+											// 	prod.data[i].stock_updated -
+											// 	prod.data[i].alert_stock,
 											ordering: prod.data[i].ordering,
 											categoryId: prod.data[i].categoryId,
 											category: cate.data.category,
@@ -724,6 +755,7 @@ export default {
 			formData.append("unite_vente", this.qtyMini);
 			formData.append("unity", this.unity);
 			formData.append("ordering", this.ordering);
+			formData.append("stock_manag", this.stock_man);
 			formData.append("image", this.image);
 			formData.append("active", this.active);
 
@@ -924,6 +956,53 @@ export default {
 			}
 		},
 
+		//* Change status od stock_manag of the product (in list of products)
+		changeStockManag: function(event, prod) {
+			if (prod.stock_manag === 1) {
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "product/changestockmanag/" + prod.id + "/0",
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				})
+					.then(() => {
+						prod.stock_manag = 0;
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			} else {
+				if (prod.stock_manag === 0) {
+					axios({
+						method: "put",
+						url: process.env.VUE_APP_API + "product/changestockmanag/" + prod.id + "/1",
+						headers: {
+							Authorization: `Bearer ${this.token}`,
+						},
+					})
+						.then(() => {
+							prod.stock_manag = 1;
+							console.log("OK !");
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}
+			}
+		},
+
+		//* Change status of stock_manag of the product (in creation of new product)
+		createStockManag: function() {
+			if (this.stock_man === 1) {
+				this.stock_man = 0;
+			} else {
+				if (this.stock_man === 0) {
+					this.stock_man = 1;
+				}
+			}
+		},
+
 		//* Go down to the bottom of the page
 		downPage: function() {
 			window.scrollTo(0, document.body.scrollHeight);
@@ -974,15 +1053,14 @@ export default {
 													price: prod.data[i].price,
 													unite_vente: prod.data[i].unite_vente,
 													unity: prod.data[i].unity,
-													price_unite_vente:
-														prod.data[i].price_unite_vente,
+													stock_manag: prod.data[i].stock_manag,
 													stock_init: prod.data[i].stock_init,
 													stock_updated: prod.data[i].stock_updated,
-													alert_stock: prod.data[i].alert_stock,
+													stock_in_date: prod.data[i].stock_in_date,
 													photo: prod.data[i].photo,
-													alert:
-														prod.data[i].stock_updated -
-														prod.data[i].alert_stock,
+													// alert:
+													// 	prod.data[i].stock_updated -
+													// 	prod.data[i].alert_stock,
 													ordering: prod.data[i].ordering,
 													categoryId: prod.data[i].categoryId,
 													category: cate.data.category,
@@ -1182,6 +1260,13 @@ table {
 	margin-left: 0;
 	cursor: pointer;
 }
+.stock {
+	width: 1.5rem;
+	height: 1.5rem;
+	/* border-radius: 50%; */
+	margin-left: 0;
+	cursor: pointer;
+}
 .on {
 	background-color: greenyellow;
 	color: black;
@@ -1189,6 +1274,13 @@ table {
 .off {
 	background-color: red;
 }
+.on_stock {
+	background-color: rgb(20, 243, 243);
+}
+.off_stock {
+	background-color: rgb(224, 213, 213);
+}
+
 #allactived {
 	margin-left: 5rem;
 }

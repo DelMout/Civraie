@@ -4,6 +4,7 @@ import Password from "../views/Password.vue";
 // import ProdShop from "../views/ProdShop.vue";
 import ProdOrder from "../views/ProdOrder.vue";
 import Products from "../views/Products.vue";
+import StockManag from "../views/StockManag.vue";
 import Producers from "../views/Producers.vue";
 import Users from "../views/Users.vue";
 import Orders from "../views/Orders.vue";
@@ -85,6 +86,26 @@ const routes = [
 		component: Products,
 		meta: {
 			title: "Magasin Civraie / Tous Produits",
+		},
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
+	},
+	{
+		path: "/suivi_stock",
+		name: "StockManag",
+		component: StockManag,
+		meta: {
+			title: "Magasin Civraie / Suivi Stock",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");

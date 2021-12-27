@@ -207,6 +207,24 @@ exports.changeActive = (req, res) => {
 		});
 };
 
+// * Change "stock_manag" of a product
+exports.changeStockManag = (req, res) => {
+	product
+		.update(
+			{
+				stock_manag: req.params.stockmanag,
+			},
+			{ where: { id: req.params.productid } }
+		)
+		.then(() => {
+			res.send("stock_manag modified !");
+		})
+		.catch((err) => {
+			// res.status(401).send(err);
+			res.status(401).send(err.errors[0].validatorKey);
+		});
+};
+
 // * Put all products on "active"
 exports.putProductsActived = (req, res) => {
 	product

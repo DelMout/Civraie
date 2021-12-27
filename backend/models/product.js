@@ -56,10 +56,10 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				allowNull: true,
 			},
-			price_unite_vente: {
-				type: DataTypes.DECIMAL,
+			stock_manag: {
+				type: DataTypes.TINYINT,
 				allowNull: true,
-				defaultValue: null,
+				defaultValue: 0,
 			},
 			stock_init: {
 				type: DataTypes.INTEGER,
@@ -71,10 +71,9 @@ module.exports = (sequelize, DataTypes) => {
 				allowNull: true,
 				defaultValue: null,
 			},
-			alert_stock: {
-				type: DataTypes.INTEGER,
+			stock_in_date: {
+				type: DataTypes.DATEONLY,
 				allowNull: true,
-				defaultValue: null,
 			},
 			ordering: {
 				type: DataTypes.TINYINT,
