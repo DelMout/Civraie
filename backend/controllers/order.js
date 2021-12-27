@@ -73,7 +73,6 @@ exports.emailConfirm = (req, res) => {
 						req.params.delivery_date +
 						".</p>";
 					const contenu = req.params.contenu;
-					// const total = req.params.total;
 					transporter.sendMail(
 						{
 							from: "Magasin Civraie Si Frais <lacivraie@delmout.com>",

@@ -304,8 +304,21 @@ export default {
 													this.dialog = true;
 												}
 											})
-											.catch((err) => {
-												console.log(err);
+											.catch(() => {
+												this.products = [];
+												this.total = 0;
+												localStorage.removeItem("Total");
+												localStorage.removeItem("escarg");
+												if (this.counter_other > 0) {
+													this.message =
+														"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
+													this.dialog = true;
+												} else {
+													this.message =
+														"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
+													this.dialog = true;
+												}
+												console.log("broum !");
 											});
 									}
 									//for other_escargots
@@ -344,8 +357,21 @@ export default {
 													this.dialog = true;
 												}
 											})
-											.catch((err) => {
-												console.log(err);
+											.catch(() => {
+												this.products = [];
+												this.total = 0;
+												localStorage.removeItem("Total");
+												localStorage.removeItem("other_escarg");
+												if (this.counter_escarg > 0) {
+													this.message =
+														"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
+													this.dialog = true;
+												} else {
+													this.message =
+														"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
+													this.dialog = true;
+												}
+												console.log("broum 2 !");
 											});
 									}
 								})
