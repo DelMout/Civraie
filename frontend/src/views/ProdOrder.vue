@@ -273,7 +273,7 @@ export default {
 									price: prod.data[i].price,
 									unite_vente: prod.data[i].unite_vente,
 									photo: prod.data[i].photo,
-									alert: prod.data[i].stock_updated - prod.data[i].alert_stock,
+									stock_manag: prod.data[i].stock_manag,
 									stock_updated: prod.data[i].stock_updated,
 									selected: this.beSelected,
 									qty: this.qtyDisplay,
@@ -319,11 +319,23 @@ export default {
 					}
 				} else {
 					if (localStorage.getItem(prod.id) !== null) {
-						localStorage.setItem(
-							prod.id,
-							JSON.parse(localStorage.getItem(prod.id)) + 1
-						);
-						prod.qty = localStorage.getItem(prod.id);
+						// if product stock_managed
+						if (prod.stock_manag === 1) {
+							if (prod.qty < prod.stock_updated) {
+								localStorage.setItem(
+									prod.id,
+									JSON.parse(localStorage.getItem(prod.id)) + 1
+								);
+								prod.qty = localStorage.getItem(prod.id);
+							} else {
+								this.$toast.add({
+									severity: "error",
+									detail: "Stock limité !",
+									closable: false,
+									life: 4000,
+								});
+							}
+						}
 					} else {
 						localStorage.setItem(prod.id, 1);
 						localStorage.setItem(
@@ -332,6 +344,7 @@ export default {
 						);
 						prod.qty = 1;
 					}
+					//! Englober ce if suivant avec stock_manag=1 et prod.qty<prod.stock_updated
 					if (prod.producerId === 16) {
 						localStorage.setItem(
 							"escarg",

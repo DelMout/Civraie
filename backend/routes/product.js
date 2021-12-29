@@ -22,6 +22,9 @@ router.get("/producerid/:producerid", productCtrl.getProductsProducerid); //! No
 // * See all products actived
 router.get("/getproducts/actived", productCtrl.getProductsActived); //! No need auth
 
+// * See all products with stock-manag
+router.get("/getproducts/stockmanag", admin, productCtrl.getProductsStockManag);
+
 // * See products according to ordering=1 and 2 AND category AND active=1
 router.get("/category/:category", productCtrl.getProductsCategory);
 

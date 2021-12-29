@@ -3,6 +3,14 @@
 		<div id="productsTable">
 			<div id="title">
 				<h3>Gestion des stocks</h3>
+				<p id="number">Produits actifs et non actifs.</p>
+			</div>
+			<div>
+				<p>
+					<span id="exclam" class="pi pi-exclamation-triangle"></span> Veillez à bien
+					remettre à jour le stock initial car seulement le "stock mis à jour" est pris en
+					compte.
+				</p>
 			</div>
 
 			<ConfirmPopup></ConfirmPopup>
@@ -140,10 +148,10 @@ export default {
 	},
 	created: function() {
 		this.$store.state.inPages = true;
-		//* All products
+		//* All products wth stock_manag
 		axios({
 			method: "get",
-			url: process.env.VUE_APP_API + "product",
+			url: process.env.VUE_APP_API + "product/getproducts/stockmanag",
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -286,7 +294,7 @@ h3 {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 0rem;
-	margin-bottom: 1rem;
+	/* margin-bottom: 1rem; */
 	margin-left: 5rem;
 }
 
@@ -440,5 +448,16 @@ table {
 }
 .light {
 	background-color: yellow;
+}
+#number {
+	margin: 0;
+	font-size: 12px;
+	margin-top: 0.2rem;
+}
+#exclam {
+	color: red;
+	/* background-color: white; */
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
 }
 </style>

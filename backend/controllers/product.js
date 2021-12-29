@@ -76,6 +76,23 @@ exports.getProductsActived = (req, res) => {
 		});
 };
 
+// * Get all products with stock_manag
+exports.getProductsStockManag = (req, res) => {
+	product
+		.findAll({
+			order: [["product", "ASC"]],
+			where: {
+				stock_manag: 1,
+			},
+		})
+		.then((obj) => {
+			res.send(obj);
+		})
+		.catch((err) => {
+			res.send(err);
+		});
+};
+
 // * Get  products according to ordering=1 and 2 AND category AND active=1
 exports.getProductsCategory = (req, res) => {
 	product
