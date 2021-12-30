@@ -320,14 +320,29 @@ export default {
 				} else {
 					if (localStorage.getItem(prod.id) !== null) {
 						// if product stock_managed
-						if (prod.stock_manag === 1) {
-							if (prod.qty < prod.stock_updated) {
+						if (
+							(prod.stock_manag === 1 && prod.qty < prod.stock_updated) ||
+							prod.stock_manag != 1 ||
+							(prod.stock_manag === 1 && prod.stock_updated === null)
+						) {
+							localStorage.setItem(
+								prod.id,
+								JSON.parse(localStorage.getItem(prod.id)) + 1
+							);
+							prod.qty = localStorage.getItem(prod.id);
+							if (prod.producerId === 16) {
 								localStorage.setItem(
-									prod.id,
-									JSON.parse(localStorage.getItem(prod.id)) + 1
+									"escarg",
+									JSON.parse(localStorage.getItem("escarg")) + 1
 								);
-								prod.qty = localStorage.getItem(prod.id);
 							} else {
+								localStorage.setItem(
+									"other_escarg",
+									JSON.parse(localStorage.getItem("other_escarg")) + 1
+								);
+							}
+						} else {
+							if (prod.stock_manag === 1 && prod.qty == prod.stock_updated) {
 								this.$toast.add({
 									severity: "error",
 									detail: "Stock limité !",
@@ -343,18 +358,17 @@ export default {
 							JSON.parse(localStorage.getItem("Total")) + 1
 						);
 						prod.qty = 1;
-					}
-					//! Englober ce if suivant avec stock_manag=1 et prod.qty<prod.stock_updated
-					if (prod.producerId === 16) {
-						localStorage.setItem(
-							"escarg",
-							JSON.parse(localStorage.getItem("escarg")) + 1
-						);
-					} else {
-						localStorage.setItem(
-							"other_escarg",
-							JSON.parse(localStorage.getItem("other_escarg")) + 1
-						);
+						if (prod.producerId === 16) {
+							localStorage.setItem(
+								"escarg",
+								JSON.parse(localStorage.getItem("escarg")) + 1
+							);
+						} else {
+							localStorage.setItem(
+								"other_escarg",
+								JSON.parse(localStorage.getItem("other_escarg")) + 1
+							);
+						}
 					}
 				}
 				this.$store.commit("setTotal", localStorage.getItem("Total"));

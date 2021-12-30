@@ -110,6 +110,18 @@
 				<ProgressSpinner />
 			</div>
 		</div>
+		<div style="width:30vw">
+			<Toast position="center" :breakpoints="{ '500px': { width: '90%' } }">
+				<template #message="slotProps">
+					<div class="p-d-flex ">
+						<div class="p-text-center">
+							<i class="pi pi-exclamation-triangle" style="font-size: 2rem"></i>
+							<p class="p-text-center">{{ slotProps.message.detail }}</p>
+						</div>
+					</div>
+				</template>
+			</Toast>
+		</div>
 		<div>
 			<Dialog
 				header="Confirmation"
@@ -149,6 +161,7 @@ export default {
 			message:
 				"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.",
 			delivery_day_gene: "",
+			counter_go: 0,
 		};
 	},
 	computed: {
@@ -179,7 +192,8 @@ export default {
 						price_kg: prod.data[c].price_kg,
 						unity_kg: prod.data[c].unite_vente,
 						unity: prod.data[c].unity,
-						price_unity: prod.data[c].price_unite_vente,
+						stock_manag: prod.data[c].stock_manag,
+						stock_updated: prod.data[c].stock_updated,
 						producerId: prod.data[c].producerId,
 						qty: localStorage.getItem(prod.data[c].id),
 					});
@@ -204,7 +218,6 @@ export default {
 
 				this.$router.push("/");
 			} else {
-				this.ordered = true;
 				// Save in database and send 1 email for non escargots and 1 email for escargots
 
 				axios({
@@ -212,178 +225,217 @@ export default {
 					url: process.env.VUE_APP_API + "product/getproducts/actived",
 				}).then((prod) => {
 					for (let i = 0; i < prod.data.length; i++) {
-						if (this.products[i].qty > 0) {
-							if (this.products[i].unity) {
-								this.unitee = this.products[i].unity;
-							} else {
-								this.unitee = this.products[i].unity_kg;
-							}
-							// if escargots ordered
-							if (this.products[i].producerId === 16) {
-								this.counter_escarg =
-									this.counter_escarg + JSON.parse(this.products[i].qty);
-								this.tablMail_escarg =
-									this.tablMail_escarg +
-									"<tr style='text-align:center'><td style='border: 1px solid black;width:150px;height:50px;'>" +
-									encodeURIComponent(this.products[i].product) +
-									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-									this.products[i].qty +
-									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-									encodeURIComponent(this.unitee);
-								this.delivery_day_gene = this.deliveryDateNextW;
-							} else {
-								this.counter_other =
-									this.counter_other + JSON.parse(this.products[i].qty);
-								this.tablMail =
-									this.tablMail +
-									"<tr style='text-align:center'><td style='border: 1px solid black;width:150px;height:50px;'>" +
-									encodeURIComponent(this.products[i].product) +
-									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-									this.products[i].qty +
-									"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-									encodeURIComponent(this.unitee);
-								this.delivery_day_gene = this.deliveryDate;
-							}
-							localStorage.removeItem(this.products[i].id);
+						// if qty ordered > stock_updated
+						if (this.products[i].unity) {
+							this.unitee = this.products[i].unity;
+						} else {
+							this.unitee = this.products[i].unity_kg;
+						}
+						if (
+							this.products[i].stock_manag === 1 &&
+							this.products[i].qty > this.products[i].stock_updated &&
+							this.products[i].stock_updated != null
+						) {
+							this.$toast.add({
+								severity: "error",
+								detail:
+									"Le stock de " +
+									this.products[i].product +
+									" est limité à " +
+									this.products[i].stock_updated +
+									" " +
+									this.unitee +
+									". Merci de baisser la quantité.",
+								closable: false,
+								life: 8000,
+							});
+						} else {
+							this.counter_go++;
+							console.log(this.counter_go);
+							console.log("length = " + prod.data.length);
+						}
+					}
+					// if  qty of products without qty>stock_updated == qty total of products
+					if (this.counter_go === prod.data.length) {
+						this.ordered = true;
+						for (let i = 0; i < prod.data.length; i++) {
+							if (this.products[i].qty > 0) {
+								if (this.products[i].unity) {
+									this.unitee = this.products[i].unity;
+								} else {
+									this.unitee = this.products[i].unity_kg;
+								}
+								// if escargots ordered
+								if (this.products[i].producerId === 16) {
+									this.counter_escarg =
+										this.counter_escarg + JSON.parse(this.products[i].qty);
+									this.tablMail_escarg =
+										this.tablMail_escarg +
+										"<tr style='text-align:center'><td style='border: 1px solid black;width:150px;height:50px;'>" +
+										encodeURIComponent(this.products[i].product) +
+										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+										this.products[i].qty +
+										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+										encodeURIComponent(this.unitee);
+									this.delivery_day_gene = this.deliveryDateNextW;
+								} else {
+									this.counter_other =
+										this.counter_other + JSON.parse(this.products[i].qty);
+									this.tablMail =
+										this.tablMail +
+										"<tr style='text-align:center'><td style='border: 1px solid black;width:150px;height:50px;'>" +
+										encodeURIComponent(this.products[i].product) +
+										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+										this.products[i].qty +
+										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
+										encodeURIComponent(this.unitee);
+									this.delivery_day_gene = this.deliveryDate;
+								}
+								localStorage.removeItem(this.products[i].id);
 
-							axios({
-								method: "post",
-								url:
-									process.env.VUE_APP_API +
-									"order/createorder/" +
-									this.userId +
-									"/" +
-									this.delivery_day_gene,
-								data: {
-									productId: this.products[i].id,
-									quantity: this.products[i].qty,
-									order_date: Date.now(),
-								},
-								headers: {
-									Authorization: `Bearer ${this.token}`,
-								},
-							})
-								.then(() => {
-									console.log("order  saved !");
-									this.counter++;
-									console.log(JSON.parse(localStorage.getItem("Total")));
-									//send email confirmation
-									//for escargots
-									if (
-										this.counter_escarg ===
-											JSON.parse(localStorage.getItem("escarg")) &&
-										this.counter === JSON.parse(localStorage.getItem("Total"))
-									) {
-										axios({
-											method: "post",
-											url:
-												process.env.VUE_APP_API +
-												"order/emailconf/" +
-												this.userId +
-												"/" +
-												this.deliveryDateNextW +
-												"/" +
-												this.tablMail_escarg,
-
-											headers: {
-												Authorization: `Bearer ${this.token}`,
-											},
-										})
-											.then(() => {
-												this.products = [];
-												this.total = 0;
-												localStorage.removeItem("Total");
-												localStorage.removeItem("escarg");
-												if (this.counter_other > 0) {
-													this.message =
-														"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
-													this.dialog = true;
-												} else {
-													this.message =
-														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-													this.dialog = true;
-												}
-											})
-											.catch(() => {
-												this.products = [];
-												this.total = 0;
-												localStorage.removeItem("Total");
-												localStorage.removeItem("escarg");
-												if (this.counter_other > 0) {
-													this.message =
-														"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
-													this.dialog = true;
-												} else {
-													this.message =
-														"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
-													this.dialog = true;
-												}
-												console.log("broum !");
-											});
-									}
-									//for other_escargots
-									if (
-										this.counter_other ===
-											JSON.parse(localStorage.getItem("other_escarg")) &&
-										this.counter === JSON.parse(localStorage.getItem("Total"))
-									) {
-										axios({
-											method: "post",
-											url:
-												process.env.VUE_APP_API +
-												"order/emailconf/" +
-												this.userId +
-												"/" +
-												this.deliveryDate +
-												"/" +
-												this.tablMail,
-
-											headers: {
-												Authorization: `Bearer ${this.token}`,
-											},
-										})
-											.then(() => {
-												this.products = [];
-												this.total = 0;
-												localStorage.removeItem("Total");
-												localStorage.removeItem("other_escarg");
-												if (this.counter_escarg > 0) {
-													this.message =
-														"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
-													this.dialog = true;
-												} else {
-													this.message =
-														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-													this.dialog = true;
-												}
-											})
-											.catch(() => {
-												this.products = [];
-												this.total = 0;
-												localStorage.removeItem("Total");
-												localStorage.removeItem("other_escarg");
-												if (this.counter_escarg > 0) {
-													this.message =
-														"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
-													this.dialog = true;
-												} else {
-													this.message =
-														"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
-													this.dialog = true;
-												}
-												console.log("broum 2 !");
-											});
-									}
+								axios({
+									method: "post",
+									url:
+										process.env.VUE_APP_API +
+										"order/createorder/" +
+										this.userId +
+										"/" +
+										this.delivery_day_gene,
+									data: {
+										productId: this.products[i].id,
+										quantity: this.products[i].qty,
+										order_date: Date.now(),
+									},
+									headers: {
+										Authorization: `Bearer ${this.token}`,
+									},
 								})
-								.catch((err) => {
-									console.log(err);
-								});
+									.then(() => {
+										console.log("order  saved !");
+										//! decremente stock_updated if necessary
+										this.counter++;
+										console.log(JSON.parse(localStorage.getItem("Total")));
+										//send email confirmation
+										//for escargots
+										if (
+											this.counter_escarg ===
+												JSON.parse(localStorage.getItem("escarg")) &&
+											this.counter ===
+												JSON.parse(localStorage.getItem("Total"))
+										) {
+											axios({
+												method: "post",
+												url:
+													process.env.VUE_APP_API +
+													"order/emailconf/" +
+													this.userId +
+													"/" +
+													this.deliveryDateNextW +
+													"/" +
+													this.tablMail_escarg,
+
+												headers: {
+													Authorization: `Bearer ${this.token}`,
+												},
+											})
+												.then(() => {
+													this.products = [];
+													this.total = 0;
+													localStorage.removeItem("Total");
+													localStorage.removeItem("escarg");
+													if (this.counter_other > 0) {
+														this.message =
+															"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
+														this.dialog = true;
+													} else {
+														this.message =
+															"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+														this.dialog = true;
+													}
+												})
+												.catch(() => {
+													this.products = [];
+													this.total = 0;
+													localStorage.removeItem("Total");
+													localStorage.removeItem("escarg");
+													if (this.counter_other > 0) {
+														this.message =
+															"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
+														this.dialog = true;
+													} else {
+														this.message =
+															"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
+														this.dialog = true;
+													}
+													console.log("broum !");
+												});
+										}
+										//for other_escargots
+										if (
+											this.counter_other ===
+												JSON.parse(localStorage.getItem("other_escarg")) &&
+											this.counter ===
+												JSON.parse(localStorage.getItem("Total"))
+										) {
+											axios({
+												method: "post",
+												url:
+													process.env.VUE_APP_API +
+													"order/emailconf/" +
+													this.userId +
+													"/" +
+													this.deliveryDate +
+													"/" +
+													this.tablMail,
+
+												headers: {
+													Authorization: `Bearer ${this.token}`,
+												},
+											})
+												.then(() => {
+													this.products = [];
+													this.total = 0;
+													localStorage.removeItem("Total");
+													localStorage.removeItem("other_escarg");
+													if (this.counter_escarg > 0) {
+														this.message =
+															"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
+														this.dialog = true;
+													} else {
+														this.message =
+															"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+														this.dialog = true;
+													}
+												})
+												.catch(() => {
+													this.products = [];
+													this.total = 0;
+													localStorage.removeItem("Total");
+													localStorage.removeItem("other_escarg");
+													if (this.counter_escarg > 0) {
+														this.message =
+															"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
+														this.dialog = true;
+													} else {
+														this.message =
+															"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
+														this.dialog = true;
+													}
+													console.log("broum 2 !");
+												});
+										}
+									})
+									.catch((err) => {
+										console.log(err);
+									});
+							}
 						}
 					}
 				});
 			}
 		},
 		//* Add product to the order
+		//! vérifier stock limité
 		addQty: function(event, prod) {
 			this.$store.dispatch("checkConnect");
 			if (!this.connected) {
@@ -401,11 +453,38 @@ export default {
 					}
 				} else {
 					if (localStorage.getItem(prod.id) !== null) {
-						localStorage.setItem(
-							prod.id,
-							JSON.parse(localStorage.getItem(prod.id)) + 1
-						);
-						prod.qty = localStorage.getItem(prod.id);
+						// if product stock_managed
+						if (
+							(prod.stock_manag === 1 && prod.qty < prod.stock_updated) ||
+							prod.stock_manag != 1 ||
+							(prod.stock_manag === 1 && prod.stock_updated === null)
+						) {
+							localStorage.setItem(
+								prod.id,
+								JSON.parse(localStorage.getItem(prod.id)) + 1
+							);
+							prod.qty = localStorage.getItem(prod.id);
+							if (prod.producerId === 16) {
+								localStorage.setItem(
+									"escarg",
+									JSON.parse(localStorage.getItem("escarg")) + 1
+								);
+							} else {
+								localStorage.setItem(
+									"other_escarg",
+									JSON.parse(localStorage.getItem("other_escarg")) + 1
+								);
+							}
+						} else {
+							if (prod.stock_manag === 1 && prod.qty == prod.stock_updated) {
+								this.$toast.add({
+									severity: "error",
+									detail: "Stock limité !",
+									closable: false,
+									life: 4000,
+								});
+							}
+						}
 					} else {
 						localStorage.setItem(prod.id, 1);
 						localStorage.setItem(
@@ -413,17 +492,17 @@ export default {
 							JSON.parse(localStorage.getItem("Total")) + 1
 						);
 						prod.qty = 1;
-					}
-					if (prod.producerId === 16) {
-						localStorage.setItem(
-							"escarg",
-							JSON.parse(localStorage.getItem("escarg")) + 1
-						);
-					} else {
-						localStorage.setItem(
-							"other_escarg",
-							JSON.parse(localStorage.getItem("other_escarg")) + 1
-						);
+						if (prod.producerId === 16) {
+							localStorage.setItem(
+								"escarg",
+								JSON.parse(localStorage.getItem("escarg")) + 1
+							);
+						} else {
+							localStorage.setItem(
+								"other_escarg",
+								JSON.parse(localStorage.getItem("other_escarg")) + 1
+							);
+						}
 					}
 				}
 				this.$store.commit("setTotal", localStorage.getItem("Total"));
@@ -474,6 +553,7 @@ export default {
 							);
 						}
 					}
+					location.reload();
 				}
 				this.$store.commit("setTotal", localStorage.getItem("Total"));
 				if (localStorage.getItem("Total") == 0) {
