@@ -35,10 +35,13 @@ router.get("/datas/:productid", admin, productCtrl.getDatasProduct);
 router.put("/modif/:productid", admin, multer, productCtrl.modifProduct);
 
 // * Change "active" of a product
-router.put("/changeactive/:productid/:active", admin, productCtrl.changeActive);
+router.put("/changeactive/:productid/:active", auth, productCtrl.changeActive);
 
 // * Change "stock_manag" of a product
 router.put("/changestockmanag/:productid/:stockmanag", admin, productCtrl.changeStockManag);
+
+// * Decremente "stock_updated" of a product
+router.put("/stockmanag/decrementestock/:productid/:qty", auth, productCtrl.decrementeStock);
 
 // * Put all products on "active"
 router.put("/putallproducts/actived", admin, productCtrl.putProductsActived);

@@ -242,6 +242,24 @@ exports.changeStockManag = (req, res) => {
 		});
 };
 
+// * Decremente "stock_updated" of a product
+exports.decrementeStock = (req, res) => {
+	product
+		.update(
+			{
+				stock_updated: req.params.qty,
+			},
+			{ where: { id: req.params.productid } }
+		)
+		.then(() => {
+			res.send("stock_updated updated !");
+		})
+		.catch((err) => {
+			// res.status(401).send(err);
+			res.status(401).send(err.errors[0].validatorKey);
+		});
+};
+
 // * Put all products on "active"
 exports.putProductsActived = (req, res) => {
 	product

@@ -312,7 +312,50 @@ export default {
 								})
 									.then(() => {
 										console.log("order  saved !");
-										//! decremente stock_updated if necessary
+										// decremente stock_updated if necessary
+										if (
+											this.products[i].stock_manag === 1 &&
+											this.products[i].stock_updated > 0
+										) {
+											const newValue =
+												this.products[i].stock_updated -
+												this.products[i].qty;
+											axios({
+												method: "put",
+												url:
+													process.env.VUE_APP_API +
+													"product/stockmanag/decrementestock/" +
+													this.products[i].id +
+													"/" +
+													newValue,
+
+												headers: {
+													Authorization: `Bearer ${this.token}`,
+												},
+											}).then(() => {
+												console.log("stock_updated has been updated !");
+												// if stock_updated=0 put inactive the product
+												if (newValue === 0) {
+													console.log("put inactif the product");
+													axios({
+														method: "put",
+														url:
+															process.env.VUE_APP_API +
+															"product/changeactive/" +
+															this.products[i].id +
+															"/0",
+
+														headers: {
+															Authorization: `Bearer ${this.token}`,
+														},
+													}).then(() => {
+														console.log("product in inactive !");
+													});
+												}
+											});
+
+											console.log("new qty for stock_updated = " + newValue);
+										}
 										this.counter++;
 										console.log(JSON.parse(localStorage.getItem("Total")));
 										//send email confirmation
