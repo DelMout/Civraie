@@ -15,6 +15,7 @@ export default createStore({
 		infoHome: "",
 		inPages: true,
 		newUser: false,
+		expired: false,
 	},
 	mutations: {
 		setUserId(state, userId) {
@@ -40,6 +41,9 @@ export default createStore({
 		},
 		setInfo(state) {
 			state.infoHome = "Ta session a expiré.";
+		},
+		setExpired(state) {
+			state.expired = true;
 		},
 		IS_TRUE(state) {
 			state.connected = true;
@@ -102,6 +106,7 @@ export default createStore({
 				} else {
 					context.commit("IS_FALSE");
 					context.commit("setInfo");
+					context.commit("setExpired");
 					localStorage.clear();
 				}
 			} else {

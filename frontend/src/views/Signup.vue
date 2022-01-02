@@ -56,6 +56,18 @@
 			</div>
 		</div>
 		<div v-if="!(!creation || forgot)">
+			<div id="rgpd">
+				<p>
+					<Checkbox v-model="checked" :binary="true" /> En soumettant ce formulaire,
+					j'accepte que les informations saisies soient uniquement utilisées pour
+					permettre de me contacter et de traiter mes commandes. Plus d'informations dans
+					<span>
+						<a href="https://www.delmout.com" target="_blank"
+							><i>Mentions Légales</i></a
+						></span
+					>
+				</p>
+			</div>
 			<Button
 				label="Valider mon inscription"
 				class="p-button-raised p-button-primary login"
@@ -106,9 +118,17 @@
 			</div>
 		</div>
 		<div id="copyright">
-			<a href="https://www.delmout.com" target="_blank"
-				><p><i>&#xA9; Site créé par Delphine Moutault</i></p></a
-			>
+			<div>
+				<a href="https://www.delmout.com" target="_blank"
+					><p><i>&#xA9; Site créé par Delphine Moutault</i></p></a
+				>
+			</div>
+			<div>
+				<!-- Mettre le lien sur la page Mentions légales -->
+				<a href="https://www.delmout.com" target="_blank"
+					><p><i>Mentions Légales</i></p></a
+				>
+			</div>
 		</div>
 		<div style="width:30vw">
 			<Toast position="center" :breakpoints="{ '400px': { width: '95%' } }">
@@ -145,6 +165,7 @@ export default {
 			forgotSent: false,
 			openhours: "",
 			connectionInProgress: false,
+			checked: false,
 			errors: [
 				{
 					error: "Validation is on phone failed",
@@ -207,6 +228,14 @@ export default {
 	},
 	mounted: function() {
 		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
+		if (!this.$store.state.connected && this.$store.state.expired) {
+			this.$toast.add({
+				severity: "warn",
+				detail: "Votre session a expiré.",
+				closable: false,
+				life: 4000,
+			});
+		}
 	},
 	created: function() {
 		this.$store.state.inPages = false;
@@ -220,7 +249,16 @@ export default {
 	},
 
 	computed: {
-		...mapState(["infoHome", "token", "userId", "isAdmin", "connected", "inPages", "newUser"]),
+		...mapState([
+			"infoHome",
+			"token",
+			"userId",
+			"isAdmin",
+			"connected",
+			"inPages",
+			"newUser",
+			"expired",
+		]),
 	},
 	methods: {
 		...mapMutations(["setUserId", "setToken", "setAdmin", "setNewUser", "setTotal"]),
@@ -393,7 +431,8 @@ export default {
 label {
 	text-align: left;
 }
-.cells {
+.cells,
+#rgpd {
 	width: 15%;
 	margin: auto;
 }
@@ -423,11 +462,21 @@ label {
 a {
 	text-decoration: none;
 }
+span a {
+	text-decoration: underline;
+	color: #4caf50;
+}
+#rgpd {
+	text-align: justify;
+}
 #copyright {
+	width: 98%;
 	text-align: left;
-	margin-left: 1rem;
+	margin-left: 1%;
 	position: fixed;
 	bottom: 0px;
+	display: flex;
+	justify-content: space-between;
 }
 #copyright a {
 	color: #4caf50;

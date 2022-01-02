@@ -62,7 +62,7 @@ exports.login = (req, res) => {
 					{ userId: user.id, isAdmin: user.isAdmin },
 					process.env.JWT_KEY,
 					{
-						expiresIn: "1h",
+						expiresIn: "0.01h",
 					}
 				);
 				res.json({

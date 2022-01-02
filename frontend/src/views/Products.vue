@@ -355,6 +355,7 @@
 </template>
 <script>
 import axios from "axios";
+import moment from "moment";
 import { mapState, mapActions } from "vuex";
 
 export default {
@@ -743,9 +744,6 @@ export default {
 
 		//* Create a product
 		validateCreate: function() {
-			//! Vérifier conditions avant de créer, toutes les cases sont bien remplies ?
-
-			console.log("on y est !");
 			const formData = new FormData();
 			formData.append("product", this.name);
 			formData.append("producerId", this.prodcToSelect);
@@ -758,6 +756,9 @@ export default {
 			formData.append("stock_manag", this.stock_man);
 			formData.append("image", this.image);
 			formData.append("active", this.active);
+			if (this.active === 1) {
+				formData.append("active_date", moment().format("YYYY-MM-DD"));
+			}
 
 			axios({
 				method: "post",

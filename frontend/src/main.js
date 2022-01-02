@@ -19,6 +19,7 @@ import Editor from "primevue/editor";
 import Textarea from "primevue/textarea";
 import ConfirmationService from "primevue/confirmationservice";
 import ConfirmPopup from "primevue/confirmpopup";
+import Checkbox from "primevue/checkbox";
 
 // import JsonExcel from "vue-json-excel";
 import "primeicons/primeicons.css"; //icons
@@ -56,6 +57,7 @@ createApp(App)
 	.component("Editor", Editor)
 	.component("Textarea", Textarea)
 	.component("ConfirmPopup", ConfirmPopup)
+	.component("Checkbox", Checkbox)
 
 	// .component("downloadExcel", JsonExcel)
 	.mount("#app");
