@@ -111,6 +111,22 @@ exports.lastconn = (req, res) => {
 		});
 };
 
+// * Update phone number
+exports.updatePhone = (req, res) => {
+	user.update(
+		{
+			phone: req.body.phone,
+		},
+		{ where: { id: req.params.userid } }
+	)
+		.then(() => {
+			res.send("user's phone modified !");
+		})
+		.catch((err) => {
+			res.status(401).send(err);
+		});
+};
+
 // * Get all users
 exports.getAllUsers = (req, res) => {
 	user.findAll({
@@ -167,8 +183,19 @@ exports.updatePassword = (req, res) => {
 	}
 };
 
-// * Delete user
+// * Delete user from Admin
 exports.delete = (req, res) => {
+	user.destroy({ where: { id: req.params.userid } })
+		.then(() => {
+			res.send("user deleted");
+		})
+		.catch((err) => {
+			res.send(err);
+		});
+};
+
+// * Delete user from a user
+exports.deleteMyAccount = (req, res) => {
 	user.destroy({ where: { id: req.params.userid } })
 		.then(() => {
 			res.send("user deleted");

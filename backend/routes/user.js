@@ -4,6 +4,7 @@ const router = express.Router();
 const userCtrl = require("../controllers/user");
 
 const auth = require("../middleware/auth"); // Request authentification
+const ident = require("../middleware/ident"); // Request identification (connectedId = Req.params.id)
 const admin = require("../middleware/isAdmin"); // Request authentification for admin
 
 // * Sign Up
@@ -18,11 +19,14 @@ router.post("/login", userCtrl.login);
 // * Update last connection date + jeton
 router.put("/login/:email", auth, userCtrl.lastconn);
 
+// * Update phone number
+router.put("/account/phone/:userid", auth, userCtrl.updatePhone);
+
 // * See all users
 router.get("/allusers", admin, userCtrl.getAllUsers);
 
 // * See datas for a user via id
-router.get("/getuser/:userid", admin, userCtrl.getUser);
+router.get("/getuser/:userid", auth, userCtrl.getUser);
 
 // * Comment a user
 router.put("/comment/:userid", admin, userCtrl.comment);
@@ -30,8 +34,11 @@ router.put("/comment/:userid", admin, userCtrl.comment);
 // * Modify password after lost
 router.put("/password/:jeton", userCtrl.updatePassword);
 
-// * Delete user
+// * Delete user from admin
 router.delete("/delete/:userid", admin, userCtrl.delete);
+
+// * Delete user from user
+router.delete("/deletemyaccount/:userid", ident, userCtrl.deleteMyAccount);
 
 // * send email for updating password
 router.post("/emailpassword/:email", userCtrl.emailPassword);

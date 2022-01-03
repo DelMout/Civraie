@@ -237,6 +237,15 @@ export default {
 				life: 4000,
 			});
 		}
+		if (this.$store.state.deleted) {
+			this.$toast.add({
+				severity: "success",
+				detail: "Votre compte utilisateur a été supprimé !",
+				closable: false,
+				life: 4000,
+			});
+			this.$store.commit("setDeleted", false);
+		}
 	},
 	created: function() {
 		this.$store.state.inPages = false;
@@ -259,10 +268,18 @@ export default {
 			"inPages",
 			"newUser",
 			"expired",
+			"deleted",
 		]),
 	},
 	methods: {
-		...mapMutations(["setUserId", "setToken", "setAdmin", "setNewUser", "setTotal"]),
+		...mapMutations([
+			"setUserId",
+			"setToken",
+			"setAdmin",
+			"setNewUser",
+			"setTotal",
+			"setDeleted",
+		]),
 		...mapActions(["checkConnect"]),
 		//* Create a user
 		signup: function() {

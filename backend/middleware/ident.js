@@ -1,15 +1,14 @@
-// const { publication } = require("../models");
+const { user } = require("../models");
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-	publication
-		.findOne({ where: { id: req.params.pubid } })
-		.then((pub) => {
+	user.findOne({ where: { id: req.params.userid } })
+		.then((user) => {
 			try {
 				const token = req.headers.authorization.split(" ")[1];
 				const decodedToken = jwt.verify(token, process.env.JWT_KEY);
 				const userConnectedId = decodedToken.userId;
-				const userAuthorId = pub.userId;
+				const userAuthorId = user.id;
 				const isAdmin = decodedToken.isAdmin;
 				if (
 					(isAdmin === 0 && userConnectedId !== userAuthorId) ||

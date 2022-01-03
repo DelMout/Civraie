@@ -16,6 +16,7 @@ export default createStore({
 		inPages: true,
 		newUser: false,
 		expired: false,
+		deleted: false,
 	},
 	mutations: {
 		setUserId(state, userId) {
@@ -26,6 +27,9 @@ export default createStore({
 		},
 		setAdmin(state, isAdmin) {
 			state.isAdmin = isAdmin;
+		},
+		setDeleted(state, deleted) {
+			state.deleted = deleted;
 		},
 		// setDeliveryDate(state, deliveryDate) {
 		// 	state.deliveryDate = deliveryDate;

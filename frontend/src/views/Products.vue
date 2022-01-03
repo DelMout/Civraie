@@ -1059,9 +1059,6 @@ export default {
 													stock_updated: prod.data[i].stock_updated,
 													stock_in_date: prod.data[i].stock_in_date,
 													photo: prod.data[i].photo,
-													// alert:
-													// 	prod.data[i].stock_updated -
-													// 	prod.data[i].alert_stock,
 													ordering: prod.data[i].ordering,
 													categoryId: prod.data[i].categoryId,
 													category: cate.data.category,
