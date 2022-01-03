@@ -65,6 +65,14 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.TINYINT,
 				defaultValue: 0,
 			},
+			consent_RGPD: {
+				type: DataTypes.TINYINT,
+				allowNull: false,
+			},
+			consent_date: {
+				type: DataTypes.DATEONLY,
+				allowNull: false,
+			},
 		},
 		{
 			timestamps: false,

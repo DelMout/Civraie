@@ -173,6 +173,7 @@ export default {
 				life: 4000,
 			});
 		}
+		this.$store.commit("setNewUserAnymore");
 		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
 	},
 	beforeCreate: function() {
@@ -217,7 +218,7 @@ export default {
 
 	methods: {
 		// ...mapActions(["nextDeliveryDay"]),
-		...mapMutations(["setProducts", "setTotal"]),
+		...mapMutations(["setProducts", "setTotal", "setNewUserAnymore"]),
 		//* Number format
 		numFr: function(num) {
 			return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(

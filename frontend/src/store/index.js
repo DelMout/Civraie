@@ -36,6 +36,9 @@ export default createStore({
 		setNewUser(state) {
 			state.newUser = true;
 		},
+		setNewUserAnymore(state) {
+			state.newUser = false;
+		},
 		setTotal(state, total) {
 			state.total = total;
 		},

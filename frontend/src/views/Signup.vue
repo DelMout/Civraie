@@ -65,7 +65,7 @@
 						<a href="https://www.delmout.com" target="_blank"
 							><i>Mentions Légales</i></a
 						></span
-					>
+					>.
 				</p>
 			</div>
 			<Button
@@ -146,6 +146,7 @@
 </template>
 <script>
 import axios from "axios";
+import moment from "moment";
 import { mapMutations, mapState, mapActions } from "vuex";
 
 export default {
@@ -265,30 +266,43 @@ export default {
 		...mapActions(["checkConnect"]),
 		//* Create a user
 		signup: function() {
-			axios
-				.post(process.env.VUE_APP_API + "user/signup", {
-					prenom: this.prenom,
-					nom: this.nom,
-					phone: this.phone,
-					email: this.email,
-					password: this.password,
-				})
-				.then(() => {
-					this.$store.commit("setNewUser");
-					this.login();
-				})
-				.catch((err) => {
-					for (let i = 0; i < 9; i++) {
-						if (this.errors[i].error === err.response.data) {
-							this.$toast.add({
-								severity: "error",
-								detail: this.errors[i].message,
-								closable: false,
-								life: 4000,
-							});
-						}
-					}
+			if (!this.checked) {
+				this.$toast.add({
+					severity: "error",
+					detail:
+						"Pour valider votre inscription vous devez cocher la case sur le consentement du traitement des données.",
+					closable: false,
+					life: 4000,
 				});
+			} else {
+				axios
+					.post(process.env.VUE_APP_API + "user/signup", {
+						prenom: this.prenom,
+						nom: this.nom,
+						phone: this.phone,
+						email: this.email,
+						password: this.password,
+						consent_RGPD: 1,
+						consent_date: moment().format("YYYY-MM-DD"),
+					})
+					.then(() => {
+						this.$store.commit("setNewUser");
+						this.login();
+					})
+					.catch((err) => {
+						for (let i = 0; i < 9; i++) {
+							if (this.errors[i].error === err.response.data) {
+								this.$toast.add({
+									severity: "error",
+									detail: this.errors[i].message,
+									closable: false,
+									life: 4000,
+								});
+							}
+						}
+						console.log(err);
+					});
+			}
 		},
 
 		//* Login

@@ -45,6 +45,9 @@
 		<div id="custom">
 			<router-link class="link " to="/produits_vente_commande">Produits </router-link>
 			<router-link class="link" to="/producteurs_carousel">Producteurs </router-link>
+			<router-link class="link" v-if="isAdminApp === 0" to="/compte_client"
+				>Votre compte
+			</router-link>
 		</div>
 		<div id="owner">
 			<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email"

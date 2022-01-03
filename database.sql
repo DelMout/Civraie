@@ -14,7 +14,9 @@ password VARCHAR(255) NOT NULL,
 jeton VARCHAR(255) NOT NULL,
 last_connect DATE NOT NULL,
 comment VARCHAR(255),
-isAdmin TINYINT DEFAULT 0
+isAdmin TINYINT DEFAULT 0,
+consent_RGPD TINYINT NOT NULL,
+consent_date DATE NOT NULL
 )
 ENGINE=INNODB;
 

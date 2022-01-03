@@ -7,6 +7,7 @@ import Products from "../views/Products.vue";
 import StockManag from "../views/StockManag.vue";
 import Producers from "../views/Producers.vue";
 import Users from "../views/Users.vue";
+import Account from "../views/Account.vue";
 import Orders from "../views/Orders.vue";
 import Snails from "../views/Snails.vue";
 import Panier from "../views/Panier.vue";
@@ -58,6 +59,22 @@ const routes = [
 		component: ProducersCarousel,
 		meta: {
 			title: "Magasin Civraie / Producteurs",
+		},
+	},
+	{
+		path: "/compte_client",
+		name: "Account",
+		component: Account,
+		meta: {
+			title: "Magasin Civraie / Compte client",
+		},
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				next();
+			}
 		},
 	},
 	{
