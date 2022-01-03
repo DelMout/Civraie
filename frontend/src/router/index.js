@@ -5,6 +5,7 @@ import Password from "../views/Password.vue";
 import ProdOrder from "../views/ProdOrder.vue";
 import Products from "../views/Products.vue";
 import StockManag from "../views/StockManag.vue";
+import Categories from "../views/Categories.vue";
 import Producers from "../views/Producers.vue";
 import Users from "../views/Users.vue";
 import Account from "../views/Account.vue";
@@ -123,6 +124,26 @@ const routes = [
 		component: StockManag,
 		meta: {
 			title: "Magasin Civraie / Suivi Stock",
+		},
+		beforeEnter: (to, from, next) => {
+			store.dispatch("checkConnect");
+			if (!store.state.connected) {
+				next({ name: "Signup" });
+			} else {
+				if (localStorage.getItem("isAdmin") == 0) {
+					next({ name: "Signup" });
+				} else {
+					next();
+				}
+			}
+		},
+	},
+	{
+		path: "/categories",
+		name: "Categories",
+		component: Categories,
+		meta: {
+			title: "Magasin Civraie / Categories",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");

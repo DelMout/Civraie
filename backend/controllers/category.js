@@ -21,3 +21,19 @@ exports.getCategory = (req, res) => {
 			res.send(obj);
 		});
 };
+
+// * Modify cloture_day of a category
+exports.modifClotureDay = (req, res) => {
+	category
+		.update(
+			{
+				cloture_day: req.body.cloture_day,
+			},
+			{
+				where: { id: req.params.categoryId },
+			}
+		)
+		.then((obj) => {
+			res.send(obj);
+		});
+};

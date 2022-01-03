@@ -50,20 +50,23 @@
 			</router-link>
 		</div>
 		<div id="owner">
-			<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email"
-				>* Email *</router-link
-			>
 			<router-link class="link jo " v-if="isAdminApp === 1" to="/commandes"
 				>* Commandes *</router-link
 			>
 			<router-link class="link jo " v-if="isAdminApp === 1" to="/escargots"
 				>* Escargots *</router-link
 			>
+			<router-link class="link" v-if="isAdminApp === 1" to="/envoi_email"
+				>* Email *</router-link
+			>
 			<router-link class="link" v-if="isAdminApp === 1" to="/tous_produits"
 				>* Produits *</router-link
 			>
 			<router-link class="link" v-if="isAdminApp === 1" to="/suivi_stock"
 				>* Stock *</router-link
+			>
+			<router-link class="link" v-if="isAdminApp === 1" to="/categories"
+				>* Categories *</router-link
 			>
 
 			<router-link class="link" v-if="isAdminApp === 1" to="/utilisateurs"
