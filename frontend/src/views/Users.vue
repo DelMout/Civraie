@@ -95,19 +95,6 @@ export default {
 		return {
 			users: [],
 			length: "",
-			lengthPc: "",
-			nom: "Nom",
-			prenom: "Prénom",
-			produits: "Produits proposés",
-			adresse: "Adresse",
-			telephone: "Téléphone",
-			email: "Email",
-			site: "Site web",
-			photo: "", // total name paste in database
-			image: null, // file received brut
-			prodId: "",
-			modif: false,
-			index: "",
 			dialog: false,
 		};
 	},

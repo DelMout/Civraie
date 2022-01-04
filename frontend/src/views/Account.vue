@@ -38,7 +38,7 @@
 					compte engendrera la suppression des éventuelles commandes en cours. Aucune
 					donnée vous concernant ne sera alors conservée. Plus d'informations dans
 					<span>
-						<a href="https://www.delmout.com" target="_blank"
+						<a href="/mentions_legales" target="_blank"
 							><i>Mentions Légales</i></a
 						></span
 					>.</i
@@ -205,5 +205,8 @@ export default {
 }
 h3 {
 	margin-bottom: 0.5rem;
+}
+a {
+	color: #4caf50;
 }
 </style>

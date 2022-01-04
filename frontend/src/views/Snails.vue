@@ -75,22 +75,11 @@ import { mapState, mapGetters, mapActions } from "vuex";
 export default {
 	data() {
 		return {
-			products: [],
-			length: "",
-			displayList: false,
-			idDate: "",
 			orders: [],
 			qtyUsers: [],
 			qtyProd: [],
-			total: 0,
-			dateId: 1, //TODO Aller chercher la bonne info
-			userId: 5, //TODO Aller chercher la bonne info
-			infoOrder: "",
-			manqProd: "",
-			tablMail: "",
 			produit: false,
 			client: false,
-			linkOpenExcel: "",
 			inQtyProd: false,
 			custProd: "Afficher par PRODUIT",
 			download: "Télécharger Excel par CLIENT",

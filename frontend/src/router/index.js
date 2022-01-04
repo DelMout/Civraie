@@ -15,6 +15,7 @@ import Panier from "../views/Panier.vue";
 import SendEmail from "../views/SendEmail.vue";
 import OpeningHours from "../views/OpeningHours.vue";
 import ProducersCarousel from "../views/ProducersCarousel.vue";
+import MentionsLegales from "../views/MentionsLegales.vue";
 import NotFound from "../views/NotFound.vue";
 import store from "../store/index.js";
 
@@ -60,6 +61,14 @@ const routes = [
 		component: ProducersCarousel,
 		meta: {
 			title: "Magasin Civraie / Producteurs",
+		},
+	},
+	{
+		path: "/mentions_legales",
+		name: "MentionsLegales",
+		component: MentionsLegales,
+		meta: {
+			title: "Magasin Civraie / Mentions Légales",
 		},
 	},
 	{

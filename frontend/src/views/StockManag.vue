@@ -87,14 +87,6 @@
 				</table>
 			</div>
 			<!-- Info : product created or deleted -->
-			<div>
-				<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
-					><p>{{ infoProd }}</p>
-					<template #footer>
-						<Button label="OK" @click="closeCreated" autofocus />
-					</template>
-				</Dialog>
-			</div>
 		</div>
 		<div style="width:30vw">
 			<Toast position="center" :breakpoints="{ '400px': { width: '95%' } }">
@@ -120,23 +112,8 @@ export default {
 		return {
 			products: [],
 			length: "",
-			name: "",
-			price: "",
-			qtyMini: "",
-			unity: "",
-			PriceQtyMini: "",
-			stockInit: "",
-			stockLimit: "",
-			priceKgM: "",
-
-			prodId: "",
-			modif: false,
-			index: "",
-			dialog: false,
 			modifInProgress: false,
-			infoProd: "",
 			tamponId: "",
-			unitee: "",
 		};
 	},
 	beforeMount: function() {
@@ -158,30 +135,9 @@ export default {
 		}).then((prod) => {
 			this.length = prod.data.length;
 			for (let i = 0; i < this.length; i++) {
-				// axios
-				// 	.get(
-				// 		process.env.VUE_APP_API + "producer/getproducer/" + prod.data[i].producerId
-				// 	)
-				// 	.then((producer) => {
-				// 		axios
-				// 			.get(
-				// 				process.env.VUE_APP_API +
-				// 					"information/supportvente/" +
-				// 					prod.data[i].ordering
-				// 			)
-				// 			.then((ordering) => {
-				// 				axios
-				// 					.get(
-				// 						process.env.VUE_APP_API +
-				// 							"category/getcategory/" +
-				// 							prod.data[i].categoryId
-				// 					)
-				// 					.then((cate) => {
 				this.products.push({
 					id: prod.data[i].id,
 					product: prod.data[i].product,
-					// producerId: prod.data[i].producerId,
-					// producer: producer.data.entreprise,
 					price: prod.data[i].price,
 					unite_vente: prod.data[i].unite_vente,
 					unity: prod.data[i].unity,
@@ -189,9 +145,6 @@ export default {
 					stock_updated: prod.data[i].stock_updated,
 					stock_in_date: prod.data[i].stock_in_date,
 					photo: prod.data[i].photo,
-					// alert:
-					// 	prod.data[i].stock_updated -
-					// 	prod.data[i].alert_stock,
 					modif: 0,
 				});
 				// sort alpha order
@@ -207,9 +160,6 @@ export default {
 					}
 					return 0;
 				});
-				// 				});
-				// 		});
-				// });
 			}
 			console.log(this.products);
 		});
@@ -231,10 +181,6 @@ export default {
 			if (!this.modifInProgress) {
 				prod.modif = "yellow";
 				this.tamponId = prod.id;
-				// this.producerModel = prod.producerId;
-				// this.categoryModel = prod.categoryId;
-				// this.orderingModel = prod.ordering;
-				// this.clotureModel = prod.cloturedayId;
 				this.modifInProgress = true;
 			} else {
 				if (prod.id != this.tamponId) {
@@ -253,16 +199,9 @@ export default {
 			const id = prod.id;
 
 			const formData = new FormData();
-			// formData.append("product", prod.product);
-			// formData.append("producerId", this.producerModel);
-			// formData.append("categoryId", this.categoryModel);
-			// formData.append("cloturedayId", this.clotureModel);
-			// formData.append("price", prod.price);
 			formData.append("stock_init", prod.stock_init);
 			formData.append("stock_updated", prod.stock_init);
-			// formData.append("stock_in_date", "2021-11-21");
 			formData.append("stock_in_date", moment().format("YYYY-MM-DD"));
-			// formData.append("image", this.image);
 			axios({
 				method: "put",
 				url: process.env.VUE_APP_API + "product/modif/" + id,

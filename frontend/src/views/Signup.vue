@@ -62,7 +62,7 @@
 					j'accepte que les informations saisies soient uniquement utilisées pour
 					permettre de me contacter et de traiter mes commandes. Plus d'informations dans
 					<span>
-						<a href="https://www.delmout.com" target="_blank"
+						<a href="/mentions_legales" target="_blank"
 							><i>Mentions Légales</i></a
 						></span
 					>.
@@ -125,7 +125,7 @@
 			</div>
 			<div>
 				<!-- Mettre le lien sur la page Mentions légales -->
-				<a href="https://www.delmout.com" target="_blank"
+				<a href="/mentions_legales" target="_blank"
 					><p><i>Mentions Légales</i></p></a
 				>
 			</div>
