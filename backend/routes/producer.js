@@ -20,7 +20,4 @@ router.get("/getproducerid/:entreprise", producerCtrl.getProducerId);
 // * Modify a producer
 router.put("/modif/:producerid", admin, producerCtrl.modifProducer);
 
-// // * Delete a producer
-// router.delete("/delete/:producerid", admin, producerCtrl.deleteProducer);
-
 module.exports = router;

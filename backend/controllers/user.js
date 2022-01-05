@@ -1,7 +1,5 @@
 const { user } = require("../models");
 const { information } = require("../models");
-// const { publication } = require("../models");
-const fs = require("fs"); // handle files
 const bcrypt = require("bcrypt"); // crypt password
 const jwt = require("jsonwebtoken"); // create token key
 const passwordValidator = require("password-validator");
@@ -107,7 +105,6 @@ exports.lastconn = (req, res) => {
 		})
 		.catch((err) => {
 			res.status(401).send(err);
-			// res.status(401).send(err.errors[0].validatorKey);
 		});
 };
 
@@ -159,7 +156,6 @@ exports.comment = (req, res) => {
 		})
 		.catch((err) => {
 			res.status(401).send(err);
-			// res.status(401).send(err.errors[0].validatorKey);
 		});
 };
 
@@ -280,7 +276,6 @@ exports.emailPassword = (req, res) => {
 							res.status(200).send("email envoyé !");
 						}
 					);
-					// res.status(200).send(prenom);
 				})
 				.catch((err) => res.status(401).send(err));
 		})
@@ -345,5 +340,4 @@ exports.emailInfo = (req, res) => {
 				.catch((err) => res.status(401).send(err));
 		})
 		.catch((err) => res.status(401).send(err));
-	// });
 };

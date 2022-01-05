@@ -97,43 +97,48 @@ export default {
 		this.$store.state.inPages = true;
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
 		//* Send Email
 		sendEmail: function() {
-			if (this.object === "") {
-				this.$toast.add({
-					severity: "error",
-					detail: "Merci d'écrire un objet à votre mail.",
-					closable: false,
-					life: 4000,
-				});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
 			} else {
-				if (this.body === "") {
+				if (this.object === "") {
 					this.$toast.add({
 						severity: "error",
-						detail: "Attention, le contenu de votre mail est vide.",
+						detail: "Merci d'écrire un objet à votre mail.",
 						closable: false,
 						life: 4000,
 					});
 				} else {
-					this.emailSent = true;
-					axios({
-						method: "post",
-						url: process.env.VUE_APP_API + "user/emailinfo",
-						data: {
-							title: this.object,
-							content: this.body,
-						},
-						headers: {
-							Authorization: `Bearer ${this.token}`,
-						},
-					}).then(() => {
-						this.emailSent = false;
-						this.dialog = true;
-					});
+					if (this.body === "") {
+						this.$toast.add({
+							severity: "error",
+							detail: "Attention, le contenu de votre mail est vide.",
+							closable: false,
+							life: 4000,
+						});
+					} else {
+						this.emailSent = true;
+						axios({
+							method: "post",
+							url: process.env.VUE_APP_API + "user/emailinfo",
+							data: {
+								title: this.object,
+								content: this.body,
+							},
+							headers: {
+								Authorization: `Bearer ${this.token}`,
+							},
+						}).then(() => {
+							this.emailSent = false;
+							this.dialog = true;
+						});
+					}
 				}
 			}
 		},

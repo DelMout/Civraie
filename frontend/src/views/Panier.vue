@@ -11,9 +11,6 @@
 			<h5>Vos articles seront livrés le {{ deliveryDate }}.</h5>
 
 			<table>
-				<!-- <caption>
-					Votre commande
-				</caption> -->
 				<tr>
 					<th>Produit</th>
 					<th>Quantité</th>
@@ -207,11 +204,9 @@ export default {
 			this.$store.dispatch("checkConnect");
 			if (!this.connected) {
 				localStorage.setItem("disconnect", "disconnected");
-
 				this.$router.push("/");
 			} else {
 				// Save in database and send 1 email for non escargots and 1 email for escargots
-
 				axios({
 					method: "get",
 					url: process.env.VUE_APP_API + "product/getproducts/actived",
@@ -596,7 +591,7 @@ export default {
 		//* Close Dialog
 		closeConfirm: function() {
 			this.dialog = false;
-			this.$router.push("http://localhost:8080/produits_vente_commande");
+			this.$router.push("/produits_vente_commande");
 		},
 	},
 };

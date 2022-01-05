@@ -13,9 +13,6 @@ router.post("/signup", userCtrl.signup);
 // * Login
 router.post("/login", userCtrl.login);
 
-// // * See datas for a user via email
-// router.get("/firstname/:email", userCtrl.firstname);
-
 // * Update last connection date + jeton
 router.put("/login/:email", auth, userCtrl.lastconn);
 

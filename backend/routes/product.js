@@ -13,9 +13,6 @@ router.post("/createproduct", admin, multer, productCtrl.createProduct);
 // * See all products
 router.get("/", admin, productCtrl.getAllProducts);
 
-// // * See products according to ordering
-// router.get("/:ordering", productCtrl.getProductsOrdering);
-
 // * See products according to producerId
 router.get("/producerid/:producerid", productCtrl.getProductsProducerid); //! No need Admin
 

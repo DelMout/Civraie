@@ -92,80 +92,88 @@ export default {
 		this.orders = [];
 	},
 	created: function() {
-		//* Display orders
-		this.client = true;
-		this.$store.state.inPages = true;
+		this.$store.dispatch("checkConnect");
+		if (!this.connected) {
+			this.$router.push("/");
+		} else {
+			//* Display orders
+			this.client = true;
+			this.$store.state.inPages = true;
 
-		axios({
-			method: "get",
-			url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-			},
-		}).then((order) => {
-			for (let i = 0; i < order.data.length; i++) {
-				axios({
-					method: "get",
-					url: process.env.VUE_APP_API + "user/getuser/" + order.data[i].userId,
-					headers: {
-						Authorization: `Bearer ${this.token}`,
-					},
-				}).then((user) => {
-					// Find name of product and unité_vente of productId
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((order) => {
+				for (let i = 0; i < order.data.length; i++) {
 					axios({
 						method: "get",
-						url: process.env.VUE_APP_API + "product/datas/" + order.data[i].productId,
+						url: process.env.VUE_APP_API + "user/getuser/" + order.data[i].userId,
 						headers: {
 							Authorization: `Bearer ${this.token}`,
 						},
-					}).then((product) => {
-						this.orders.push({
-							userId: order.data[i].userId,
-							userName: user.data.nom.toUpperCase(),
-							userFirstName: user.data.prenom,
-							product: product.data.product,
-							producerId: product.data.producerId,
-							unite_kg: product.data.unite_vente,
-							unity: product.data.unity,
-							quantity: order.data[i].quantity,
-							order_date: order.data[i].order_date,
-							color: "line_pair",
-						});
-						// sort alpha order
-						this.orders.sort(function(a, b) {
-							var orderA = a.userId;
-							var orderB = b.userId;
+					}).then((user) => {
+						// Find name of product and unité_vente of productId
+						axios({
+							method: "get",
+							url:
+								process.env.VUE_APP_API +
+								"product/datas/" +
+								order.data[i].productId,
+							headers: {
+								Authorization: `Bearer ${this.token}`,
+							},
+						}).then((product) => {
+							this.orders.push({
+								userId: order.data[i].userId,
+								userName: user.data.nom.toUpperCase(),
+								userFirstName: user.data.prenom,
+								product: product.data.product,
+								producerId: product.data.producerId,
+								unite_kg: product.data.unite_vente,
+								unity: product.data.unity,
+								quantity: order.data[i].quantity,
+								order_date: order.data[i].order_date,
+								color: "line_pair",
+							});
+							// sort alpha order
+							this.orders.sort(function(a, b) {
+								var orderA = a.userId;
+								var orderB = b.userId;
 
-							if (orderA < orderB) {
-								return -1;
+								if (orderA < orderB) {
+									return -1;
+								}
+								if (orderA > orderB) {
+									return 1;
+								}
+								return 0;
+							});
+							// List of userId
+							if (this.qtyUsers.indexOf(order.data[i].userId) < 0) {
+								this.qtyUsers.push(order.data[i].userId);
 							}
-							if (orderA > orderB) {
-								return 1;
-							}
-							return 0;
-						});
-						// List of userId
-						if (this.qtyUsers.indexOf(order.data[i].userId) < 0) {
-							this.qtyUsers.push(order.data[i].userId);
-						}
 
-						// sort alpha order
-						this.qtyUsers.sort(function(a, b) {
-							var userA = a;
-							var userB = b;
+							// sort alpha order
+							this.qtyUsers.sort(function(a, b) {
+								var userA = a;
+								var userB = b;
 
-							if (userA < userB) {
-								return -1;
-							}
-							if (userA > userB) {
-								return 1;
-							}
-							return 0;
+								if (userA < userB) {
+									return -1;
+								}
+								if (userA > userB) {
+									return 1;
+								}
+								return 0;
+							});
 						});
 					});
-				});
-			}
-		});
+				}
+			});
+		}
 	},
 	updated: function() {
 		this.alterColor();
@@ -173,7 +181,7 @@ export default {
 
 	computed: {
 		...mapGetters(["deliveryDateNextW"]),
-		...mapState(["inPages", "token"]),
+		...mapState(["inPages", "token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
@@ -216,81 +224,91 @@ export default {
 
 		//* Display of orders by producer
 		displayByProducer: function() {
-			this.qtyProd = [];
-			this.produit = true;
-			this.client = false;
-			axios({
-				method: "get",
-				url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			}).then((order) => {
-				for (let i = 0; i < order.data.length; i++) {
-					axios({
-						method: "get",
-						url: process.env.VUE_APP_API + "product/datas/" + order.data[i].productId,
-						headers: {
-							Authorization: `Bearer ${this.token}`,
-						},
-					}).then((product) => {
-						// Find name of product and unité_vente of productId
-						axios
-							.get(
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				this.qtyProd = [];
+				this.produit = true;
+				this.client = false;
+				axios({
+					method: "get",
+					url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then((order) => {
+					for (let i = 0; i < order.data.length; i++) {
+						axios({
+							method: "get",
+							url:
 								process.env.VUE_APP_API +
-									"producer/getproducer/" +
-									product.data.producerId
-							)
-							.then((producer) => {
-								this.inQtyProd = false;
-								for (let q = 0; q < this.qtyProd.length; q++) {
-									if (product.data.product === this.qtyProd[q].product) {
-										this.qtyProd[q].quantity =
-											this.qtyProd[q].quantity + order.data[i].quantity;
-										this.inQtyProd = true;
-									}
-								}
-								if (!this.inQtyProd) {
-									this.qtyProd.push({
-										producer: producer.data.entreprise,
-										product: product.data.product,
-										quantity: order.data[i].quantity,
-										unity_kg: product.data.unite_vente,
-										unity: product.data.unity,
-										color: "line_pair",
-									});
-								}
-
-								// sort alpha order
-								this.qtyProd.sort(function(a, b) {
-									var prodA = a.producer;
-									var prodB = b.producer;
-
-									if (prodA < prodB) {
-										return -1;
-									}
-									if (prodA > prodB) {
-										return 1;
-									}
-									return 0;
-								});
-								let p = 0;
-								for (let j = 1; j < this.qtyProd.length; j++) {
-									if (this.qtyProd[j].producer != this.qtyProd[j - 1].producer) {
-										p++;
-										if (p % 2 == 0) {
-											this.qtyProd[j].color = "line_pair";
-										} else {
-											this.qtyProd[j].color = "line_impair";
+								"product/datas/" +
+								order.data[i].productId,
+							headers: {
+								Authorization: `Bearer ${this.token}`,
+							},
+						}).then((product) => {
+							// Find name of product and unité_vente of productId
+							axios
+								.get(
+									process.env.VUE_APP_API +
+										"producer/getproducer/" +
+										product.data.producerId
+								)
+								.then((producer) => {
+									this.inQtyProd = false;
+									for (let q = 0; q < this.qtyProd.length; q++) {
+										if (product.data.product === this.qtyProd[q].product) {
+											this.qtyProd[q].quantity =
+												this.qtyProd[q].quantity + order.data[i].quantity;
+											this.inQtyProd = true;
 										}
-									} else {
-										this.qtyProd[j].color = this.qtyProd[j - 1].color;
 									}
-								}
-							});
-					});
-				}
-			});
+									if (!this.inQtyProd) {
+										this.qtyProd.push({
+											producer: producer.data.entreprise,
+											product: product.data.product,
+											quantity: order.data[i].quantity,
+											unity_kg: product.data.unite_vente,
+											unity: product.data.unity,
+											color: "line_pair",
+										});
+									}
+
+									// sort alpha order
+									this.qtyProd.sort(function(a, b) {
+										var prodA = a.producer;
+										var prodB = b.producer;
+
+										if (prodA < prodB) {
+											return -1;
+										}
+										if (prodA > prodB) {
+											return 1;
+										}
+										return 0;
+									});
+									let p = 0;
+									for (let j = 1; j < this.qtyProd.length; j++) {
+										if (
+											this.qtyProd[j].producer != this.qtyProd[j - 1].producer
+										) {
+											p++;
+											if (p % 2 == 0) {
+												this.qtyProd[j].color = "line_pair";
+											} else {
+												this.qtyProd[j].color = "line_impair";
+											}
+										} else {
+											this.qtyProd[j].color = this.qtyProd[j - 1].color;
+										}
+									}
+								});
+						});
+					}
+				});
+			}
 		},
 
 		//* Number format
@@ -310,13 +328,23 @@ export default {
 
 		//* Downloading Excel By Customer
 		downloadClient: function() {
-			var xls = new XlsExport(this.orders, "Par_Client");
-			xls.exportToXLS("commandes_Client_" + this.deliveryDateNextW + ".xls");
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				var xls = new XlsExport(this.orders, "Par_Client");
+				xls.exportToXLS("commandes_Client_" + this.deliveryDateNextW + ".xls");
+			}
 		},
 		// //* Downloading Excel By Product
 		downloadProduit: function() {
-			var xls = new XlsExport(this.qtyProd, "Par_Producteur");
-			xls.exportToXLS("commandes_Producteur_" + this.deliveryDateNextW + ".xls");
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				var xls = new XlsExport(this.qtyProd, "Par_Producteur");
+				xls.exportToXLS("commandes_Producteur_" + this.deliveryDateNextW + ".xls");
+			}
 		},
 	},
 };

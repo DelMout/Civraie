@@ -387,7 +387,6 @@ export default {
 	margin-top: 1rem;
 }
 .buttgo {
-	/* width: 4rem; */
 	background-color: white;
 	color: green;
 }

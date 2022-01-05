@@ -1,5 +1,3 @@
-const { Sequelize } = require(".");
-
 module.exports = (sequelize, DataTypes) => {
 	const producer = sequelize.define(
 		"producer",
@@ -15,9 +13,6 @@ module.exports = (sequelize, DataTypes) => {
 			prenom: {
 				type: DataTypes.STRING,
 				allowNull: true,
-				// validate: {
-				// 	notEmpty: true,
-				// },
 			},
 			entreprise: {
 				type: DataTypes.STRING,
@@ -47,9 +42,6 @@ module.exports = (sequelize, DataTypes) => {
 			email: {
 				type: DataTypes.STRING,
 				allowNull: true,
-				// validate: {
-				// 	isEmail: true,
-				// },
 			},
 			site_web: {
 				type: DataTypes.STRING,

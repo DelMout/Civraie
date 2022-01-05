@@ -123,47 +123,52 @@ export default {
 		this.producers = [];
 	},
 	created: function() {
-		this.$store.state.inPages = true;
-		//* All products wth stock_manag
-		axios({
-			method: "get",
-			url: process.env.VUE_APP_API + "product/getproducts/stockmanag",
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-			},
-		}).then((prod) => {
-			this.length = prod.data.length;
-			for (let i = 0; i < this.length; i++) {
-				this.products.push({
-					id: prod.data[i].id,
-					product: prod.data[i].product,
-					price: prod.data[i].price,
-					unite_vente: prod.data[i].unite_vente,
-					unity: prod.data[i].unity,
-					stock_init: prod.data[i].stock_init,
-					stock_updated: prod.data[i].stock_updated,
-					stock_in_date: prod.data[i].stock_in_date,
-					photo: prod.data[i].photo,
-					modif: 0,
-				});
-				// sort alpha order
-				this.products.sort(function(a, b) {
-					var productA = a.product.toUpperCase();
-					var productB = b.product.toUpperCase();
+		this.$store.dispatch("checkConnect");
+		if (!this.connected) {
+			this.$router.push("/");
+		} else {
+			this.$store.state.inPages = true;
+			//* All products wth stock_manag
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "product/getproducts/stockmanag",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((prod) => {
+				this.length = prod.data.length;
+				for (let i = 0; i < this.length; i++) {
+					this.products.push({
+						id: prod.data[i].id,
+						product: prod.data[i].product,
+						price: prod.data[i].price,
+						unite_vente: prod.data[i].unite_vente,
+						unity: prod.data[i].unity,
+						stock_init: prod.data[i].stock_init,
+						stock_updated: prod.data[i].stock_updated,
+						stock_in_date: prod.data[i].stock_in_date,
+						photo: prod.data[i].photo,
+						modif: 0,
+					});
+					// sort alpha order
+					this.products.sort(function(a, b) {
+						var productA = a.product.toUpperCase();
+						var productB = b.product.toUpperCase();
 
-					if (productA < productB) {
-						return -1;
-					}
-					if (productA > productB) {
-						return 1;
-					}
-					return 0;
-				});
-			}
-		});
+						if (productA < productB) {
+							return -1;
+						}
+						if (productA > productB) {
+							return 1;
+						}
+						return 0;
+					});
+				}
+			});
+		}
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
@@ -194,32 +199,37 @@ export default {
 
 		//* Validation modifications
 		validModif: function(event, prod) {
-			const id = prod.id;
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				const id = prod.id;
 
-			const formData = new FormData();
-			formData.append("stock_init", prod.stock_init);
-			formData.append("stock_updated", prod.stock_init);
-			formData.append("stock_in_date", moment().format("YYYY-MM-DD"));
-			axios({
-				method: "put",
-				url: process.env.VUE_APP_API + "product/modif/" + id,
-				data: formData,
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					prod.modif = false;
-					location.reload();
+				const formData = new FormData();
+				formData.append("stock_init", prod.stock_init);
+				formData.append("stock_updated", prod.stock_init);
+				formData.append("stock_in_date", moment().format("YYYY-MM-DD"));
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "product/modif/" + id,
+					data: formData,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail: "Erreur ! Votre modification n'a pas été prise en compte.",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						prod.modif = false;
+						location.reload();
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail: "Erreur ! Votre modification n'a pas été prise en compte.",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 	},
 };

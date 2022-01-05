@@ -85,41 +85,46 @@ export default {
 		this.producers = [];
 	},
 	created: function() {
-		this.$store.state.inPages = true;
-		//* All products wth stock_manag
-		axios({
-			method: "get",
-			url: process.env.VUE_APP_API + "category/getcategories",
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-			},
-		}).then((cat) => {
-			for (let i = 0; i < cat.data.length; i++) {
-				this.categories.push({
-					id: cat.data[i].id,
-					category: cat.data[i].category,
-					cloture_day: cat.data[i].cloture_day,
-					priority: cat.data[i].priority,
-					modif: 0,
-				});
-				// sort alpha order
-				this.categories.sort(function(a, b) {
-					var catA = a.priority;
-					var catB = b.priority;
+		this.$store.dispatch("checkConnect");
+		if (!this.connected) {
+			this.$router.push("/");
+		} else {
+			this.$store.state.inPages = true;
+			//* All products with stock_manag
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "category/getcategories",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((cat) => {
+				for (let i = 0; i < cat.data.length; i++) {
+					this.categories.push({
+						id: cat.data[i].id,
+						category: cat.data[i].category,
+						cloture_day: cat.data[i].cloture_day,
+						priority: cat.data[i].priority,
+						modif: 0,
+					});
+					// sort alpha order
+					this.categories.sort(function(a, b) {
+						var catA = a.priority;
+						var catB = b.priority;
 
-					if (catA < catB) {
-						return -1;
-					}
-					if (catA > catB) {
-						return 1;
-					}
-					return 0;
-				});
-			}
-		});
+						if (catA < catB) {
+							return -1;
+						}
+						if (catA > catB) {
+							return 1;
+						}
+						return 0;
+					});
+				}
+			});
+		}
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
@@ -144,43 +149,41 @@ export default {
 
 		//* Validation modifications
 		validModif: function(event, cat) {
-			const id = cat.id;
-			axios({
-				method: "put",
-				url: process.env.VUE_APP_API + "category/modifclotureday/" + id,
-				data: { cloture_day: this.clotureModel.name },
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					cat.modif = false;
-					location.reload();
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				const id = cat.id;
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "category/modifclotureday/" + id,
+					data: { cloture_day: this.clotureModel.name },
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail: "Problème ! Votre modification n'a pu être prise en compte.",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						cat.modif = false;
+						location.reload();
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail: "Problème ! Votre modification n'a pu être prise en compte.",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 	},
 };
 </script>
 <style scoped>
-/* h3 {
-	margin: 0;
-	margin-right: 2rem;
-	text-align: right;
-	margin-left: 5rem;
-} */
 #title {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 0rem;
-	/* margin-bottom: 1rem; */
 	margin-left: 5rem;
 }
 
@@ -295,7 +298,6 @@ table {
 .stock {
 	width: 1.5rem;
 	height: 1.5rem;
-	/* border-radius: 50%; */
 	margin-left: 0;
 	cursor: pointer;
 }

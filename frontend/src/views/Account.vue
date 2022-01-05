@@ -19,14 +19,14 @@
 			</template>
 		</ConfirmPopup>
 		<div class="telephone">
-			<p class="">
+			<p>
 				<label for="phone">Votre téléphone : </label>
 				<InputText class="fill" id="phone" type="text" v-model="phone" />
 			</p>
 			<div>
 				<Button
 					label="Valider les modifications"
-					class="p-button-raised p-button-primary login"
+					class="p-button-raised p-button-primary "
 					@click="modifPhone"
 				/>
 			</div>
@@ -79,21 +79,26 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	created: function() {
-		//* Find datas od user from userId
-		axios({
-			method: "get",
-			url: process.env.VUE_APP_API + "user/getuser/" + localStorage.getItem("userId"),
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-			},
-		}).then((user) => {
-			this.name = user.data.nom;
-			this.firstname = user.data.prenom;
-			this.phone = user.data.phone;
-		});
+		//* Find datas of user from userId
+		this.$store.dispatch("checkConnect");
+		if (!this.connected) {
+			this.$router.push("/");
+		} else {
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "user/getuser/" + localStorage.getItem("userId"),
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((user) => {
+				this.name = user.data.nom;
+				this.firstname = user.data.prenom;
+				this.phone = user.data.phone;
+			});
+		}
 	},
 	methods: {
 		...mapMutations(["setDeleted"]),
@@ -101,33 +106,38 @@ export default {
 
 		//* Modify users phone  number
 		modifPhone: function() {
-			axios({
-				method: "put",
-				url:
-					process.env.VUE_APP_API +
-					"user/account/phone/" +
-					localStorage.getItem("userId"),
-				data: { phone: this.phone },
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					this.$toast.add({
-						severity: "success",
-						detail: "Votre modification a bien été prise en compte.",
-						closable: false,
-						life: 4000,
-					});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				axios({
+					method: "put",
+					url:
+						process.env.VUE_APP_API +
+						"user/account/phone/" +
+						localStorage.getItem("userId"),
+					data: { phone: this.phone },
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail: "Le numéro de téléphone n'est pas correctement saisi.",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						this.$toast.add({
+							severity: "success",
+							detail: "Votre modification a bien été prise en compte.",
+							closable: false,
+							life: 4000,
+						});
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail: "Le numéro de téléphone n'est pas correctement saisi.",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 		//* Want delete the user account
 		wantSuppress: function() {
@@ -145,30 +155,35 @@ export default {
 
 		//* Delete my user account
 		suppress: function() {
-			axios({
-				method: "delete",
-				url:
-					process.env.VUE_APP_API +
-					"user/deletemyaccount/" +
-					localStorage.getItem("userId"),
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					localStorage.clear();
-					this.$store.commit("setDeleted", true);
-					this.$store.dispatch("disconnect");
-					this.$router.push("/");
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				axios({
+					method: "delete",
+					url:
+						process.env.VUE_APP_API +
+						"user/deletemyaccount/" +
+						localStorage.getItem("userId"),
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail: "Un problème s'est produit. Le compte n'a pu être supprimé.",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						localStorage.clear();
+						this.$store.commit("setDeleted", true);
+						this.$store.dispatch("disconnect");
+						this.$router.push("/");
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail: "Un problème est apparu. Votre compte n'a pu être supprimé.",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 	},
 };

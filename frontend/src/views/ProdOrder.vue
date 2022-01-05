@@ -128,7 +128,6 @@ export default {
 			categorySel: "",
 			cloture_day: "", // cloture day of category selected
 			noProduct: false,
-			beSelected: "",
 			qtyDisplay: 0,
 			counter: 0,
 		};
@@ -184,7 +183,6 @@ export default {
 	},
 
 	methods: {
-		// ...mapActions(["nextDeliveryDay"]),
 		...mapMutations(["setProducts", "setTotal", "setNewUserAnymore"]),
 		//* Number format
 		numFr: function(num) {
@@ -221,12 +219,9 @@ export default {
 									prod.data[i].producerId
 							)
 							.then((producer) => {
-								//color background if in panier
 								if (localStorage.getItem(prod.data[i].id) !== null) {
-									this.beSelected = "background-color:rgba(0,128,0,0.1);";
 									this.qtyDisplay = localStorage.getItem(prod.data[i].id);
 								} else {
-									this.beSelected = "";
 									this.qtyDisplay = 0;
 								}
 								this.displayProd.push({
@@ -269,29 +264,61 @@ export default {
 		//* Add product to the order
 		addQty: function(event, prod) {
 			if (this.$store.state.connected) {
-				if (localStorage === null) {
-					localStorage.setItem("Total", 1);
-					localStorage.setItem(prod.id, 1);
-					prod.qty = 1;
-					if (prod.producerId === 16) {
-						// If escargots selected
-						localStorage.setItem("escarg", 1);
-					} else {
-						localStorage.setItem("other_escarg", 1);
-					}
+				this.$store.dispatch("checkConnect");
+				if (!this.connected) {
+					this.$router.push("/");
 				} else {
-					if (localStorage.getItem(prod.id) !== null) {
-						// if product stock_managed
-						if (
-							(prod.stock_manag === 1 && prod.qty < prod.stock_updated) ||
-							prod.stock_manag != 1 ||
-							(prod.stock_manag === 1 && prod.stock_updated === null)
-						) {
+					if (localStorage === null) {
+						localStorage.setItem("Total", 1);
+						localStorage.setItem(prod.id, 1);
+						prod.qty = 1;
+						if (prod.producerId === 16) {
+							// If escargots selected
+							localStorage.setItem("escarg", 1);
+						} else {
+							localStorage.setItem("other_escarg", 1);
+						}
+					} else {
+						if (localStorage.getItem(prod.id) !== null) {
+							// if product stock_managed
+							if (
+								(prod.stock_manag === 1 && prod.qty < prod.stock_updated) ||
+								prod.stock_manag != 1 ||
+								(prod.stock_manag === 1 && prod.stock_updated === null)
+							) {
+								localStorage.setItem(
+									prod.id,
+									JSON.parse(localStorage.getItem(prod.id)) + 1
+								);
+								prod.qty = localStorage.getItem(prod.id);
+								if (prod.producerId === 16) {
+									localStorage.setItem(
+										"escarg",
+										JSON.parse(localStorage.getItem("escarg")) + 1
+									);
+								} else {
+									localStorage.setItem(
+										"other_escarg",
+										JSON.parse(localStorage.getItem("other_escarg")) + 1
+									);
+								}
+							} else {
+								if (prod.stock_manag === 1 && prod.qty == prod.stock_updated) {
+									this.$toast.add({
+										severity: "error",
+										detail: "Stock limité !",
+										closable: false,
+										life: 4000,
+									});
+								}
+							}
+						} else {
+							localStorage.setItem(prod.id, 1);
 							localStorage.setItem(
-								prod.id,
-								JSON.parse(localStorage.getItem(prod.id)) + 1
+								"Total",
+								JSON.parse(localStorage.getItem("Total")) + 1
 							);
-							prod.qty = localStorage.getItem(prod.id);
+							prod.qty = 1;
 							if (prod.producerId === 16) {
 								localStorage.setItem(
 									"escarg",
@@ -303,37 +330,10 @@ export default {
 									JSON.parse(localStorage.getItem("other_escarg")) + 1
 								);
 							}
-						} else {
-							if (prod.stock_manag === 1 && prod.qty == prod.stock_updated) {
-								this.$toast.add({
-									severity: "error",
-									detail: "Stock limité !",
-									closable: false,
-									life: 4000,
-								});
-							}
-						}
-					} else {
-						localStorage.setItem(prod.id, 1);
-						localStorage.setItem(
-							"Total",
-							JSON.parse(localStorage.getItem("Total")) + 1
-						);
-						prod.qty = 1;
-						if (prod.producerId === 16) {
-							localStorage.setItem(
-								"escarg",
-								JSON.parse(localStorage.getItem("escarg")) + 1
-							);
-						} else {
-							localStorage.setItem(
-								"other_escarg",
-								JSON.parse(localStorage.getItem("other_escarg")) + 1
-							);
 						}
 					}
+					this.$store.commit("setTotal", localStorage.getItem("Total"));
 				}
-				this.$store.commit("setTotal", localStorage.getItem("Total"));
 			} else {
 				this.$toast.add({
 					severity: "warn",
@@ -343,42 +343,54 @@ export default {
 				});
 			}
 		},
+
 		//* Substract product to the order
 		subQty: function(event, prod) {
-			if (localStorage.getItem(prod.id) !== null) {
-				if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
-					localStorage.removeItem(prod.id);
-					localStorage.setItem("Total", JSON.parse(localStorage.getItem("Total")) - 1);
-					prod.qty = 0;
-					// prod.selected = "";
-					if (prod.producerId === 16) {
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				if (localStorage.getItem(prod.id) !== null) {
+					if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
+						localStorage.removeItem(prod.id);
 						localStorage.setItem(
-							"escarg",
-							JSON.parse(localStorage.getItem("escarg")) - 1
+							"Total",
+							JSON.parse(localStorage.getItem("Total")) - 1
 						);
+						prod.qty = 0;
+						// prod.selected = "";
+						if (prod.producerId === 16) {
+							localStorage.setItem(
+								"escarg",
+								JSON.parse(localStorage.getItem("escarg")) - 1
+							);
+						} else {
+							localStorage.setItem(
+								"other_escarg",
+								JSON.parse(localStorage.getItem("other_escarg")) - 1
+							);
+						}
 					} else {
 						localStorage.setItem(
-							"other_escarg",
-							JSON.parse(localStorage.getItem("other_escarg")) - 1
+							prod.id,
+							JSON.parse(localStorage.getItem(prod.id)) - 1
 						);
-					}
-				} else {
-					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
-					prod.qty = localStorage.getItem(prod.id);
-					if (prod.producerId === 16) {
-						localStorage.setItem(
-							"escarg",
-							JSON.parse(localStorage.getItem("escarg")) - 1
-						);
-					} else {
-						localStorage.setItem(
-							"other_escarg",
-							JSON.parse(localStorage.getItem("other_escarg")) - 1
-						);
+						prod.qty = localStorage.getItem(prod.id);
+						if (prod.producerId === 16) {
+							localStorage.setItem(
+								"escarg",
+								JSON.parse(localStorage.getItem("escarg")) - 1
+							);
+						} else {
+							localStorage.setItem(
+								"other_escarg",
+								JSON.parse(localStorage.getItem("other_escarg")) - 1
+							);
+						}
 					}
 				}
+				this.$store.commit("setTotal", localStorage.getItem("Total"));
 			}
-			this.$store.commit("setTotal", localStorage.getItem("Total"));
 		},
 	},
 };
@@ -552,7 +564,6 @@ img {
 	font-weight: bolder;
 	color: #12511c;
 	font-size: 1.2rem;
-	/* text-shadow: 2px 3px 3px white; */
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 	cursor: pointer;
 }
@@ -578,7 +589,6 @@ img {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/legume2.jpg");
 	background-size: 100%;
-	/* border: 4px solid rgb(85, 85, 85); */
 }
 #lapin {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
@@ -696,10 +706,8 @@ img {
 	}
 	#sousCont {
 		width: 9rem;
-		/* margin-bottom: 1rem; */
 	}
 	::v-deep(.p-card) {
-		/* box-shadow: 5px 5px 5px white; */
 		width: 8rem;
 		height: 12.5rem;
 	}
@@ -712,9 +720,7 @@ img {
 		height: 3rem;
 	}
 	::v-deep(.p-card .p-card-content) {
-		/* height: 2rem; */
 		font-size: 0.6rem;
-		/* margin-top: 0.5rem; */
 	}
 	::v-deep(.p-card .p-card-footer) {
 		height: auto;
@@ -722,10 +728,6 @@ img {
 		font-size: 0.8rem;
 	}
 	.addsub {
-		/* padding: 0 2px 5px 2px; */
-		/* line-height: 10px; */
-		/* font-size: 1px; */
-		/* margin-inline: 10px; */
 		margin: 0;
 	}
 	#qty {
@@ -736,10 +738,8 @@ img {
 	/*mobiles */
 	#sousCont {
 		width: 8rem;
-		/* margin-bottom: 1rem; */
 	}
 	::v-deep(.p-card) {
-		/* box-shadow: 5px 5px 5px white; */
 		width: 7rem;
 		height: 12.5rem;
 	}

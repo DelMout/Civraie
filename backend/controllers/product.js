@@ -2,7 +2,6 @@ const { product } = require("../models");
 const fs = require("fs"); // handle files
 const { Op } = require("sequelize");
 const moment = require("moment");
-const { nextTick } = require("process");
 
 //* Create a new product
 exports.createProduct = (req, res) => {
@@ -12,7 +11,6 @@ exports.createProduct = (req, res) => {
 		req.body.photo = null;
 	}
 	const newProduct = new product({
-		// stock_updated: req.body.stock_init,
 		...req.body,
 	});
 	newProduct
@@ -21,7 +19,6 @@ exports.createProduct = (req, res) => {
 			res.send(prod);
 		})
 		.catch((err) => {
-			// res.send(err);
 			res.status(401).send(err);
 		});
 };
@@ -158,7 +155,6 @@ exports.modifProduct = (req, res) => {
 				res.status(401).send(err.errors[0].validatorKey);
 			});
 	} else {
-		// req.body.photo = null;
 		product
 			.update(
 				{
@@ -171,7 +167,6 @@ exports.modifProduct = (req, res) => {
 			})
 			.catch((err) => {
 				res.status(401).send(err);
-				// res.status(401).send(err.errors[0].validatorKey);
 			});
 	}
 };
@@ -219,7 +214,6 @@ exports.changeActive = (req, res) => {
 			res.send("active modified !");
 		})
 		.catch((err) => {
-			// res.status(401).send(err);
 			res.status(401).send(err.errors[0].validatorKey);
 		});
 };
@@ -237,7 +231,6 @@ exports.changeStockManag = (req, res) => {
 			res.send("stock_manag modified !");
 		})
 		.catch((err) => {
-			// res.status(401).send(err);
 			res.status(401).send(err.errors[0].validatorKey);
 		});
 };
@@ -255,7 +248,6 @@ exports.decrementeStock = (req, res) => {
 			res.send("stock_updated updated !");
 		})
 		.catch((err) => {
-			// res.status(401).send(err);
 			res.status(401).send(err.errors[0].validatorKey);
 		});
 };
@@ -275,7 +267,6 @@ exports.putProductsActived = (req, res) => {
 		})
 		.catch((err) => {
 			res.status(401).send(err);
-			// res.status(401).send(err.errors[0].validatorKey);
 		});
 };
 

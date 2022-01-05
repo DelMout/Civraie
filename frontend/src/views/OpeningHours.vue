@@ -65,27 +65,32 @@ export default {
 			});
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
 		//* Save modifications of opening hours
 		modifOpenHours: function() {
-			this.modifSent = true;
-			this.hoursFormed = this.hours.replace(/<p>/g, "<p style='margin:0'>");
-			axios({
-				method: "put",
-				url: process.env.VUE_APP_API + "information/openhours/modification",
-				data: {
-					content: this.hoursFormed,
-				},
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			}).then(() => {
-				this.dialog = true;
-				this.modifSent = false;
-			});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				this.modifSent = true;
+				this.hoursFormed = this.hours.replace(/<p>/g, "<p style='margin:0'>");
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "information/openhours/modification",
+					data: {
+						content: this.hoursFormed,
+					},
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then(() => {
+					this.dialog = true;
+					this.modifSent = false;
+				});
+			}
 		},
 
 		//* Close Dialog

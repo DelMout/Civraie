@@ -29,10 +29,10 @@
 				<tr>
 					<th class="sup"></th>
 					<th>Nom</th>
-					<th class="">Prénom</th>
-					<th class="">Email</th>
-					<th class="">Téléphone</th>
-					<th class="">Dernière connexion</th>
+					<th>Prénom</th>
+					<th>Email</th>
+					<th>Téléphone</th>
+					<th>Dernière connexion</th>
 					<th>Commentaire</th>
 				</tr>
 				<tr v-for="us in users" :key="us.id" :id="us.delete">
@@ -105,46 +105,51 @@ export default {
 		this.users = [];
 	},
 	created: function() {
-		this.$store.state.inPages = true;
-		//* All users
-		axios({
-			method: "get",
-			url: process.env.VUE_APP_API + "user/allusers",
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-			},
-		}).then((user) => {
-			this.length = user.data.length;
-			for (let i = 0; i < this.length; i++) {
-				this.users.push({
-					id: user.data[i].id,
-					nom: user.data[i].nom,
-					prenom: user.data[i].prenom,
-					email: user.data[i].email,
-					phone: user.data[i].phone,
-					last_connect: user.data[i].last_connect,
-					comment: user.data[i].comment,
-					modif: 0,
-					delete: 0,
-				});
-				// sort by alpha order
-				this.users.sort(function(a, b) {
-					var nomA = a.nom.toUpperCase();
-					var nomB = b.nom.toUpperCase();
+		this.$store.dispatch("checkConnect");
+		if (!this.connected) {
+			this.$router.push("/");
+		} else {
+			this.$store.state.inPages = true;
+			//* All users
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "user/allusers",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((user) => {
+				this.length = user.data.length;
+				for (let i = 0; i < this.length; i++) {
+					this.users.push({
+						id: user.data[i].id,
+						nom: user.data[i].nom,
+						prenom: user.data[i].prenom,
+						email: user.data[i].email,
+						phone: user.data[i].phone,
+						last_connect: user.data[i].last_connect,
+						comment: user.data[i].comment,
+						modif: 0,
+						delete: 0,
+					});
+					// sort by alpha order
+					this.users.sort(function(a, b) {
+						var nomA = a.nom.toUpperCase();
+						var nomB = b.nom.toUpperCase();
 
-					if (nomA < nomB) {
-						return -1;
-					}
-					if (nomA > nomB) {
-						return 1;
-					}
-					return 0;
-				});
-			}
-		});
+						if (nomA < nomB) {
+							return -1;
+						}
+						if (nomA > nomB) {
+							return 1;
+						}
+						return 0;
+					});
+				}
+			});
+		}
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
@@ -154,46 +159,61 @@ export default {
 		},
 		// //* Validation comment
 		validComment: function(event, us) {
-			const id = us.id;
-			axios({
-				method: "put",
-				url: process.env.VUE_APP_API + "user/comment/" + id,
-				data: { comment: us.comment },
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			}).then(() => {
-				us.modif = false;
-			});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				const id = us.id;
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "user/comment/" + id,
+					data: { comment: us.comment },
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then(() => {
+					us.modif = false;
+				});
+			}
 		},
-		// //* Want delete a user
+		//* Want delete a user
 		wantDelete: function(event, us) {
-			us.delete = "red";
-			this.$confirm.require({
-				target: event.currentTarget,
-				message: "Souhaitez-vous supprimer ce compte utilisateur ?",
-				icon: "pi pi-info-circle",
-				acceptClass: "p-button-danger",
-				accept: () => {
-					this.deleteUser(event, us);
-				},
-				reject: () => {
-					us.delete = 0;
-				},
-			});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				us.delete = "red";
+				this.$confirm.require({
+					target: event.currentTarget,
+					message: "Souhaitez-vous supprimer ce compte utilisateur ?",
+					icon: "pi pi-info-circle",
+					acceptClass: "p-button-danger",
+					accept: () => {
+						this.deleteUser(event, us);
+					},
+					reject: () => {
+						us.delete = 0;
+					},
+				});
+			}
 		},
 		//* Delete user
 		deleteUser: function(event, us) {
-			const id = us.id;
-			axios({
-				method: "delete",
-				url: process.env.VUE_APP_API + "user/delete/" + id,
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			}).then(() => {
-				this.dialog = true;
-			});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				const id = us.id;
+				axios({
+					method: "delete",
+					url: process.env.VUE_APP_API + "user/delete/" + id,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then(() => {
+					this.dialog = true;
+				});
+			}
 		},
 
 		//* Close Dialog

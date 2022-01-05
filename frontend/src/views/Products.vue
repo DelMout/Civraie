@@ -77,7 +77,6 @@
 							<p v-if="!prod.modif || prod.delete">{{ prod.producer }}</p>
 							<Dropdown
 								v-if="prod.modif && !prod.delete"
-								class="dropclass"
 								v-model="producerModel"
 								:options="producers"
 								optionLabel="entreprise"
@@ -239,7 +238,6 @@
 
 						<td class="createProd">
 							<Dropdown
-								class="dropclass"
 								v-model="prodcToSelect"
 								:options="producers"
 								optionLabel="entreprise"
@@ -414,93 +412,97 @@ export default {
 		this.producers = [];
 	},
 	created: function() {
-		this.$store.state.inPages = true;
-		//* All products
-		axios({
-			method: "get",
-			url: process.env.VUE_APP_API + "product",
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-			},
-		}).then((prod) => {
-			this.length = prod.data.length;
-			for (let i = 0; i < this.length; i++) {
-				axios
-					.get(
-						process.env.VUE_APP_API + "producer/getproducer/" + prod.data[i].producerId
-					)
-					.then((producer) => {
-						axios
-							.get(
-								process.env.VUE_APP_API +
-									"information/supportvente/" +
-									prod.data[i].ordering
-							)
-							.then((ordering) => {
-								axios
-									.get(
-										process.env.VUE_APP_API +
-											"category/getcategory/" +
-											prod.data[i].categoryId
-									)
-									.then((cate) => {
-										this.products.push({
-											id: prod.data[i].id,
-											product: prod.data[i].product,
-											producerId: prod.data[i].producerId,
-											producer: producer.data.entreprise,
-											price: prod.data[i].price,
-											unite_vente: prod.data[i].unite_vente,
-											unity: prod.data[i].unity,
-											stock_manag: prod.data[i].stock_manag,
-											stock_init: prod.data[i].stock_init,
-											stock_updated: prod.data[i].stock_updated,
-											stock_in_date: prod.data[i].stock_in_date,
-											photo: prod.data[i].photo,
-											// alert:
-											// 	prod.data[i].stock_updated -
-											// 	prod.data[i].alert_stock,
-											ordering: prod.data[i].ordering,
-											categoryId: prod.data[i].categoryId,
-											category: cate.data.category,
-											cloturedayId: prod.data[i].cloturedayId,
-											support: ordering.data,
-											active: prod.data[i].active,
-											modif: 0,
-											delete: 0,
-											selectProdu: 0,
-											selectOrdering: 0,
-											selectCate: 0,
-											selectCloture: 0,
-										});
-										// sort alpha order
-										this.products.sort(function(a, b) {
-											var productA = a.product.toUpperCase();
-											var productB = b.product.toUpperCase();
+		this.$store.dispatch("checkConnect");
+		if (!this.connected) {
+			this.$router.push("/");
+		} else {
+			this.$store.state.inPages = true;
+			//* All products
+			axios({
+				method: "get",
+				url: process.env.VUE_APP_API + "product",
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			}).then((prod) => {
+				this.length = prod.data.length;
+				for (let i = 0; i < this.length; i++) {
+					axios
+						.get(
+							process.env.VUE_APP_API +
+								"producer/getproducer/" +
+								prod.data[i].producerId
+						)
+						.then((producer) => {
+							axios
+								.get(
+									process.env.VUE_APP_API +
+										"information/supportvente/" +
+										prod.data[i].ordering
+								)
+								.then((ordering) => {
+									axios
+										.get(
+											process.env.VUE_APP_API +
+												"category/getcategory/" +
+												prod.data[i].categoryId
+										)
+										.then((cate) => {
+											this.products.push({
+												id: prod.data[i].id,
+												product: prod.data[i].product,
+												producerId: prod.data[i].producerId,
+												producer: producer.data.entreprise,
+												price: prod.data[i].price,
+												unite_vente: prod.data[i].unite_vente,
+												unity: prod.data[i].unity,
+												stock_manag: prod.data[i].stock_manag,
+												stock_init: prod.data[i].stock_init,
+												stock_updated: prod.data[i].stock_updated,
+												stock_in_date: prod.data[i].stock_in_date,
+												photo: prod.data[i].photo,
+												ordering: prod.data[i].ordering,
+												categoryId: prod.data[i].categoryId,
+												category: cate.data.category,
+												cloturedayId: prod.data[i].cloturedayId,
+												support: ordering.data,
+												active: prod.data[i].active,
+												modif: 0,
+												delete: 0,
+												selectProdu: 0,
+												selectOrdering: 0,
+												selectCate: 0,
+												selectCloture: 0,
+											});
+											// sort alpha order
+											this.products.sort(function(a, b) {
+												var productA = a.product.toUpperCase();
+												var productB = b.product.toUpperCase();
 
-											if (productA < productB) {
-												return -1;
-											}
-											if (productA > productB) {
-												return 1;
-											}
-											return 0;
+												if (productA < productB) {
+													return -1;
+												}
+												if (productA > productB) {
+													return 1;
+												}
+												return 0;
+											});
 										});
-									});
-							});
-					});
-			}
-		});
-		this.displayProducers();
-		this.displayCategories();
-		this.displayOrdering();
+								});
+						});
+				}
+			});
+			this.displayProducers();
+			this.displayCategories();
+			this.displayOrdering();
+		}
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
-		//* Display all producers (when creation product)
+		//* Display all producers
 		displayProducers: function() {
 			this.producers = [];
 			//* All producers
@@ -510,34 +512,7 @@ export default {
 				headers: {
 					Authorization: `Bearer ${this.token}`,
 				},
-			})
-				// .get(process.env.VUE_APP_API + "producer")
-				.then((prodc) => {
-					this.lengthPc = prodc.data.length;
-					for (let i = 0; i < this.lengthPc; i++) {
-						this.producers.push({
-							entreprise: prodc.data[i].entreprise,
-							id: prodc.data[i].id,
-						});
-					}
-				});
-		},
-
-		//* Display all producers (when modif product)
-		displayProducersModif: function(event, prod) {
-			this.products.forEach(function(item) {
-				item.selectProdu = 0;
-				item.selectOrdering = 0;
-				item.selectCate = 0;
-				item.selectCloture = 0;
-			});
-			prod.selectProdu = "green"; // color background when cell of producer selected
-			this.producers = [];
-			prod.modif = true;
-			this.modif = true;
-			this.index = this.products.findIndex((x) => x.product === prod.product);
-			//* All producers
-			axios.get(process.env.VUE_APP_API + "producer").then((prodc) => {
+			}).then((prodc) => {
 				this.lengthPc = prodc.data.length;
 				for (let i = 0; i < this.lengthPc; i++) {
 					this.producers.push({
@@ -548,10 +523,9 @@ export default {
 			});
 		},
 
-		//* Display all categories (when creation product)
+		//* Display all categories
 		displayCategories: function() {
 			this.categories = [];
-			//* All producers
 			axios.get(process.env.VUE_APP_API + "category/getcategories").then((cate) => {
 				this.lengthCate = cate.data.length;
 				for (let i = 0; i < this.lengthCate; i++) {
@@ -563,73 +537,9 @@ export default {
 			});
 		},
 
-		//* Display all categories (when modif product)
-		displayCategoriesModif: function(event, prod) {
-			this.products.forEach(function(item) {
-				item.selectProdu = 0;
-				item.selectOrdering = 0;
-				item.selectCate = 0;
-				item.selectCloture = 0;
-			});
-			prod.selectCate = "green"; // color background when cell of producer selected
-			this.categories = [];
-			prod.modif = true;
-			this.modif = true;
-			this.index = this.products.findIndex((x) => x.product === prod.product);
-			//* All categories
-			axios.get(process.env.VUE_APP_API + "category/getcategories").then((cate) => {
-				this.lengthCate = cate.data.length;
-				for (let i = 0; i < this.lengthCate; i++) {
-					this.categories.push({
-						category: cate.data[i].category,
-						id: cate.data[i].id,
-					});
-				}
-			});
-		},
-
-		//* Display all orderings (when creation)
+		//* Display all orderings
 		displayOrdering: function() {
 			this.orderinginfo = [];
-			//* All orderings
-			axios.get(process.env.VUE_APP_API + "information/getall/Ordering").then((ord) => {
-				this.lengthPc = ord.data.length;
-				for (let i = 0; i < this.lengthPc; i++) {
-					this.orderinginfo.push({
-						ordering: ord.data[i].content,
-						item: ord.data[i].item,
-					});
-				}
-			});
-		},
-
-		//* Display all cloture_days (when modif product)
-		displayCloturedayModif: function(event, prod) {
-			this.products.forEach(function(item) {
-				item.selectProdu = 0;
-				item.selectOrdering = 0;
-				item.selectCate = 0;
-				item.selectCloture = 0;
-			});
-			prod.selectCloture = "green"; // color background when cell of producer selected
-			prod.modif = true;
-			this.modif = true;
-			this.index = this.products.findIndex((x) => x.product === prod.product);
-		},
-
-		//* Display all orderings (when modif)
-		displayOrderingModif: function(event, prod) {
-			this.products.forEach(function(item) {
-				item.selectOrdering = 0;
-				item.selectProdu = 0;
-				item.selectCate = 0;
-			});
-			prod.selectOrdering = "green"; // color background when cell of producer selected
-			this.orderinginfo = [];
-			prod.modif = true;
-			this.modif = true;
-			this.index = this.products.findIndex((x) => x.product === prod.product);
-			//* All orderings
 			axios.get(process.env.VUE_APP_API + "information/getall/Ordering").then((ord) => {
 				this.lengthPc = ord.data.length;
 				for (let i = 0; i < this.lengthPc; i++) {
@@ -694,46 +604,52 @@ export default {
 
 		//* Create a product
 		validateCreate: function() {
-			const formData = new FormData();
-			formData.append("product", this.name);
-			formData.append("producerId", this.prodcToSelect);
-			formData.append("categoryId", this.cateToSelect);
-			formData.append("cloturedayId", this.clotureToSelect);
-			formData.append("price", this.price);
-			formData.append("unite_vente", this.qtyMini);
-			formData.append("unity", this.unity);
-			formData.append("ordering", this.ordering);
-			formData.append("stock_manag", this.stock_man);
-			formData.append("image", this.image);
-			formData.append("active", this.active);
-			if (this.active === 1) {
-				formData.append("active_date", moment().format("YYYY-MM-DD"));
-			}
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				const formData = new FormData();
+				formData.append("product", this.name);
+				formData.append("producerId", this.prodcToSelect);
+				formData.append("categoryId", this.cateToSelect);
+				formData.append("cloturedayId", this.clotureToSelect);
+				formData.append("price", this.price);
+				formData.append("unite_vente", this.qtyMini);
+				formData.append("unity", this.unity);
+				formData.append("ordering", this.ordering);
+				formData.append("stock_manag", this.stock_man);
+				formData.append("image", this.image);
+				formData.append("active", this.active);
+				if (this.active === 1) {
+					formData.append("active_date", moment().format("YYYY-MM-DD"));
+				}
 
-			axios({
-				method: "post",
-				url: process.env.VUE_APP_API + "product/createproduct",
-				data: formData,
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					this.dialog = true;
-					this.infoProd = "Produit créé !";
-					this.producerId = "";
-					this.orderingItem = "";
+				axios({
+					method: "post",
+					url: process.env.VUE_APP_API + "product/createproduct",
+					data: formData,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail:
-							"Merci de renseigner : Nom du produit, Prix, Unité/prix, Producteur, Catégorie, Jour clôture et Support vente.",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						this.dialog = true;
+						this.infoProd = "Produit créé !";
+						this.producerId = "";
+						this.orderingItem = "";
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail:
+								"Merci de renseigner : Nom du produit, Prix, Unité/prix, Producteur, Catégorie, Jour clôture et Support vente.",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
+
 		//* Close Dialog
 		closeCreated: function() {
 			this.dialog = false;
@@ -768,52 +684,57 @@ export default {
 
 		//* Validation modifications
 		validModif: function(event, prod) {
-			const id = prod.id;
-			if (prod.unity) {
-				this.unitee = prod.unity;
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
 			} else {
-				this.unitee = "";
-			}
-			const formData = new FormData();
-			formData.append("product", prod.product);
-			formData.append("producerId", this.producerModel);
-			formData.append("categoryId", this.categoryModel);
-			formData.append("cloturedayId", this.clotureModel);
-			formData.append("price", prod.price);
-			formData.append("unite_vente", prod.unite_vente);
-			formData.append("unity", this.unitee);
-			formData.append("ordering", this.orderingModel);
-			formData.append("image", this.image);
-			axios({
-				method: "put",
-				url: process.env.VUE_APP_API + "product/modif/" + id,
-				data: formData,
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					prod.modif = false;
-					this.products.forEach(function(item) {
-						item.selectOrdering = 0;
-						item.selectProdu = 0;
-						item.selectCate = 0;
-						item.selectCloture = 0;
-					});
-					if (this.produSelected != 0) {
-						this.displayProdProdu();
-					} else {
-						location.reload();
-					}
+				const id = prod.id;
+				if (prod.unity) {
+					this.unitee = prod.unity;
+				} else {
+					this.unitee = "";
+				}
+				const formData = new FormData();
+				formData.append("product", prod.product);
+				formData.append("producerId", this.producerModel);
+				formData.append("categoryId", this.categoryModel);
+				formData.append("cloturedayId", this.clotureModel);
+				formData.append("price", prod.price);
+				formData.append("unite_vente", prod.unite_vente);
+				formData.append("unity", this.unitee);
+				formData.append("ordering", this.orderingModel);
+				formData.append("image", this.image);
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "product/modif/" + id,
+					data: formData,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail: "Problème ! Les modifications n'ont pas été prises en compte",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						prod.modif = false;
+						this.products.forEach(function(item) {
+							item.selectOrdering = 0;
+							item.selectProdu = 0;
+							item.selectCate = 0;
+							item.selectCloture = 0;
+						});
+						if (this.produSelected != 0) {
+							this.displayProdProdu();
+						} else {
+							location.reload();
+						}
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail: "Problème ! Les modifications n'ont pas été prises en compte",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 
 		//* Want delete a product
@@ -836,51 +757,61 @@ export default {
 
 		//* Delete product
 		Delete: function(event, prod) {
-			const id = prod.id;
-			axios({
-				method: "delete",
-				url: process.env.VUE_APP_API + "product/delete/" + id,
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					this.dialog = true;
-					this.infoProd = "Le produit a été supprimé.";
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				const id = prod.id;
+				axios({
+					method: "delete",
+					url: process.env.VUE_APP_API + "product/delete/" + id,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail: "Problème ! Le produit n'a pas été supprimé",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						this.dialog = true;
+						this.infoProd = "Le produit a été supprimé.";
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail: "Problème ! Le produit n'a pas été supprimé",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 
 		//* Active or inactive the product (in list of products)
 		activeInactive: function(event, prod) {
-			if (prod.active === 1) {
-				axios({
-					method: "put",
-					url: process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/0",
-					headers: {
-						Authorization: `Bearer ${this.token}`,
-					},
-				}).then(() => {
-					prod.active = 0;
-				});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
 			} else {
-				if (prod.active === 0) {
+				if (prod.active === 1) {
 					axios({
 						method: "put",
-						url: process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/1",
+						url: process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/0",
 						headers: {
 							Authorization: `Bearer ${this.token}`,
 						},
 					}).then(() => {
-						prod.active = 1;
+						prod.active = 0;
 					});
+				} else {
+					if (prod.active === 0) {
+						axios({
+							method: "put",
+							url: process.env.VUE_APP_API + "product/changeactive/" + prod.id + "/1",
+							headers: {
+								Authorization: `Bearer ${this.token}`,
+							},
+						}).then(() => {
+							prod.active = 1;
+						});
+					}
 				}
 			}
 		},
@@ -896,29 +827,38 @@ export default {
 			}
 		},
 
-		//* Change status od stock_manag of the product (in list of products)
+		//* Change status of stock_manag for the product (in list of products)
 		changeStockManag: function(event, prod) {
-			if (prod.stock_manag === 1) {
-				axios({
-					method: "put",
-					url: process.env.VUE_APP_API + "product/changestockmanag/" + prod.id + "/0",
-					headers: {
-						Authorization: `Bearer ${this.token}`,
-					},
-				}).then(() => {
-					prod.stock_manag = 0;
-				});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
 			} else {
-				if (prod.stock_manag === 0) {
+				if (prod.stock_manag === 1) {
 					axios({
 						method: "put",
-						url: process.env.VUE_APP_API + "product/changestockmanag/" + prod.id + "/1",
+						url: process.env.VUE_APP_API + "product/changestockmanag/" + prod.id + "/0",
 						headers: {
 							Authorization: `Bearer ${this.token}`,
 						},
 					}).then(() => {
-						prod.stock_manag = 1;
+						prod.stock_manag = 0;
 					});
+				} else {
+					if (prod.stock_manag === 0) {
+						axios({
+							method: "put",
+							url:
+								process.env.VUE_APP_API +
+								"product/changestockmanag/" +
+								prod.id +
+								"/1",
+							headers: {
+								Authorization: `Bearer ${this.token}`,
+							},
+						}).then(() => {
+							prod.stock_manag = 1;
+						});
+					}
 				}
 			}
 		},
@@ -941,80 +881,85 @@ export default {
 
 		//* Display list of products according to the producer selected
 		displayProdProdu: function() {
-			this.modifInProgress = false;
-			if (this.produSelected != "") {
-				this.products = [];
-				axios({
-					method: "get",
-					url: process.env.VUE_APP_API + "product/producerid/" + this.produSelected,
-				}).then((prod) => {
-					this.length = prod.data.length;
-					for (let i = 0; i < this.length; i++) {
-						axios
-							.get(
-								process.env.VUE_APP_API +
-									"producer/getproducer/" +
-									this.produSelected
-							)
-							.then((producer) => {
-								axios
-									.get(
-										process.env.VUE_APP_API +
-											"information/supportvente/" +
-											prod.data[i].ordering
-									)
-									.then((ordering) => {
-										axios
-											.get(
-												process.env.VUE_APP_API +
-													"category/getcategory/" +
-													prod.data[i].categoryId
-											)
-											.then((cate) => {
-												this.products.push({
-													id: prod.data[i].id,
-													product: prod.data[i].product,
-													producerId: prod.data[i].producerId,
-													producer: producer.data.entreprise,
-													price: prod.data[i].price,
-													unite_vente: prod.data[i].unite_vente,
-													unity: prod.data[i].unity,
-													stock_manag: prod.data[i].stock_manag,
-													stock_init: prod.data[i].stock_init,
-													stock_updated: prod.data[i].stock_updated,
-													stock_in_date: prod.data[i].stock_in_date,
-													photo: prod.data[i].photo,
-													ordering: prod.data[i].ordering,
-													categoryId: prod.data[i].categoryId,
-													category: cate.data.category,
-													cloturedayId: prod.data[i].cloturedayId,
-													support: ordering.data,
-													active: prod.data[i].active,
-													modif: 0,
-													delete: 0,
-													selectProdu: 0,
-													selectOrdering: 0,
-													selectCate: 0,
-													selectCloture: 0,
-												});
-												// sort alpha order
-												this.products.sort(function(a, b) {
-													var productA = a.product.toUpperCase();
-													var productB = b.product.toUpperCase();
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				this.modifInProgress = false;
+				if (this.produSelected != "") {
+					this.products = [];
+					axios({
+						method: "get",
+						url: process.env.VUE_APP_API + "product/producerid/" + this.produSelected,
+					}).then((prod) => {
+						this.length = prod.data.length;
+						for (let i = 0; i < this.length; i++) {
+							axios
+								.get(
+									process.env.VUE_APP_API +
+										"producer/getproducer/" +
+										this.produSelected
+								)
+								.then((producer) => {
+									axios
+										.get(
+											process.env.VUE_APP_API +
+												"information/supportvente/" +
+												prod.data[i].ordering
+										)
+										.then((ordering) => {
+											axios
+												.get(
+													process.env.VUE_APP_API +
+														"category/getcategory/" +
+														prod.data[i].categoryId
+												)
+												.then((cate) => {
+													this.products.push({
+														id: prod.data[i].id,
+														product: prod.data[i].product,
+														producerId: prod.data[i].producerId,
+														producer: producer.data.entreprise,
+														price: prod.data[i].price,
+														unite_vente: prod.data[i].unite_vente,
+														unity: prod.data[i].unity,
+														stock_manag: prod.data[i].stock_manag,
+														stock_init: prod.data[i].stock_init,
+														stock_updated: prod.data[i].stock_updated,
+														stock_in_date: prod.data[i].stock_in_date,
+														photo: prod.data[i].photo,
+														ordering: prod.data[i].ordering,
+														categoryId: prod.data[i].categoryId,
+														category: cate.data.category,
+														cloturedayId: prod.data[i].cloturedayId,
+														support: ordering.data,
+														active: prod.data[i].active,
+														modif: 0,
+														delete: 0,
+														selectProdu: 0,
+														selectOrdering: 0,
+														selectCate: 0,
+														selectCloture: 0,
+													});
+													// sort alpha order
+													this.products.sort(function(a, b) {
+														var productA = a.product.toUpperCase();
+														var productB = b.product.toUpperCase();
 
-													if (productA < productB) {
-														return -1;
-													}
-													if (productA > productB) {
-														return 1;
-													}
-													return 0;
+														if (productA < productB) {
+															return -1;
+														}
+														if (productA > productB) {
+															return 1;
+														}
+														return 0;
+													});
 												});
-											});
-									});
-							});
-					}
-				});
+										});
+								});
+						}
+					});
+				}
 			}
 		},
 
@@ -1025,15 +970,20 @@ export default {
 		},
 		//* Put all products actived
 		putAllActived: function() {
-			axios({
-				method: "put",
-				url: process.env.VUE_APP_API + "product/putallproducts/actived",
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			}).then(() => {
-				location.reload();
-			});
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "product/putallproducts/actived",
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then(() => {
+					location.reload();
+				});
+			}
 		},
 	},
 };
@@ -1181,7 +1131,6 @@ table {
 .stock {
 	width: 1.5rem;
 	height: 1.5rem;
-	/* border-radius: 50%; */
 	margin-left: 0;
 	cursor: pointer;
 }

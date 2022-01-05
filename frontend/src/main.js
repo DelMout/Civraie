@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import PrimeVue from "primevue/config";
-import Dialog from "primevue/dialog"; //! Exemple
+import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Password from "primevue/password";
@@ -21,12 +21,10 @@ import ConfirmationService from "primevue/confirmationservice";
 import ConfirmPopup from "primevue/confirmpopup";
 import Checkbox from "primevue/checkbox";
 
-// import JsonExcel from "vue-json-excel";
 import "primeicons/primeicons.css"; //icons
 import "primeflex/primeflex.css"; // grid system
 import "primevue/resources/primevue.min.css"; //core css
 import "primevue/resources/themes/saga-green/theme.css"; //theme
-// import "primevue/resources/themes/rhea/theme.css"; //theme
 
 createApp(App)
 	.use(router)
@@ -42,7 +40,7 @@ createApp(App)
 		},
 	})
 	.use(ConfirmationService)
-	.component("Dialog", Dialog) //! Exemple
+	.component("Dialog", Dialog)
 	.component("InputText", InputText)
 	.component("Button", Button)
 	.component("Password", Password)
@@ -59,5 +57,4 @@ createApp(App)
 	.component("ConfirmPopup", ConfirmPopup)
 	.component("Checkbox", Checkbox)
 
-	// .component("downloadExcel", JsonExcel)
 	.mount("#app");

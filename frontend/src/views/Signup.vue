@@ -252,9 +252,6 @@ export default {
 			open.innerHTML = rep.data;
 		});
 	},
-	updated: function() {
-		//* Openhours
-	},
 
 	computed: {
 		...mapState([

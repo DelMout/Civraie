@@ -49,7 +49,7 @@
 						/>
 					</td>
 
-					<td class="" @click="modifProd($event, prod)">
+					<td @click="modifProd($event, prod)">
 						<p v-if="!prod.modif || prod.delete">
 							{{ prod.nom }}
 						</p>
@@ -70,7 +70,7 @@
 						/>
 					</td>
 
-					<td class="" @click="modifProd($event, prod)">
+					<td @click="modifProd($event, prod)">
 						<p v-if="!prod.modif || prod.delete">{{ prod.products }}</p>
 						<input
 							v-if="prod.modif && !prod.delete"
@@ -79,7 +79,7 @@
 							v-model="prod.products"
 						/>
 					</td>
-					<td class="" @click="modifProd($event, prod)">
+					<td @click="modifProd($event, prod)">
 						<p v-if="!prod.modif || prod.delete">{{ prod.address }}</p>
 						<input
 							v-if="prod.modif && !prod.delete"
@@ -89,7 +89,7 @@
 							v-model="prod.address"
 						/>
 					</td>
-					<td class="" @click="modifProd($event, prod)">
+					<td @click="modifProd($event, prod)">
 						<p v-if="!prod.modif || prod.delete">{{ prod.phone }}</p>
 						<input
 							v-if="prod.modif && !prod.delete"
@@ -98,7 +98,7 @@
 							v-model="prod.phone"
 						/>
 					</td>
-					<td class="" @click="modifProd($event, prod)">
+					<td @click="modifProd($event, prod)">
 						<p v-if="!prod.modif || prod.delete">{{ prod.email }}</p>
 						<input
 							v-if="prod.modif && !prod.delete"
@@ -124,22 +124,22 @@
 						<input class="create" type="text" id="entreprise" v-model="entreprise" />
 					</td>
 
-					<td class="">
+					<td>
 						<input class="create " type="text" id="nom" v-model="nom" />
 					</td>
-					<td class="">
+					<td>
 						<input class="create " type="text" id="prenom" v-model="prenom" />
 					</td>
-					<td class="">
+					<td>
 						<input class="create " type="text" id="produits" v-model="produits" />
 					</td>
-					<td class="">
+					<td>
 						<input class="create " type="text" id="adresse" v-model="adresse" />
 					</td>
-					<td class="">
+					<td>
 						<input class="create " type="text" id="telephone" v-model="telephone" />
 					</td>
-					<td class="">
+					<td>
 						<input class="create " type="text" id="email" v-model="email" />
 					</td>
 
@@ -147,7 +147,7 @@
 						<Button
 							style="background:rgb(252, 190, 76)"
 							label="Créer"
-							class="p-button-raised validModif valButton valCreate"
+							class="p-button-raised validModif  valCreate"
 							@click="validateCreate"
 						/>
 					</td>
@@ -225,42 +225,47 @@ export default {
 		});
 	},
 	computed: {
-		...mapState(["token"]),
+		...mapState(["token", "connected"]),
 	},
 	methods: {
 		...mapActions(["checkConnect"]),
-		// //* Create a producer
+		//* Create a producer
 		validateCreate: function() {
-			axios({
-				method: "post",
-				url: process.env.VUE_APP_API + "producer/createproducer",
-				data: {
-					nom: this.nom,
-					prenom: this.prenom,
-					entreprise: this.entreprise,
-					products: this.produits,
-					address: this.adresse,
-					phone: this.telephone,
-					email: this.email,
-					site_web: this.site,
-				},
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					this.dialog = true;
-					this.infoProd = "Producteur créé !";
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				axios({
+					method: "post",
+					url: process.env.VUE_APP_API + "producer/createproducer",
+					data: {
+						nom: this.nom,
+						prenom: this.prenom,
+						entreprise: this.entreprise,
+						products: this.produits,
+						address: this.adresse,
+						phone: this.telephone,
+						email: this.email,
+						site_web: this.site,
+					},
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail:
-							"Les champs 'Producteur', 'Nom', 'Produits proposés' et 'Adresse' sont obligatoires.",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						this.dialog = true;
+						this.infoProd = "Producteur créé !";
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail:
+								"Les champs 'Producteur', 'Nom', 'Produits proposés' et 'Adresse' sont obligatoires.",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 
 		//* Want to modify a producer
@@ -270,35 +275,40 @@ export default {
 
 		// //* Validation modifications
 		validMod: function(event, prod) {
-			const id = prod.id;
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				const id = prod.id;
 
-			axios({
-				method: "put",
-				url: "http://localhost:3001/api/producer/modif/" + id,
-				data: {
-					nom: prod.nom,
-					prenom: prod.prenom,
-					entreprise: prod.entreprise,
-					products: prod.products,
-					address: prod.address,
-					phone: prod.phone,
-					email: prod.email,
-				},
-				headers: {
-					Authorization: `Bearer ${this.token}`,
-				},
-			})
-				.then(() => {
-					prod.modif = false;
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "producer/modif/" + id,
+					data: {
+						nom: prod.nom,
+						prenom: prod.prenom,
+						entreprise: prod.entreprise,
+						products: prod.products,
+						address: prod.address,
+						phone: prod.phone,
+						email: prod.email,
+					},
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
 				})
-				.catch(() => {
-					this.$toast.add({
-						severity: "error",
-						detail: "Problème ! Les modifications n'ont pas été prises en compte.",
-						closable: false,
-						life: 4000,
+					.then(() => {
+						prod.modif = false;
+					})
+					.catch(() => {
+						this.$toast.add({
+							severity: "error",
+							detail: "Problème ! Les modifications n'ont pas été prises en compte.",
+							closable: false,
+							life: 4000,
+						});
 					});
-				});
+			}
 		},
 
 		//* Close Dialog

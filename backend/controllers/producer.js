@@ -1,6 +1,4 @@
 const { producer } = require("../models");
-const fs = require("fs");
-const { Op } = require("sequelize");
 
 // * Create a new producer
 exports.createProducer = (req, res) => {
@@ -14,7 +12,6 @@ exports.createProducer = (req, res) => {
 		})
 		.catch((err) => {
 			res.status(401).send(err);
-			// res.status(401).send(err.errors[0].validatorKey);
 		});
 };
 
@@ -69,15 +66,3 @@ exports.modifProducer = (req, res) => {
 			res.status(401).send(err);
 		});
 };
-
-// //* Delete a producer
-// exports.deleteProducer = (req, res) => {
-// 	producer
-// 		.destroy({ where: { id: req.params.producerid } })
-// 		.then(() => {
-// 			res.send("producer deleted");
-// 		})
-// 		.catch((err) => {
-// 			res.status(401).send(err);
-// 		});
-// };
