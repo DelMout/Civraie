@@ -60,8 +60,8 @@ export default {
 			.then((rep) => {
 				this.hours = rep.data;
 			})
-			.catch((err) => {
-				console.log(err);
+			.catch(() => {
+				this.hours = "Erreur, affichage des horaires d'ouverture !";
 			});
 	},
 	computed: {
@@ -82,14 +82,10 @@ export default {
 				headers: {
 					Authorization: `Bearer ${this.token}`,
 				},
-			})
-				// .put(process.env.VUE_APP_API + "information/openhours/modification", {
-				// 	content: this.hoursFormed,
-				// })
-				.then(() => {
-					this.dialog = true;
-					this.modifSent = false;
-				});
+			}).then(() => {
+				this.dialog = true;
+				this.modifSent = false;
+			});
 		},
 
 		//* Close Dialog

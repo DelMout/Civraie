@@ -5,15 +5,18 @@
 				<h3>Jours de clôture des Catégories</h3>
 			</div>
 
-			<ConfirmPopup></ConfirmPopup>
-			<ConfirmPopup group="demo">
-				<template #message="slotProps">
-					<div class="p-d-flex p-p-4">
-						<i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
-						<p class="p-pl-2">{{ slotProps.message.message }}</p>
-					</div>
-				</template>
-			</ConfirmPopup>
+			<div style="width:30vw">
+				<Toast position="center" :breakpoints="{ '400px': { width: '95%' } }">
+					<template #message="slotProps">
+						<div class="p-d-flex p-flex-row">
+							<div class="p-text-center">
+								<i class="pi pi-exclamation-triangle" style="font-size: 2rem"></i>
+								<p>{{ slotProps.message.detail }}</p>
+							</div>
+						</div>
+					</template>
+				</Toast>
+			</div>
 
 			<div id="tableau">
 				<table>
@@ -62,22 +65,8 @@ export default {
 	data() {
 		return {
 			categories: [],
-			length: "",
-			name: "",
-			price: "",
-			qtyMini: "",
-			unity: "",
-			PriceQtyMini: "",
-			stockInit: "",
-			stockLimit: "",
-			priceKgM: "",
-
-			prodId: "",
-			modif: false,
-			index: "",
 			modifInProgress: false,
 			tamponId: "",
-			unitee: "",
 			clotureModel: null,
 			days: [
 				{ name: "Dimanche" },
@@ -105,8 +94,7 @@ export default {
 				Authorization: `Bearer ${this.token}`,
 			},
 		}).then((cat) => {
-			this.length = cat.data.length;
-			for (let i = 0; i < this.length; i++) {
+			for (let i = 0; i < cat.data.length; i++) {
 				this.categories.push({
 					id: cat.data[i].id,
 					category: cat.data[i].category,
@@ -128,7 +116,6 @@ export default {
 					return 0;
 				});
 			}
-			console.log(this.categories);
 		});
 	},
 	computed: {
@@ -157,7 +144,6 @@ export default {
 
 		//* Validation modifications
 		validModif: function(event, cat) {
-			console.log(this.clotureModel.name);
 			const id = cat.id;
 			axios({
 				method: "put",
@@ -171,8 +157,13 @@ export default {
 					cat.modif = false;
 					location.reload();
 				})
-				.catch((err) => {
-					console.log(err);
+				.catch(() => {
+					this.$toast.add({
+						severity: "error",
+						detail: "Problème ! Votre modification n'a pu être prise en compte.",
+						closable: false,
+						life: 4000,
+					});
 				});
 		},
 	},

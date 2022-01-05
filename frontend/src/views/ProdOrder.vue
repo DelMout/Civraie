@@ -95,13 +95,6 @@
 						</p>
 					</template>
 				</Card>
-				<!-- <OverlayPanel ref="op" class="overlay" style="textAlign:center;borderRadius:8px">
-					<i>
-						<u>Producteur</u> :<br />
-						{{ prod.producer }}<br />
-						{{ prod.producer_address }}
-					</i>
-				</OverlayPanel> -->
 			</div>
 
 			<p v-if="noProduct">Pas de produits en vente actuellement dans cette catégorie.</p>
@@ -127,35 +120,15 @@ import { mapState, mapMutations, mapGetters } from "vuex";
 export default {
 	data() {
 		return {
-			products: [],
 			displayProd: [],
 			categories: [],
 			length: "",
-			order: [],
-			cloturedays: [
-				{ id: 0, cloture_day: "Dimanche" },
-				{ id: 1, cloture_day: "Lundi" },
-				{ id: 2, cloture_day: "Mardi" },
-				{ id: 3, cloture_day: "Mercredi" },
-				{ id: 4, cloture_day: "Jeudi" },
-				// { id: 5, cloture_day: "Vendredi" },
-				// { id: 6, cloture_day: "Samedi" },
-			],
-			total: 0, // Qty of products in panier
-			dateId: 10, //TODO Aller chercher la bonne info
-			userId: 7, //TODO Aller chercher la bonne info
-			infoOrder: "",
-			manqProd: "",
-			tablMail: "",
 			card_products: false,
-			cateSelected: "",
 			categoryClass: "",
 			categorySel: "",
 			cloture_day: "", // cloture day of category selected
 			noProduct: false,
-			style: "",
 			beSelected: "",
-			seeProducer: false,
 			qtyDisplay: 0,
 			counter: 0,
 		};
@@ -177,16 +150,10 @@ export default {
 		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
 	},
 	beforeCreate: function() {
-		this.products = [];
 		this.displayProd = [];
 		this.categories = [];
 	},
 	created: function() {
-		// Check if product is not evalable for saling according cloture_day
-		let now = this.$store.getters.dayNow;
-		console.log("now = " + now);
-		this.$store.commit("setProducts", this.products);
-		console.log(this.$store.state.products);
 		this.$store.state.inPages = true;
 
 		//* All categories
@@ -231,12 +198,10 @@ export default {
 			this.displayProd = [];
 			this.noProduct = false;
 			this.card_products = true;
-			console.log(cate.id);
 			this.cateSelected = cate.id;
 			this.categorySel = cate.category;
 			this.categoryClass = cate.class;
 			this.cloture_day = cate.cloture_day;
-			console.log(this.cloture_day);
 			if (this.counter > 1) {
 				if (document.getElementById("catePossible").classList.contains("catePossible")) {
 					document.getElementById("catePossible").classList.remove("catePossible");
@@ -294,11 +259,7 @@ export default {
 								});
 							});
 					}
-					console.log(this.displayProd);
-					console.log("blavla");
 
-					// this.$store.commit("setProducts", this.products);
-					// console.log(this.$store.state.products);
 					if (this.length === 0) {
 						this.noProduct = true;
 					}
@@ -384,7 +345,6 @@ export default {
 		},
 		//* Substract product to the order
 		subQty: function(event, prod) {
-			console.log("g appuyé sur sub");
 			if (localStorage.getItem(prod.id) !== null) {
 				if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
 					localStorage.removeItem(prod.id);
@@ -403,7 +363,6 @@ export default {
 						);
 					}
 				} else {
-					console.log("je dois décrémenter !");
 					localStorage.setItem(prod.id, JSON.parse(localStorage.getItem(prod.id)) - 1);
 					prod.qty = localStorage.getItem(prod.id);
 					if (prod.producerId === 16) {
@@ -421,10 +380,6 @@ export default {
 			}
 			this.$store.commit("setTotal", localStorage.getItem("Total"));
 		},
-		// //* Display producer of product
-		// overlay(event) {
-		// 	this.$refs.op.toggle(event);
-		// },
 	},
 };
 </script>

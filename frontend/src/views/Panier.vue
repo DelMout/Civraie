@@ -3,7 +3,7 @@
 		<!-- Table pour le panier de commande -->
 		<div v-if="total === null || total == 0">
 			<p>
-				{{ info }}
+				Votre panier est actuellement vide.
 			</p>
 		</div>
 		<!-- Table for other than escargots -->
@@ -63,9 +63,6 @@
 			<h5>Vos articles seront livrés le {{ deliveryDateNextW }}.</h5>
 
 			<table>
-				<!-- <caption>
-					Votre commande
-				</caption> -->
 				<tr>
 					<th>Produit</th>
 					<th>Quantité</th>
@@ -151,7 +148,6 @@ export default {
 			products: [],
 			tablMail: "",
 			tablMail_escarg: "",
-			info: "Votre panier est actuellement vide.",
 			dialog: false,
 			ordered: false,
 			unitee: "",
@@ -174,8 +170,6 @@ export default {
 			this.$router.push("/");
 		} else {
 			this.$store.state.inPages = true;
-			console.log("hey !!");
-			console.log(this.$store.state.userId);
 			//*Select all products actived
 			axios({
 				method: "get",
@@ -184,7 +178,6 @@ export default {
 					Authorization: `Bearer ${this.token}`,
 				},
 			}).then((prod) => {
-				console.log(prod);
 				for (let c = 0; c < prod.data.length; c++) {
 					this.products.push({
 						id: prod.data[c].id,
@@ -198,7 +191,6 @@ export default {
 						qty: localStorage.getItem(prod.data[c].id),
 					});
 				}
-				console.log(this.products);
 			});
 		}
 	},
@@ -251,8 +243,6 @@ export default {
 							});
 						} else {
 							this.counter_go++;
-							console.log(this.counter_go);
-							console.log("length = " + prod.data.length);
 						}
 					}
 					// if  qty of products without qty>stock_updated == qty total of products
@@ -311,7 +301,7 @@ export default {
 									},
 								})
 									.then(() => {
-										console.log("order  saved !");
+										//"order  saved !"
 										// decremente stock_updated if necessary
 										if (
 											this.products[i].stock_manag === 1 &&
@@ -333,10 +323,8 @@ export default {
 													Authorization: `Bearer ${this.token}`,
 												},
 											}).then(() => {
-												console.log("stock_updated has been updated !");
 												// if stock_updated=0 put inactive the product
 												if (newValue === 0) {
-													console.log("put inactif the product");
 													axios({
 														method: "put",
 														url:
@@ -349,15 +337,12 @@ export default {
 															Authorization: `Bearer ${this.token}`,
 														},
 													}).then(() => {
-														console.log("product in inactive !");
+														//product in inactive
 													});
 												}
 											});
-
-											console.log("new qty for stock_updated = " + newValue);
 										}
 										this.counter++;
-										console.log(JSON.parse(localStorage.getItem("Total")));
 										//send email confirmation
 										//for escargots
 										if (
@@ -410,7 +395,6 @@ export default {
 															"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
 														this.dialog = true;
 													}
-													console.log("broum !");
 												});
 										}
 										//for other_escargots
@@ -464,12 +448,17 @@ export default {
 															"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
 														this.dialog = true;
 													}
-													console.log("broum 2 !");
 												});
 										}
 									})
-									.catch((err) => {
-										console.log(err);
+									.catch(() => {
+										this.$toast.add({
+											severity: "error",
+											detail:
+												"Un problème est survenu ! La commande n'a pu être sauvegardée.",
+											closable: false,
+											life: 4000,
+										});
 									});
 							}
 						}
@@ -478,7 +467,6 @@ export default {
 			}
 		},
 		//* Add product to the order
-		//! vérifier stock limité
 		addQty: function(event, prod) {
 			this.$store.dispatch("checkConnect");
 			if (!this.connected) {
@@ -557,7 +545,6 @@ export default {
 			if (!this.connected) {
 				this.$router.push("/");
 			} else {
-				console.log("g appuyé sur sub");
 				if (localStorage.getItem(prod.id) !== null) {
 					if (JSON.parse(localStorage.getItem(prod.id)) === 1) {
 						localStorage.removeItem(prod.id);
@@ -578,7 +565,6 @@ export default {
 							);
 						}
 					} else {
-						console.log("je dois décrémenter !");
 						localStorage.setItem(
 							prod.id,
 							JSON.parse(localStorage.getItem(prod.id)) - 1

@@ -90,18 +90,10 @@ export default {
 								headers: {
 									Authorization: `Bearer ${this.token}`,
 								},
-							})
-								// .put(process.env.VUE_APP_API + "user/login/" + this.email)
-								.then(() => {
-									this.$router.push("/produits_vente_commande");
-								});
-						})
-						.catch(() => {
-							console.log("Y a un kouak !");
+							}).then(() => {
+								this.$router.push("/produits_vente_commande");
+							});
 						});
-				})
-				.catch((err) => {
-					console.log(err);
 				});
 		},
 		//* Press Enter on email cell

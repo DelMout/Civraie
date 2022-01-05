@@ -157,14 +157,12 @@ export default {
 			email: "",
 			phone: "",
 			password: "",
-			admin: "",
 			info: "",
 			creation: false,
 			forgot: false,
 			logged: false,
 			passwordInd: false,
 			forgotSent: false,
-			openhours: "",
 			connectionInProgress: false,
 			checked: false,
 			errors: [
@@ -317,7 +315,6 @@ export default {
 								});
 							}
 						}
-						console.log(err);
 					});
 			}
 		},
@@ -336,8 +333,8 @@ export default {
 					localStorage.setItem("token", token);
 					localStorage.setItem("isAdmin", isAdmin);
 					this.setAdmin(isAdmin);
+					this.$store.commit("setExpired", false);
 					this.$store.dispatch("checkConnect");
-					console.log("connected !");
 					// Update last-connect and jeton
 					axios({
 						method: "put",
@@ -347,16 +344,19 @@ export default {
 						},
 					})
 						.then(() => {
-							console.log("last_conn updated");
+							if (this.isAdmin === 1) {
+								this.$router.push("/commandes");
+							} else {
+								this.$router.push("/produits_vente_commande");
+							}
 						})
-						.catch((err) => {
-							console.log(err);
+						.catch(() => {
+							if (this.isAdmin === 1) {
+								this.$router.push("/commandes");
+							} else {
+								this.$router.push("/produits_vente_commande");
+							}
 						});
-					if (this.isAdmin === 1) {
-						this.$router.push("/commandes");
-					} else {
-						this.$router.push("/produits_vente_commande");
-					}
 				})
 				.catch((err) => {
 					if (err.response.data === "Password not OK") {

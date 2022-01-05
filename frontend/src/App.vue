@@ -31,17 +31,12 @@
 					></a>
 				</p>
 			</div>
-			<!-- <div class="panier_connect" style="margin-top:0.7rem;">
-				<p><i>Vous êtes connecté(e)</i></p>
-			</div> -->
 			<div style="margin-top:0.7rem;">
 				<p><a @click="disconnect">Déconnexion</a></p>
 			</div>
 		</div>
 	</div>
 	<div id="nav">
-		<!-- <router-link class="link" to="/">Accueil </router-link> -->
-		<!-- <router-link class="link" to="/produits_vente_magasin">Produits à la vente </router-link> -->
 		<div id="custom">
 			<router-link class="link " to="/produits_vente_commande">Produits </router-link>
 			<router-link class="link" to="/producteurs_carousel">Producteurs </router-link>

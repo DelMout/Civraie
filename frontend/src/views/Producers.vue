@@ -5,16 +5,6 @@
 			<p id="number">Nombre producteurs = {{ length }}</p>
 		</div>
 
-		<!-- <ConfirmPopup></ConfirmPopup>
-		<ConfirmPopup group="demo">
-			<template #message="slotProps">
-				<div class="p-d-flex p-p-4">
-					<i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
-					<p class="p-pl-2">{{ slotProps.message.message }}</p>
-				</div>
-			</template>
-		</ConfirmPopup> -->
-
 		<div>
 			<Dialog header="Confirmation" v-model:visible="dialog" :style="{ width: '15vw' }"
 				><p>{{ infoProd }}</p>
@@ -126,14 +116,6 @@
 							class="p-button-rounded butt"
 							@click="validMod($event, prod)"
 						/>
-
-						<!-- <Button
-							v-if="prod.modif"
-							id="trash"
-							icon="pi pi-trash"
-							class=" p-button-rounded p-button-danger butt"
-							@click="wantDelete($event, prod)"
-						/> -->
 					</td>
 				</tr>
 				<!-- Row for creating new producer -->
@@ -185,7 +167,6 @@ export default {
 			infoProd: "",
 			producers: [],
 			length: "",
-			lengthPc: "",
 			entreprise: "* Producteur",
 			nom: "* Nom",
 			prenom: "Prénom",
@@ -194,11 +175,6 @@ export default {
 			telephone: "Téléphone",
 			email: "Email",
 			site: "Site web",
-			photo: "", // total name paste in database
-			image: null, // file received brut
-			prodId: "",
-			modif: false,
-			index: "",
 			dialog: false,
 		};
 	},
@@ -245,7 +221,6 @@ export default {
 					}
 					return 0;
 				});
-				console.log(this.producers);
 			}
 		});
 	},
@@ -278,7 +253,6 @@ export default {
 					this.infoProd = "Producteur créé !";
 				})
 				.catch(() => {
-					console.log("pas correct !");
 					this.$toast.add({
 						severity: "error",
 						detail:
@@ -314,45 +288,18 @@ export default {
 					Authorization: `Bearer ${this.token}`,
 				},
 			})
-				.then((rep) => {
+				.then(() => {
 					prod.modif = false;
-					console.log(rep);
-					console.log("heu hooo !!" + id);
 				})
-				.catch((err) => console.log(err));
+				.catch(() => {
+					this.$toast.add({
+						severity: "error",
+						detail: "Problème ! Les modifications n'ont pas été prises en compte.",
+						closable: false,
+						life: 4000,
+					});
+				});
 		},
-
-		// //* Want delete a product
-		// wantDelete: function(event, prod) {
-		// 	prod.delete = "red";
-		// 	this.$confirm.require({
-		// 		target: event.currentTarget,
-		// 		message: "Souhaitez-vous supprimer ce producteur ?",
-		// 		icon: "pi pi-info-circle",
-		// 		acceptClass: "p-button-danger",
-		// 		accept: () => {
-		// 			this.Delete(event, prod);
-		// 		},
-		// 		reject: () => {
-		// 			prod.delete = 0;
-		// 		},
-		// 	});
-		// },
-
-		// //* Delete producer
-		// Delete: function(event, prod) {
-		// 	const id = prod.id;
-		// 	axios({
-		// 		method: "delete",
-		// 		url: process.env.VUE_APP_API + "producer/delete/" + id,
-		// 		headers: {
-		// 			Authorization: `Bearer ${this.token}`,
-		// 		},
-		// 	}).then(() => {
-		// 		this.dialog = true;
-		// 		this.infoProd = "La ligne du producteur a été supprimée.";
-		// 	});
-		// },
 
 		//* Close Dialog
 		close: function() {

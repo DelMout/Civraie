@@ -286,7 +286,6 @@ export default {
 			this.articles = [];
 			if (this.indice > 0) {
 				this.indice--;
-				console.log(this.indice);
 				this.getItems();
 				let title = document.getElementById("title");
 				title.innerHTML = this.producers[this.indice].name;
@@ -323,7 +322,6 @@ export default {
 						this.producers[this.indice].name
 				)
 				.then((produ) => {
-					console.log(produ.data.id);
 					// Get list of products from producerId
 					axios
 						.get(process.env.VUE_APP_API + "product/producerid/" + produ.data.id)

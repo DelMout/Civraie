@@ -86,7 +86,6 @@
 					</tr>
 				</table>
 			</div>
-			<!-- Info : product created or deleted -->
 		</div>
 		<div style="width:30vw">
 			<Toast position="center" :breakpoints="{ '400px': { width: '95%' } }">
@@ -161,7 +160,6 @@ export default {
 					return 0;
 				});
 			}
-			console.log(this.products);
 		});
 	},
 	computed: {
@@ -212,11 +210,15 @@ export default {
 			})
 				.then(() => {
 					prod.modif = false;
-
 					location.reload();
 				})
-				.catch((err) => {
-					console.log(err);
+				.catch(() => {
+					this.$toast.add({
+						severity: "error",
+						detail: "Erreur ! Votre modification n'a pas été prise en compte.",
+						closable: false,
+						life: 4000,
+					});
 				});
 		},
 	},
@@ -233,7 +235,6 @@ h3 {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 0rem;
-	/* margin-bottom: 1rem; */
 	margin-left: 5rem;
 }
 
@@ -347,7 +348,6 @@ table {
 .stock {
 	width: 1.5rem;
 	height: 1.5rem;
-	/* border-radius: 50%; */
 	margin-left: 0;
 	cursor: pointer;
 }
@@ -395,7 +395,6 @@ table {
 }
 #exclam {
 	color: red;
-	/* background-color: white; */
 	font-size: 1.5rem;
 	margin-bottom: 1rem;
 }

@@ -6,7 +6,6 @@ export default createStore({
 	state: {
 		userId: null,
 		isAdmin: 0,
-		// deliveryDate: null,
 		products: [],
 		order: [],
 		total: localStorage.getItem("Total"),
@@ -31,9 +30,7 @@ export default createStore({
 		setDeleted(state, deleted) {
 			state.deleted = deleted;
 		},
-		// setDeliveryDate(state, deliveryDate) {
-		// 	state.deliveryDate = deliveryDate;
-		// },
+
 		setProducts(state, products) {
 			state.products = products;
 		},
@@ -49,8 +46,8 @@ export default createStore({
 		setInfo(state) {
 			state.infoHome = "Ta session a expiré.";
 		},
-		setExpired(state) {
-			state.expired = true;
+		setExpired(state, expired) {
+			state.expired = expired;
 		},
 		IS_TRUE(state) {
 			state.connected = true;
@@ -63,7 +60,6 @@ export default createStore({
 		dateNow() {
 			moment.locale("fr");
 			return Date.now();
-			// return moment(Date.now()).format("DD MMMM YYYY");
 		},
 		dayNow() {
 			return new Date().getDay(); // day of the week of today (0-Sunday 6-Saturday)
@@ -106,14 +102,13 @@ export default createStore({
 		checkConnect(context) {
 			context.commit("setToken", localStorage.getItem("token"));
 			context.commit("setUserId", localStorage.getItem("userId"));
-			// context.commit("setAdmin", localStorage.getItem("isAdmin"));
 			if (context.state.token) {
 				if (this.getters.dateExp > this.getters.dateNow) {
 					context.commit("IS_TRUE");
 				} else {
 					context.commit("IS_FALSE");
 					context.commit("setInfo");
-					context.commit("setExpired");
+					context.commit("setExpired", true);
 					localStorage.clear();
 				}
 			} else {

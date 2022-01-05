@@ -85,13 +85,11 @@ export default {
 		//* Find datas od user from userId
 		axios({
 			method: "get",
-			// url: process.env.VUE_APP_API + "user/getuser/25",
 			url: process.env.VUE_APP_API + "user/getuser/" + localStorage.getItem("userId"),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
 		}).then((user) => {
-			console.log(user.data.nom);
 			this.name = user.data.nom;
 			this.firstname = user.data.prenom;
 			this.phone = user.data.phone;
@@ -103,7 +101,6 @@ export default {
 
 		//* Modify users phone  number
 		modifPhone: function() {
-			console.log("phone = " + this.phone);
 			axios({
 				method: "put",
 				url:
@@ -123,14 +120,13 @@ export default {
 						life: 4000,
 					});
 				})
-				.catch((err) => {
+				.catch(() => {
 					this.$toast.add({
 						severity: "error",
 						detail: "Le numéro de téléphone n'est pas correctement saisi.",
 						closable: false,
 						life: 4000,
 					});
-					console.log(err.response.data);
 				});
 		},
 		//* Want delete the user account
@@ -143,9 +139,7 @@ export default {
 				accept: () => {
 					this.suppress();
 				},
-				reject: () => {
-					console.log("rien !");
-				},
+				reject: () => {},
 			});
 		},
 
@@ -167,14 +161,13 @@ export default {
 					this.$store.dispatch("disconnect");
 					this.$router.push("/");
 				})
-				.catch((err) => {
+				.catch(() => {
 					this.$toast.add({
 						severity: "error",
 						detail: "Un problème s'est produit. Le compte n'a pu être supprimé.",
 						closable: false,
 						life: 4000,
 					});
-					console.log(err.response.data);
 				});
 		},
 	},

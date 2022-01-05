@@ -102,77 +102,70 @@ export default {
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
-		})
-			.then((order) => {
-				for (let i = 0; i < order.data.length; i++) {
+		}).then((order) => {
+			for (let i = 0; i < order.data.length; i++) {
+				axios({
+					method: "get",
+					url: process.env.VUE_APP_API + "user/getuser/" + order.data[i].userId,
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then((user) => {
+					// Find name of product and unité_vente of productId
 					axios({
 						method: "get",
-						url: process.env.VUE_APP_API + "user/getuser/" + order.data[i].userId,
+						url: process.env.VUE_APP_API + "product/datas/" + order.data[i].productId,
 						headers: {
 							Authorization: `Bearer ${this.token}`,
 						},
-					}).then((user) => {
-						// Find name of product and unité_vente of productId
-						axios({
-							method: "get",
-							url:
-								process.env.VUE_APP_API +
-								"product/datas/" +
-								order.data[i].productId,
-							headers: {
-								Authorization: `Bearer ${this.token}`,
-							},
-						}).then((product) => {
-							this.orders.push({
-								userId: order.data[i].userId,
-								userName: user.data.nom.toUpperCase(),
-								userFirstName: user.data.prenom,
-								product: product.data.product,
-								producerId: product.data.producerId,
-								unite_kg: product.data.unite_vente,
-								unity: product.data.unity,
-								quantity: order.data[i].quantity,
-								order_date: order.data[i].order_date,
-								color: "line_pair",
-							});
-							// sort alpha order
-							this.orders.sort(function(a, b) {
-								var orderA = a.userId;
-								var orderB = b.userId;
+					}).then((product) => {
+						this.orders.push({
+							userId: order.data[i].userId,
+							userName: user.data.nom.toUpperCase(),
+							userFirstName: user.data.prenom,
+							product: product.data.product,
+							producerId: product.data.producerId,
+							unite_kg: product.data.unite_vente,
+							unity: product.data.unity,
+							quantity: order.data[i].quantity,
+							order_date: order.data[i].order_date,
+							color: "line_pair",
+						});
+						// sort alpha order
+						this.orders.sort(function(a, b) {
+							var orderA = a.userId;
+							var orderB = b.userId;
 
-								if (orderA < orderB) {
-									return -1;
-								}
-								if (orderA > orderB) {
-									return 1;
-								}
-								return 0;
-							});
-							// List of userId
-							if (this.qtyUsers.indexOf(order.data[i].userId) < 0) {
-								this.qtyUsers.push(order.data[i].userId);
+							if (orderA < orderB) {
+								return -1;
 							}
+							if (orderA > orderB) {
+								return 1;
+							}
+							return 0;
+						});
+						// List of userId
+						if (this.qtyUsers.indexOf(order.data[i].userId) < 0) {
+							this.qtyUsers.push(order.data[i].userId);
+						}
 
-							// sort alpha order
-							this.qtyUsers.sort(function(a, b) {
-								var userA = a;
-								var userB = b;
+						// sort alpha order
+						this.qtyUsers.sort(function(a, b) {
+							var userA = a;
+							var userB = b;
 
-								if (userA < userB) {
-									return -1;
-								}
-								if (userA > userB) {
-									return 1;
-								}
-								return 0;
-							});
+							if (userA < userB) {
+								return -1;
+							}
+							if (userA > userB) {
+								return 1;
+							}
+							return 0;
 						});
 					});
-				}
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+				});
+			}
+		});
 	},
 	updated: function() {
 		this.alterColor();
@@ -193,13 +186,8 @@ export default {
 
 		//* Altern backcolor on lines in table for each customer
 		alterColor: function() {
-			// //! Boucle sur nombre de qty Users et appliquer sur color !
 			for (let j = 1; j < this.qtyUsers.length; j = j + 2) {
-				console.log(this.orders);
-				console.log(this.qtyUsers[j]);
-				console.log("orders =");
 				for (let k = 0; k < this.orders.length; k++) {
-					console.log(this.orders[k].userId);
 					if (this.orders[k].userId === this.qtyUsers[j]) {
 						this.orders[k].color = "line_impair";
 					}
@@ -228,7 +216,6 @@ export default {
 
 		//* Display of orders by producer
 		displayByProducer: function() {
-			console.log("coucou");
 			this.qtyProd = [];
 			this.produit = true;
 			this.client = false;
@@ -238,83 +225,72 @@ export default {
 				headers: {
 					Authorization: `Bearer ${this.token}`,
 				},
-			})
-				.then((order) => {
-					console.log(order.data.length);
-					for (let i = 0; i < order.data.length; i++) {
-						axios({
-							method: "get",
-							url:
+			}).then((order) => {
+				for (let i = 0; i < order.data.length; i++) {
+					axios({
+						method: "get",
+						url: process.env.VUE_APP_API + "product/datas/" + order.data[i].productId,
+						headers: {
+							Authorization: `Bearer ${this.token}`,
+						},
+					}).then((product) => {
+						// Find name of product and unité_vente of productId
+						axios
+							.get(
 								process.env.VUE_APP_API +
-								"product/datas/" +
-								order.data[i].productId,
-							headers: {
-								Authorization: `Bearer ${this.token}`,
-							},
-						}).then((product) => {
-							// Find name of product and unité_vente of productId
-							axios
-								.get(
-									process.env.VUE_APP_API +
-										"producer/getproducer/" +
-										product.data.producerId
-								)
-								.then((producer) => {
-									this.inQtyProd = false;
-									for (let q = 0; q < this.qtyProd.length; q++) {
-										if (product.data.product === this.qtyProd[q].product) {
-											this.qtyProd[q].quantity =
-												this.qtyProd[q].quantity + order.data[i].quantity;
-											this.inQtyProd = true;
-										}
+									"producer/getproducer/" +
+									product.data.producerId
+							)
+							.then((producer) => {
+								this.inQtyProd = false;
+								for (let q = 0; q < this.qtyProd.length; q++) {
+									if (product.data.product === this.qtyProd[q].product) {
+										this.qtyProd[q].quantity =
+											this.qtyProd[q].quantity + order.data[i].quantity;
+										this.inQtyProd = true;
 									}
-									if (!this.inQtyProd) {
-										this.qtyProd.push({
-											producer: producer.data.entreprise,
-											product: product.data.product,
-											quantity: order.data[i].quantity,
-											unity_kg: product.data.unite_vente,
-											unity: product.data.unity,
-											color: "line_pair",
-										});
-									}
-
-									// sort alpha order
-									this.qtyProd.sort(function(a, b) {
-										var prodA = a.producer;
-										var prodB = b.producer;
-
-										if (prodA < prodB) {
-											return -1;
-										}
-										if (prodA > prodB) {
-											return 1;
-										}
-										return 0;
+								}
+								if (!this.inQtyProd) {
+									this.qtyProd.push({
+										producer: producer.data.entreprise,
+										product: product.data.product,
+										quantity: order.data[i].quantity,
+										unity_kg: product.data.unite_vente,
+										unity: product.data.unity,
+										color: "line_pair",
 									});
-									let p = 0;
-									for (let j = 1; j < this.qtyProd.length; j++) {
-										if (
-											this.qtyProd[j].producer != this.qtyProd[j - 1].producer
-										) {
-											p++;
-											if (p % 2 == 0) {
-												this.qtyProd[j].color = "line_pair";
-											} else {
-												this.qtyProd[j].color = "line_impair";
-											}
-										} else {
-											this.qtyProd[j].color = this.qtyProd[j - 1].color;
-										}
+								}
+
+								// sort alpha order
+								this.qtyProd.sort(function(a, b) {
+									var prodA = a.producer;
+									var prodB = b.producer;
+
+									if (prodA < prodB) {
+										return -1;
 									}
+									if (prodA > prodB) {
+										return 1;
+									}
+									return 0;
 								});
-						});
-					}
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-			console.log(this.qtyProd);
+								let p = 0;
+								for (let j = 1; j < this.qtyProd.length; j++) {
+									if (this.qtyProd[j].producer != this.qtyProd[j - 1].producer) {
+										p++;
+										if (p % 2 == 0) {
+											this.qtyProd[j].color = "line_pair";
+										} else {
+											this.qtyProd[j].color = "line_impair";
+										}
+									} else {
+										this.qtyProd[j].color = this.qtyProd[j - 1].color;
+									}
+								}
+							});
+					});
+				}
+			});
 		},
 
 		//* Number format
@@ -326,10 +302,8 @@ export default {
 		//* Choose download
 		downloadX: function() {
 			if (this.download === "Télécharger Excel par PRODUIT") {
-				// this.download = "Télécharger Excel par CLIENT";
 				this.downloadProduit();
 			} else {
-				// this.download = "Télécharger Excel par PRODUCTEUR";
 				this.downloadClient();
 			}
 		},
