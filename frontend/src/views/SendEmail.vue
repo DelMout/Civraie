@@ -31,7 +31,7 @@
 					Magasin Civraie, Si Frais<br />
 					<i id="openhours"></i>
 					Adrien et Céline Pichon<br />
-					<a href="#">adrienpichon&#xA9;live.fr</a><br />
+					<a href="#">adrienpichon<span class="pi pi-at"></span>live.fr</a><br />
 					La Civraie<br />
 					Noyant<br />
 					49490 Noyant-Villages<br />

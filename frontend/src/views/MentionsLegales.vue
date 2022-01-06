@@ -1,6 +1,7 @@
 <template>
 	<div id="mentions">
 		<h1>Mentions Légales</h1>
+		<p id="update"><i>Dernière mise à jour : 06/01/2022</i></p>
 		<div id="contenu">
 			<h2>Identité</h2>
 			<h3>Propriétaire du site</h3>
@@ -98,5 +99,8 @@ h2 {
 }
 h3 {
 	text-decoration: underline;
+}
+#update {
+	text-align: right;
 }
 </style>

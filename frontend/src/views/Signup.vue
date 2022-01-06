@@ -60,7 +60,8 @@
 				<p>
 					<Checkbox v-model="checked" :binary="true" /> En soumettant ce formulaire,
 					j'accepte que les informations saisies soient uniquement utilisées pour
-					permettre de me contacter et de traiter mes commandes. Plus d'informations dans
+					permettre de me contacter et de traiter mes commandes. <br />Plus d'informations
+					dans
 					<span>
 						<a href="/mentions_legales" target="_blank"
 							><i>Mentions Légales</i></a
@@ -84,7 +85,7 @@
 		<div v-if="connectionInProgress">
 			<ProgressSpinner />
 		</div>
-		<p>{{ info }}</p>
+		<p id="info">{{ info }}</p>
 
 		<div v-if="forgot && !forgotSent">
 			<Button
@@ -118,15 +119,14 @@
 			</div>
 		</div>
 		<div id="copyright">
-			<div>
-				<a href="https://www.delmout.com" target="_blank"
-					><p><i>&#xA9; Site créé par Delphine Moutault</i></p></a
+			<div id="mentions">
+				<a href="/mentions_legales" target="_blank"
+					><p><i>Mentions Légales</i></p></a
 				>
 			</div>
 			<div>
-				<!-- Mettre le lien sur la page Mentions légales -->
-				<a href="/mentions_legales" target="_blank"
-					><p><i>Mentions Légales</i></p></a
+				<a href="https://www.delmout.com" target="_blank"
+					><p><i>&#xA9; Site créé par Delphine Moutault</i></p></a
 				>
 			</div>
 		</div>
@@ -426,7 +426,7 @@ export default {
 			this.creation = false;
 			this.logged = false;
 			this.info =
-				"Merci de renseigner votre adresse email. Vous aller revevoir un email pour initialiser votre mot de passe.";
+				"Merci de renseigner votre adresse email. Vous allez recevoir un email pour initialiser votre mot de passe.";
 		},
 
 		//* Refresh page - Go back initial page "Login"
@@ -509,13 +509,26 @@ span a {
 #copyright a {
 	color: #4caf50;
 }
+#info {
+	width: 60%;
+	margin: auto;
+	margin-bottom: 2rem;
+}
 
 /* MEDIA QUERIES */
+@media only screen and (max-width: 1500px) {
+	#rgpd {
+		width: 40%;
+	}
+}
 
 @media only screen and (max-width: 768px) {
 	/*mobiles et tablettes*/
 	.cells {
 		width: 30%;
+	}
+	#rgpd {
+		width: 60%;
 	}
 }
 @media only screen and (max-width: 576px) {
@@ -537,6 +550,20 @@ span a {
 	}
 	.facebook {
 		margin-left: 0.3rem;
+	}
+	#copyright {
+		text-align: center;
+		flex-direction: column;
+		background-color: #122f1c;
+	}
+	#createForget {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 10rem;
+	}
+	#mentions {
+		padding-bottom: 0rem;
+		height: 2rem;
 	}
 }
 </style>

@@ -217,4 +217,33 @@ h3 {
 a {
 	color: #4caf50;
 }
+/* MEDIA QUERIES */
+@media only screen and (max-width: 1500px) {
+	.telephone {
+		width: 65%;
+	}
+	#prevention {
+		margin-right: 2rem;
+	}
+}
+@media only screen and (max-width: 768px) {
+	/*mobiles et tablettes*/
+	.telephone {
+		width: 90%;
+	}
+}
+@media only screen and (max-width: 576px) {
+	.telephone {
+		flex-direction: column;
+	}
+	#prevention {
+		width: 100%;
+		margin: auto;
+		margin-top: 1rem;
+		margin-bottom: 1rem;
+	}
+	button {
+		margin-bottom: 1rem;
+	}
+}
 </style>
