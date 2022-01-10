@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<h1>19 producteurs et artisans réunis près de chez vous</h1>
 		<div id="conteneur">
 			<Button
 				v-if="indice > 0"
@@ -352,6 +353,12 @@ export default {
 @font-face {
 	font-family: "caveat";
 	src: url("../assets/caveat-regular.ttf") format("truetype");
+}
+h1 {
+	font-size: 2rem;
+	margin-top: 0;
+	margin-bottom: 2rem;
+	font-family: "caveat";
 }
 #conteneur {
 	display: flex;

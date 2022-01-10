@@ -257,7 +257,7 @@ exports.emailPassword = (req, res) => {
 								message +
 								"</br><a href='http://localhost:8080/setpassword/" +
 								jeton +
-								"'>Saisir un nouveau mot de passe</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
+								"'>Saisir un nouveau mot de passe</a></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><a href='mailto:adrienpichon@live.fr'>adrienpichon@live.fr</a><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
 								openhours +
 								"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px;margin-top:10px' src='cid:logo@civraie.com'/>",
 							attachments: [

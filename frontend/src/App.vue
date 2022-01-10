@@ -89,11 +89,11 @@ export default {
 		...mapState(["connected", "isAdmin", "total", "inPages"]),
 	},
 	beforeMount: function() {
-		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page
+		this.$store.dispatch("checkConnect");
 		this.isAdminApp = parseInt(localStorage.getItem("isAdmin"));
 	},
 	updated: function() {
-		this.$store.dispatch("checkConnect"); //! à recopier sur chaque page
+		this.$store.dispatch("checkConnect");
 		this.isAdminApp = parseInt(localStorage.getItem("isAdmin"));
 	},
 	created: function() {

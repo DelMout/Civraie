@@ -1,14 +1,26 @@
 <template>
 	<div id="signup">
 		<div>
+			<!-- <img src="../assets/butterfly.png" alt="" /> -->
 			<img
 				@click="returnHome"
 				id="logoAccueil"
 				src="../assets/fermeCivraie.png"
-				alt="logo Civraie"
+				alt="logo ferme Civraie"
 			/>
 		</div>
-		<p class="produ">19 producteurs et artisans réunis près de chez vous !</p>
+		<p class="produ">
+			Réservez vos commandes de produits locaux de qualité et BIO <br />parmi 19 producteurs
+			et artisans locaux.<br />
+			Livraison au magasin de la Ferme de la Civraie <br />à Noyant tous les vendredis.
+		</p>
+		<p>
+			<i
+				>Ferme de la Civraie<br />
+				La Civraie - Noyant<br />
+				49490 Noyant-Villages
+			</i>
+		</p>
 		<p id="openhours"></p>
 
 		<div class="cells">
@@ -209,16 +221,7 @@ export default {
 		this.creation = false;
 		this.forgot = false;
 		this.logged = false;
-		// this.$store.dispatch("checkConnect");
-		// if (localStorage.getItem("disconnect") != null) {
-		// 	this.$toast.add({
-		// 		severity: "error",
-		// 		detail: "boum boum",
-		// 		closable: false,
-		// 		life: 4000,
-		// 	});
-		// }
-		//! Voir si on raffiche la suite
+
 		if (!this.connected) {
 			localStorage.clear();
 		}
@@ -438,6 +441,14 @@ export default {
 };
 </script>
 <style scoped>
+@font-face {
+	font-family: "dancing";
+	src: url("../assets/dancingscript-regular-webfont.ttf") format("truetype");
+}
+@font-face {
+	font-family: "caveat";
+	src: url("../assets/caveat-regular.ttf") format("truetype");
+}
 #logoAccueil {
 	display: flex;
 	width: 30%;
@@ -445,8 +456,9 @@ export default {
 	cursor: pointer;
 }
 .produ {
-	font-size: 1.2rem;
+	font-size: 1.8rem;
 	margin-bottom: 1rem;
+	font-family: "caveat";
 }
 #openhours {
 	margin-bottom: 2rem;
@@ -455,6 +467,7 @@ export default {
 #signup {
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 	color: white;
+	cursor: url("../assets/but.png"), auto;
 }
 label {
 	text-align: left;

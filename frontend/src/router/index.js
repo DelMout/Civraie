@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Signup from "../views/Signup.vue";
 import Password from "../views/Password.vue";
-// import ProdShop from "../views/ProdShop.vue";
 import ProdOrder from "../views/ProdOrder.vue";
 import Products from "../views/Products.vue";
 import StockManag from "../views/StockManag.vue";
@@ -25,7 +24,9 @@ const routes = [
 		name: "Signup",
 		component: Signup,
 		meta: {
+			publicRoute: true,
 			title: "Magasin Civraie",
+			metaTags: [{ name: "description", content: "Commande de produits locaux, BIO." }],
 		},
 	},
 	{
@@ -52,15 +53,32 @@ const routes = [
 		name: "ProdOrder",
 		component: ProdOrder,
 		meta: {
+			publicRoute: true,
 			title: "Magasin Civraie / Produits commande",
+			metaTags: [
+				{
+					name: "description",
+					content:
+						"Commande de légumes frais, produits laitiers, viandes, œufs, escargots, miels, vins, huiles, pâtes.",
+				},
+			],
 		},
 	},
 	{
 		path: "/producteurs_carousel",
 		name: "Producteurs",
 		component: ProducersCarousel,
+
 		meta: {
+			publicRoute: true,
 			title: "Magasin Civraie / Producteurs",
+			metaTags: [
+				{
+					name: "description",
+					content:
+						"Présentation et détail des articles proposés par les producteurs réunis à la ferme de la Civraie à Noyant (49).",
+				},
+			],
 		},
 	},
 	{
