@@ -270,6 +270,24 @@ exports.putProductsActived = (req, res) => {
 		});
 };
 
+// * Put all products on "INactive"
+exports.putProductsInactived = (req, res) => {
+	product
+		.update(
+			{
+				active: 0,
+				active_date: Date(),
+			},
+			{ where: { active: 1 } }
+		)
+		.then(() => {
+			res.send(" all products are  INactived !");
+		})
+		.catch((err) => {
+			res.status(401).send(err);
+		});
+};
+
 // * Check if product must become inactive (after clotureday)
 exports.checkActive = (req, res) => {
 	product

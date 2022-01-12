@@ -43,6 +43,9 @@ router.put("/stockmanag/decrementestock/:productid/:qty", auth, productCtrl.decr
 // * Put all products on "active"
 router.put("/putallproducts/actived", admin, productCtrl.putProductsActived);
 
+// * Put all products on "INactive"
+router.put("/putallproducts/inactived", admin, productCtrl.putProductsInactived);
+
 // * Check if product must become inactive (after clotureday)
 router.put("/checkactive/putinactive", productCtrl.checkActive);
 

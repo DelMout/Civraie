@@ -31,10 +31,15 @@
 					@click="downPage"
 				/>
 				<Button
-					id="allactived"
 					label="Tous actifs"
-					class="p-button-raised   p-button on"
+					class="p-button-raised   p-button on allactived"
 					@click="putAllActived"
+				/>
+				<Button
+					id=""
+					label="Tous INactifs"
+					class="p-button-raised   p-button-danger out allactived"
+					@click="putAllInactived"
 				/>
 			</div>
 
@@ -968,6 +973,7 @@ export default {
 			this.produSelected = "";
 			location.reload();
 		},
+
 		//* Put all products actived
 		putAllActived: function() {
 			this.$store.dispatch("checkConnect");
@@ -977,6 +983,24 @@ export default {
 				axios({
 					method: "put",
 					url: process.env.VUE_APP_API + "product/putallproducts/actived",
+					headers: {
+						Authorization: `Bearer ${this.token}`,
+					},
+				}).then(() => {
+					location.reload();
+				});
+			}
+		},
+
+		//* Put all products INactived
+		putAllInactived: function() {
+			this.$store.dispatch("checkConnect");
+			if (!this.connected) {
+				this.$router.push("/");
+			} else {
+				axios({
+					method: "put",
+					url: process.env.VUE_APP_API + "product/putallproducts/inactived",
 					headers: {
 						Authorization: `Bearer ${this.token}`,
 					},
@@ -1138,6 +1162,10 @@ table {
 	background-color: greenyellow;
 	color: black;
 }
+.out {
+	background-color: rgb(228, 63, 41);
+	color: white;
+}
 .off {
 	background-color: red;
 }
@@ -1148,7 +1176,7 @@ table {
 	background-color: rgb(224, 213, 213);
 }
 
-#allactived {
+.allactived {
 	margin-left: 5rem;
 }
 ::v-deep(.p-dropdown) {
