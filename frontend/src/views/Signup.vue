@@ -476,6 +476,7 @@ label {
 #rgpd {
 	width: 15%;
 	margin: auto;
+	cursor: none;
 }
 .fill {
 	width: 100%;

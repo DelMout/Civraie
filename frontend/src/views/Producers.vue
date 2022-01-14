@@ -84,7 +84,6 @@
 						<input
 							v-if="prod.modif && !prod.delete"
 							class="create "
-							style="background-color:blue;"
 							type="text"
 							v-model="prod.address"
 						/>
@@ -174,7 +173,6 @@ export default {
 			adresse: "* Adresse",
 			telephone: "Téléphone",
 			email: "Email",
-			site: "Site web",
 			dialog: false,
 		};
 	},
@@ -246,7 +244,6 @@ export default {
 						address: this.adresse,
 						phone: this.telephone,
 						email: this.email,
-						site_web: this.site,
 					},
 					headers: {
 						Authorization: `Bearer ${this.token}`,
