@@ -1,7 +1,4 @@
--- Read instructions on README for setting up the database on MySQL server
-
-CREATE DATABASE civraie CHARACTER SET 'utf8mb4';
-USE civraie;
+USE essv2436_civraie;
 
 CREATE TABLE users
 (

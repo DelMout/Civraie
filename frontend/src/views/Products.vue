@@ -215,7 +215,7 @@
 								v-if="prod.modif"
 								id=""
 								label="Supprimer"
-								class="p-button-raised  valButton p-button-danger"
+								class="p-button-raised  valButton p-button-danger supbutton"
 								@click="wantDelete($event, prod)"
 							/>
 						</td>
@@ -675,6 +675,7 @@ export default {
 				this.orderingModel = prod.ordering;
 				this.clotureModel = prod.cloturedayId;
 				this.modifInProgress = true;
+				this.image = null;
 			} else {
 				if (prod.id != this.tamponId) {
 					this.products.forEach((item) => {
@@ -1195,5 +1196,8 @@ table {
 #selAll {
 	background-color: #a3d7a5;
 	color: rgb(92, 91, 91);
+}
+.supbutton {
+	background-color: red;
 }
 </style>

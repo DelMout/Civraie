@@ -23,7 +23,7 @@
 				<p>
 					Passez votre commande sur le site de la ferme de La Civraie :
 					<br />
-					<a href="http://localhost:8080/">La ferme de la Civraie</a>
+					<a href="https://fermedelacivraie.delmout.com/">La ferme de la Civraie</a>
 				</p>
 
 				<p>
@@ -134,10 +134,20 @@ export default {
 							headers: {
 								Authorization: `Bearer ${this.token}`,
 							},
-						}).then(() => {
-							this.emailSent = false;
-							this.dialog = true;
-						});
+						})
+							.then(() => {
+								this.emailSent = false;
+								this.dialog = true;
+							})
+							.catch(() => {
+								this.emailSent = false;
+								this.$toast.add({
+									severity: "error",
+									detail: "Problème technique ! L'email ne peut être envoyé.",
+									closable: false,
+									life: 4000,
+								});
+							});
 					}
 				}
 			}

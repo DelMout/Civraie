@@ -126,7 +126,7 @@ export default {
 						"Ferme familiale depuis 5 générations, située au Lude sur le bord du Loir, il y est produit du fromages et des laitages au lait cru de vache. Multiples saveurs grâce aux prairies permanentes à la flore très variée des zones humides. Ketty, Cécile, Joël et Lucie ont le plaisir de produire en agriculture biologique avec un troupeau de 30 vaches de races mixtes.",
 					imageUn: "LEFreneLogo.jpg",
 					imageDeux: "ABlogo.png",
-					imageTrois: "freneFromage.png",
+					imageTrois: "freneFromage1.png",
 				},
 				{
 					name: "Les légumes du Frêne",

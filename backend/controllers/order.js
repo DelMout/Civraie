@@ -50,7 +50,6 @@ exports.emailConfirm = (req, res) => {
 		},
 	});
 	// Recherche  datas du user
-	//TODO Remplacer localhost:8080 par adresse site en ligne !!
 	user.findOne({ where: { id: req.params.userid } })
 		.then((user) => {
 			information

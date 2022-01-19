@@ -18,15 +18,19 @@
 					<th>Modification</th>
 				</tr>
 				<tr v-for="prod in products" :key="prod.id">
-					<td v-if="prod.qty > 0 && prod.producerId != 16">{{ prod.product }}</td>
-					<td v-if="prod.qty > 0 && prod.producerId != 16">{{ prod.qty }}</td>
-					<td v-if="prod.qty > 0 && !prod.unity && prod.producerId != 16">
+					<td v-if="prod.qty > 0 && prod.producerId != producerIdEscarg">
+						{{ prod.product }}
+					</td>
+					<td v-if="prod.qty > 0 && prod.producerId != producerIdEscarg">
+						{{ prod.qty }}
+					</td>
+					<td v-if="prod.qty > 0 && !prod.unity && prod.producerId != producerIdEscarg">
 						<span>{{ prod.unity_kg }}</span>
 					</td>
-					<td v-if="prod.qty > 0 && prod.unity && prod.producerId != 16">
+					<td v-if="prod.qty > 0 && prod.unity && prod.producerId != producerIdEscarg">
 						{{ prod.unity }}
 					</td>
-					<td v-if="prod.qty > 0 && prod.producerId != 16">
+					<td v-if="prod.qty > 0 && prod.producerId != producerIdEscarg">
 						<p class="butAddSub">
 							<Button
 								label="-"
@@ -58,7 +62,6 @@
 		<!-- Table for only escargots -->
 		<div class="commande escar" v-if="total > 0 && escarg > 0">
 			<h5>Vos articles seront livrés le {{ deliveryDateNextW }}.</h5>
-
 			<table>
 				<tr>
 					<th>Produit</th>
@@ -67,15 +70,19 @@
 					<th>Modification</th>
 				</tr>
 				<tr v-for="prod in products" :key="prod.id">
-					<td v-if="prod.qty > 0 && prod.producerId === 16">{{ prod.product }}</td>
-					<td v-if="prod.qty > 0 && prod.producerId === 16">{{ prod.qty }}</td>
-					<td v-if="prod.qty > 0 && !prod.unity && prod.producerId === 16">
+					<td v-if="prod.qty > 0 && prod.producerId == producerIdEscarg">
+						{{ prod.product }}
+					</td>
+					<td v-if="prod.qty > 0 && prod.producerId == producerIdEscarg">
+						{{ prod.qty }}
+					</td>
+					<td v-if="prod.qty > 0 && !prod.unity && prod.producerId == producerIdEscarg">
 						<span>{{ prod.unity_kg }}</span>
 					</td>
-					<td v-if="prod.qty > 0 && prod.unity && prod.producerId === 16">
+					<td v-if="prod.qty > 0 && prod.unity && prod.producerId == producerIdEscarg">
 						{{ prod.unity }}
 					</td>
-					<td v-if="prod.qty > 0 && prod.producerId === 16">
+					<td v-if="prod.qty > 0 && prod.producerId == producerIdEscarg">
 						<p class="butAddSub">
 							<Button
 								label="-"
@@ -155,6 +162,7 @@ export default {
 				"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.",
 			delivery_day_gene: "",
 			counter_go: 0,
+			producerIdEscarg: process.env.VUE_APP_PRODUCER_ESCARG, //Id of escargot producer
 		};
 	},
 	computed: {
@@ -251,7 +259,10 @@ export default {
 									this.unitee = this.products[i].unity_kg;
 								}
 								// if escargots ordered
-								if (this.products[i].producerId === 16) {
+								if (
+									this.products[i].producerId ==
+									process.env.VUE_APP_PRODUCER_ESCARG
+								) {
 									this.counter_escarg =
 										this.counter_escarg + JSON.parse(this.products[i].qty);
 									this.tablMail_escarg =
@@ -471,7 +482,7 @@ export default {
 					localStorage.setItem("Total", 1);
 					localStorage.setItem(prod.id, 1);
 					prod.qty = 1;
-					if (prod.producerId === 16) {
+					if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 						// If escargots selected
 						localStorage.setItem("escarg", 1);
 					} else {
@@ -490,7 +501,7 @@ export default {
 								JSON.parse(localStorage.getItem(prod.id)) + 1
 							);
 							prod.qty = localStorage.getItem(prod.id);
-							if (prod.producerId === 16) {
+							if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 								localStorage.setItem(
 									"escarg",
 									JSON.parse(localStorage.getItem("escarg")) + 1
@@ -518,7 +529,7 @@ export default {
 							JSON.parse(localStorage.getItem("Total")) + 1
 						);
 						prod.qty = 1;
-						if (prod.producerId === 16) {
+						if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 							localStorage.setItem(
 								"escarg",
 								JSON.parse(localStorage.getItem("escarg")) + 1
@@ -548,7 +559,7 @@ export default {
 							JSON.parse(localStorage.getItem("Total")) - 1
 						);
 						prod.qty = 0;
-						if (prod.producerId === 16) {
+						if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 							localStorage.setItem(
 								"escarg",
 								JSON.parse(localStorage.getItem("escarg")) - 1
@@ -565,7 +576,7 @@ export default {
 							JSON.parse(localStorage.getItem(prod.id)) - 1
 						);
 						prod.qty = localStorage.getItem(prod.id);
-						if (prod.producerId === 16) {
+						if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 							localStorage.setItem(
 								"escarg",
 								JSON.parse(localStorage.getItem("escarg")) - 1
@@ -624,13 +635,7 @@ caption {
 	border-collapse: collapse;
 	margin: auto;
 	height: 5vh;
-	/* color: #122f1c; */
 }
-/* caption {
-	font-weight: 800;
-	padding: 1vh;
-	background-color: #fbc02d;
-} */
 td {
 	background-color: white;
 	color: #122f1c;

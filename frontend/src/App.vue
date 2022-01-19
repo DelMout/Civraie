@@ -13,19 +13,22 @@
 		<div id="connected" v-if="connected">
 			<div class="panier_connect ">
 				<p v-if="total > 0">
-					<a href="http://localhost:8080/panier" class="monpanier ">Mon Panier</a>
+					<a href="https://fermedelacivraie.delmout.com/panier" class="monpanier "
+						>Mon Panier</a
+					>
 
 					<a
-						href="http://localhost:8080/panier"
+						href="https://fermedelacivraie.delmout.com/panier"
 						class="pi pi-shopping-bag p-mr-4 "
 						style="font-size:1.5rem;"
 						v-badge="total"
 					></a>
 				</p>
 				<p v-if="total == 0">
-					<a href="http://localhost:8080/panier" class="monpanier ">Mon Panier</a
+					<a href="https://fermedelacivraie.delmout.com/panier" class="monpanier "
+						>Mon Panier</a
 					><a
-						href="http://localhost:8080/panier"
+						href="https://fermedelacivraie.delmout.com/panier"
 						class="pi pi-shopping-bag p-mr-4 "
 						style="font-size:1.5rem;"
 					></a>
@@ -106,7 +109,7 @@ export default {
 		disconnect: function() {
 			localStorage.clear();
 			this.$store.dispatch("disconnect");
-			this.$router.push("http://localhost:8080/");
+			this.$router.push("https://fermedelacivraie.delmout.com/");
 		},
 
 		//* Go back to Home

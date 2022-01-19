@@ -272,7 +272,7 @@ export default {
 						localStorage.setItem("Total", 1);
 						localStorage.setItem(prod.id, 1);
 						prod.qty = 1;
-						if (prod.producerId === 16) {
+						if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 							// If escargots selected
 							localStorage.setItem("escarg", 1);
 						} else {
@@ -291,7 +291,7 @@ export default {
 									JSON.parse(localStorage.getItem(prod.id)) + 1
 								);
 								prod.qty = localStorage.getItem(prod.id);
-								if (prod.producerId === 16) {
+								if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 									localStorage.setItem(
 										"escarg",
 										JSON.parse(localStorage.getItem("escarg")) + 1
@@ -319,7 +319,7 @@ export default {
 								JSON.parse(localStorage.getItem("Total")) + 1
 							);
 							prod.qty = 1;
-							if (prod.producerId === 16) {
+							if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 								localStorage.setItem(
 									"escarg",
 									JSON.parse(localStorage.getItem("escarg")) + 1
@@ -359,7 +359,7 @@ export default {
 						);
 						prod.qty = 0;
 						// prod.selected = "";
-						if (prod.producerId === 16) {
+						if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 							localStorage.setItem(
 								"escarg",
 								JSON.parse(localStorage.getItem("escarg")) - 1
@@ -376,7 +376,7 @@ export default {
 							JSON.parse(localStorage.getItem(prod.id)) - 1
 						);
 						prod.qty = localStorage.getItem(prod.id);
-						if (prod.producerId === 16) {
+						if (prod.producerId == process.env.VUE_APP_PRODUCER_ESCARG) {
 							localStorage.setItem(
 								"escarg",
 								JSON.parse(localStorage.getItem("escarg")) - 1
