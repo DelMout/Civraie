@@ -3,6 +3,7 @@ const { user } = require("../models");
 const { information } = require("../models");
 const nodemailer = require("nodemailer");
 const path = require("path");
+const { Op } = require("sequelize");
 
 // * Create a new order
 exports.createOrder = (req, res) => {
@@ -21,11 +22,16 @@ exports.createOrder = (req, res) => {
 		});
 };
 
-// * Get orders according to delivery date (delivery_date)
+// * Get orders according to delivery date (delivery_date) and if snails products (escarg)
 exports.getAllOrders = (req, res) => {
 	order
 		.findAll({
-			where: { delivery_date: req.params.delivery_date },
+			where: {
+				[Op.and]: [
+					{ delivery_date: req.params.delivery_date },
+					{ escarg: req.params.escarg },
+				],
+			},
 		})
 		.then((obj) => {
 			res.send(obj);

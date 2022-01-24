@@ -9,8 +9,8 @@ const admin = require("../middleware/isAdmin"); // Request authentification for 
 // * Create an order
 router.post("/createorder/:userid/:delivery_date", auth, orderCtrl.createOrder);
 
-// * See order according to delivery date
-router.get("/getallorders/:delivery_date", admin, orderCtrl.getAllOrders);
+// * See order according to delivery date and if snails products
+router.get("/getallorders/:escarg/:delivery_date", admin, orderCtrl.getAllOrders);
 
 // * Send email for order confirmation
 router.post("/emailconf/:userid/:delivery_date/:contenu", auth, orderCtrl.emailConfirm);

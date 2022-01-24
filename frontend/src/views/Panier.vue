@@ -163,6 +163,7 @@ export default {
 			delivery_day_gene: "",
 			counter_go: 0,
 			producerIdEscarg: process.env.VUE_APP_PRODUCER_ESCARG, //Id of escargot producer
+			ifescarg: 0,
 		};
 	},
 	computed: {
@@ -209,6 +210,7 @@ export default {
 
 		//* Validation order
 		validOrder: function() {
+			this.ifescarg = 0;
 			this.$store.dispatch("checkConnect");
 			if (!this.connected) {
 				localStorage.setItem("disconnect", "disconnected");
@@ -263,6 +265,7 @@ export default {
 									this.products[i].producerId ==
 									process.env.VUE_APP_PRODUCER_ESCARG
 								) {
+									this.ifescarg = 1;
 									this.counter_escarg =
 										this.counter_escarg + JSON.parse(this.products[i].qty);
 									this.tablMail_escarg =
@@ -275,6 +278,7 @@ export default {
 										encodeURIComponent(this.unitee);
 									this.delivery_day_gene = this.deliveryDateNextW;
 								} else {
+									this.ifescarg = 0;
 									this.counter_other =
 										this.counter_other + JSON.parse(this.products[i].qty);
 									this.tablMail =
@@ -300,6 +304,7 @@ export default {
 									data: {
 										productId: this.products[i].id,
 										quantity: this.products[i].qty,
+										escarg: this.ifescarg,
 										order_date: Date.now(),
 									},
 									headers: {

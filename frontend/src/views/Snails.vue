@@ -2,7 +2,7 @@
 	<div>
 		<h3>
 			Commandes reçues d'Escargots pour livraison :<br />
-			{{ deliveryDateNextW }}
+			{{ displayDeliveryDate }}
 		</h3>
 		<!-- Dropdown -->
 		<div></div>
@@ -83,6 +83,8 @@ export default {
 			inQtyProd: false,
 			custProd: "Afficher par PRODUIT",
 			download: "Télécharger Excel par CLIENT",
+			today: moment().format("dddd"), // day of current date
+			displayDeliveryDate: "",
 		};
 	},
 	beforeMount: function() {
@@ -99,10 +101,15 @@ export default {
 			//* Display orders
 			this.client = true;
 			this.$store.state.inPages = true;
+			if (this.today === "vendredi") {
+				this.displayDeliveryDate = this.deliveryDate;
+			} else {
+				this.displayDeliveryDate = this.deliveryDateNextW;
+			}
 
 			axios({
 				method: "get",
-				url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
+				url: process.env.VUE_APP_API + "order/getallorders/1/" + this.displayDeliveryDate,
 				headers: {
 					Authorization: `Bearer ${this.token}`,
 				},
@@ -180,7 +187,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(["deliveryDateNextW"]),
+		...mapGetters(["deliveryDateNextW", "deliveryDate"]),
 		...mapState(["inPages", "token", "connected"]),
 	},
 	methods: {
@@ -233,7 +240,10 @@ export default {
 				this.client = false;
 				axios({
 					method: "get",
-					url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDateNextW,
+					url:
+						process.env.VUE_APP_API +
+						"order/getallorders/1/" +
+						this.displayDeliveryDate,
 					headers: {
 						Authorization: `Bearer ${this.token}`,
 					},
@@ -333,7 +343,7 @@ export default {
 				this.$router.push("/");
 			} else {
 				var xls = new XlsExport(this.orders, "Par_Client");
-				xls.exportToXLS("commandes_Client_" + this.deliveryDateNextW + ".xls");
+				xls.exportToXLS("commandes_Client_" + this.displayDeliveryDate + ".xls");
 			}
 		},
 		// //* Downloading Excel By Product
@@ -343,7 +353,7 @@ export default {
 				this.$router.push("/");
 			} else {
 				var xls = new XlsExport(this.qtyProd, "Par_Producteur");
-				xls.exportToXLS("commandes_Producteur_" + this.deliveryDateNextW + ".xls");
+				xls.exportToXLS("commandes_Producteur_" + this.displayDeliveryDate + ".xls");
 			}
 		},
 	},

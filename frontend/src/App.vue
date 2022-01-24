@@ -13,22 +13,19 @@
 		<div id="connected" v-if="connected">
 			<div class="panier_connect ">
 				<p v-if="total > 0">
-					<a href="https://fermedelacivraie.delmout.com/panier" class="monpanier "
-						>Mon Panier</a
-					>
+					<a href="/panier" class="monpanier ">Mon Panier</a>
 
 					<a
-						href="https://fermedelacivraie.delmout.com/panier"
+						href="/panier"
 						class="pi pi-shopping-bag p-mr-4 "
 						style="font-size:1.5rem;"
 						v-badge="total"
 					></a>
 				</p>
 				<p v-if="total == 0">
-					<a href="https://fermedelacivraie.delmout.com/panier" class="monpanier "
-						>Mon Panier</a
+					<a href="/panier" class="monpanier ">Mon Panier</a
 					><a
-						href="https://fermedelacivraie.delmout.com/panier"
+						href="/panier"
 						class="pi pi-shopping-bag p-mr-4 "
 						style="font-size:1.5rem;"
 					></a>

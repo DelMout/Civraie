@@ -527,5 +527,18 @@ td {
 	table {
 		font-size: 1.2rem;
 	}
+	#sousCont {
+		/* top: 2rem; */
+		width: 95%;
+		margin: auto;
+		position: absolute;
+		z-index: 1;
+	}
+
+	#leftButt,
+	#rightButt {
+		position: relative;
+		z-index: 20;
+	}
 }
 </style>

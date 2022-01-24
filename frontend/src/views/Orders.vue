@@ -2,7 +2,7 @@
 	<div>
 		<h3>
 			Commandes reçues pour livraison :<br />
-			{{ deliveryDate }}
+			{{ displayDeliveryDate }}
 		</h3>
 		<!-- Dropdown -->
 		<div></div>
@@ -83,6 +83,8 @@ export default {
 			inQtyProd: false,
 			custProd: "Afficher par PRODUCTEUR",
 			download: "Télécharger Excel par CLIENT",
+			today:moment().format('dddd'),// day of current date
+			displayDeliveryDate:"",
 		};
 	},
 	beforeMount: function() {
@@ -97,16 +99,23 @@ export default {
 		if (!this.connected) {
 			this.$router.push("/");
 		} else {
+			if(this.today==="vendredi"){
+				this.displayDeliveryDate=this.deliveryDatePreviousW;
+			}else{
+								this.displayDeliveryDate=this.deliveryDate;
+
+			}
 			this.client = true;
 			this.$store.state.inPages = true;
-
+			console.log("coucou");
 			axios({
 				method: "get",
-				url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate,
+				url: process.env.VUE_APP_API + "order/getallorders/0/" + this.displayDeliveryDate,
 				headers: {
 					Authorization: `Bearer ${this.token}`,
 				},
 			}).then((order) => {
+				console.log(order.data.[0].productId);
 				for (let i = 0; i < order.data.length; i++) {
 					axios({
 						method: "get",
@@ -126,7 +135,7 @@ export default {
 								Authorization: `Bearer ${this.token}`,
 							},
 						}).then((product) => {
-							if (product.data.producerId != 16) {
+							if (product.data.producerId != process.env.VUE_APP_PRODUCER_ESCARG) {
 								this.orders.push({
 									userId: order.data[i].userId,
 									userName: user.data.nom.toUpperCase(),
@@ -182,7 +191,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(["deliveryDate"]),
+		...mapGetters(["deliveryDate","deliveryDatePreviousW"]),
 		...mapState(["inPages", "token", "connected"]),
 	},
 	methods: {
@@ -235,7 +244,7 @@ export default {
 				this.client = false;
 				axios({
 					method: "get",
-					url: process.env.VUE_APP_API + "order/getallorders/" + this.deliveryDate,
+					url: process.env.VUE_APP_API + "order/getallorders/0/" + this.displayDeliveryDate,
 					headers: {
 						Authorization: `Bearer ${this.token}`,
 					},
@@ -268,7 +277,7 @@ export default {
 										}
 									}
 									if (!this.inQtyProd) {
-										if (product.data.producerId != 16) {
+										if (product.data.producerId != process.env.VUE_APP_PRODUCER_ESCARG) {
 											this.qtyProd.push({
 												producer: producer.data.entreprise,
 												product: product.data.product,
@@ -337,7 +346,7 @@ export default {
 				this.$router.push("/");
 			} else {
 				var xls = new XlsExport(this.orders, "Par_Client");
-				xls.exportToXLS("commandes_Client_" + this.deliveryDate + ".xls");
+				xls.exportToXLS("commandes_Client_" + this.displayDeliveryDate + ".xls");
 			}
 		},
 		//* Downloading Excel By Product
@@ -347,7 +356,7 @@ export default {
 				this.$router.push("/");
 			} else {
 				var xls = new XlsExport(this.qtyProd, "Par_Producteur");
-				xls.exportToXLS("commandes_Producteur_" + this.deliveryDate + ".xls");
+				xls.exportToXLS("commandes_Producteur_" + this.displayDeliveryDate + ".xls");
 			}
 		},
 	},

@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
 					notEmpty: true,
 				},
 			},
+			escarg: {
+				type: DataTypes.TINYINT,
+				defaultValue: 0,
+			},
 		},
 		{
 			timestamps: true,
