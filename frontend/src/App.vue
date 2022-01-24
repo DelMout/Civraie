@@ -168,16 +168,19 @@ a {
 	justify-content: space-between;
 	position: fixed;
 	top: 0rem;
-	background-color: #122f1c;
+	/* background-color: #122f1c; */
 	z-index: 20;
 	padding-top: 0.5rem;
 	padding-bottom: 0;
 	width: 100%;
+	height: 8%;
+	/* background-color: chartreuse; */
 }
 #logo {
 	margin-left: 2rem;
 	display: flex;
 	width: 10%;
+	/* background-color: pink; */
 }
 
 #connected {
@@ -190,7 +193,8 @@ a {
 	right: 0;
 }
 #logoEntete {
-	width: 50%;
+	width: 140px;
+	height: 90px;
 	cursor: pointer;
 }
 
@@ -205,9 +209,21 @@ a {
 	margin-right: 0.5rem;
 	font-size: 1rem;
 }
+@media only screen and (max-width: 1650px) {
+	#nav {
+		font-size: 1rem;
+	}
+	#logoEntete {
+		width: 100px;
+		height: 65px;
+	}
+}
 @media only screen and (max-width: 1280px) {
 	#logo {
 		width: 12%;
+	}
+	#nav {
+		font-size: 0.8rem;
 	}
 }
 @media only screen and (max-width: 1024px) {

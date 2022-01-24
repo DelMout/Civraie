@@ -6,7 +6,7 @@ const moment = require("moment");
 //* Create a new product
 exports.createProduct = (req, res) => {
 	if (req.file) {
-		req.body.photo = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+		req.body.photo = `https://${req.get("host")}/images/${req.file.filename}`;
 	} else {
 		req.body.photo = null;
 	}
@@ -122,7 +122,7 @@ exports.getDatasProduct = (req, res) => {
 //* Modify a product
 exports.modifProduct = (req, res) => {
 	if (req.file) {
-		req.body.photo = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+		req.body.photo = `https://${req.get("host")}/images/${req.file.filename}`;
 		//delete the previous image file
 		product
 			.findOne({ where: { id: req.params.productid } })

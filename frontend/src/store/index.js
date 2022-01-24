@@ -91,6 +91,14 @@ export default createStore({
 			moment.locale("fr");
 			return "Vendredi " + moment(res).format("D MMMM YYYY");
 		},
+		deliveryDatePreviousW(state, getters) {
+			// Date of Friday in previous week
+			// Change delivery date at the Thursday night
+			let res = new Date(getters.dateNow);
+			res.setDate(res.getDate() + getters.gapDays - 7);
+			moment.locale("fr");
+			return "Vendredi " + moment(res).format("D MMMM YYYY");
+		},
 		decoded(state) {
 			return jwt_decode(state.token);
 		},

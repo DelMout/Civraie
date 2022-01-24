@@ -89,7 +89,7 @@ export default {
 					text:
 						"Adrien et Céline Pichon vous accueillent sur la Ferme de la Civraie. Producteurs depuis le 1<sup>er</sup> novembre 2010, nous produisons sur la ferme du lait de vaches de race mixte et des œufs de poules pondeuses plein air. Ayant créé l’atelier vente directe en 2013, nous aimons le contact avec les clients, rencontrer de nouvelles personnes et répondre au mieux à leurs besoins. Nous avons créé le magasin Civraie, Si Frais en septembre 2020. Nous sommes maintenant près de 20 producteurs réunis à la ferme&nbsp!!<br/>Pour le lait cru, apportez vos bouteilles, nous vendons le lait en vrac.",
 					imageUn: "vaches_civraie.jpg",
-					imageDeux: "logocivraie.jpg",
+					imageDeux: "logocivraie.png",
 					imageTrois: "poules_civraie.jpg",
 				},
 				{
@@ -245,10 +245,27 @@ export default {
 		this.imageDeux = this.producers[this.indice].imageDeux;
 		this.imageTrois = this.producers[this.indice].imageTrois;
 		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
+
+		//* Clcik-and-drag for seeing next producer
+		let xleft = 0;
+		let xright = 0;
+		const card = document.getElementById("sousCont");
+		card.addEventListener("mousedown", (e) => {
+			xleft = e.offsetX;
+		});
+		card.addEventListener("mouseup", (e) => {
+			xright = e.offsetX;
+			if (xleft > xright) {
+				this.goRight();
+			} else if (xleft < xright) {
+				this.goLeft();
+			}
+		});
 	},
 	created: function() {
 		this.$store.state.inPages = true;
 	},
+
 	methods: {
 		...mapMutations(["setProducts", "setTotal"]),
 
@@ -279,7 +296,7 @@ export default {
 			this.getItems();
 		},
 
-		//* Show a new producer from the right
+		//* Show a new producer from the left
 		goLeft: function() {
 			this.imageUn = "";
 			this.imageDeux = "";
