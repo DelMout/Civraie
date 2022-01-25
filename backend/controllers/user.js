@@ -261,8 +261,8 @@ exports.emailPassword = (req, res) => {
 								"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px;margin-top:10px' src='cid:logo@civraie.com'/>",
 							attachments: [
 								{
-									filename: "logocivraie.png",
-									path: path.join(__dirname, "../images/fermecivraie.png"),
+									filename: "magasin_civraie.png",
+									path: path.join(__dirname, "../images/magasin_civraie.png"),
 									cid: "logo@civraie.com",
 									contentDisposition: "inline",
 								},
@@ -320,8 +320,8 @@ exports.emailInfo = (req, res) => {
 									"<p style='margin:0'>La Civraie</p><p style='margin:0'>Noyant</p><p style='margin:0'>49490 Noyant-Villages</p><p style='margin:0'>Tél. : 06 14 10 04 47</p><img style='width:200px;margin-top:10px' src='cid:logo@civraie.com'/>",
 								attachments: [
 									{
-										filename: "logocivraie.png",
-										path: path.join(__dirname, "../images/fermecivraie.png"),
+										filename: "magasin_civraie.png",
+										path: path.join(__dirname, "../images/magasin_civraie.png"),
 										cid: "logo@civraie.com",
 										contentDisposition: "inline",
 									},

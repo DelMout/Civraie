@@ -20,6 +20,7 @@ import Textarea from "primevue/textarea";
 import ConfirmationService from "primevue/confirmationservice";
 import ConfirmPopup from "primevue/confirmpopup";
 import Checkbox from "primevue/checkbox";
+import Vue3TouchEvents from "vue3-touch-events";
 
 import "primeicons/primeicons.css"; //icons
 import "primeflex/primeflex.css"; // grid system
@@ -39,6 +40,7 @@ createApp(App)
 			reject: "Non",
 		},
 	})
+	.use(Vue3TouchEvents)
 	.use(ConfirmationService)
 	.component("Dialog", Dialog)
 	.component("InputText", InputText)

@@ -10,7 +10,7 @@
 				@click="goLeft"
 			/>
 			<div v-if="indice === 0"></div>
-			<div id="sousCont">
+			<div v-touch:swipe.left="swipeLeft" v-touch:swipe.right="swipeRight" id="sousCont">
 				<Card>
 					<template #title>
 						<p id="title"></p>
@@ -245,22 +245,6 @@ export default {
 		this.imageDeux = this.producers[this.indice].imageDeux;
 		this.imageTrois = this.producers[this.indice].imageTrois;
 		this.$store.commit("setTotal", localStorage.getItem("Total")); // Pour mise à jour du panier
-
-		//* Clcik-and-drag for seeing next producer
-		let xleft = 0;
-		let xright = 0;
-		const card = document.getElementById("sousCont");
-		card.addEventListener("mousedown", (e) => {
-			xleft = e.offsetX;
-		});
-		card.addEventListener("mouseup", (e) => {
-			xright = e.offsetX;
-			if (xleft > xright) {
-				this.goRight();
-			} else if (xleft < xright) {
-				this.goLeft();
-			}
-		});
 	},
 	created: function() {
 		this.$store.state.inPages = true;
@@ -358,6 +342,14 @@ export default {
 							}
 						});
 				});
+		},
+		//* Swipe left on mobile
+		swipeLeft: function() {
+			this.goRight();
+		},
+		//* Swipe right on mobile
+		swipeRight: function() {
+			this.goLeft();
 		},
 	},
 };
