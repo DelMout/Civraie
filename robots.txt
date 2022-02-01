@@ -1,0 +1,14 @@
+# Page Produits
+User-agent:*
+Allow:/produits_vente_commande
+
+# Page Producteurs
+User-agent:*
+Allow:/producteurs_carousel
+
+# Interdire indexation des autres pages
+User-agent:*
+Disallow:/
+
+Sitemap:https://fermedelacivraie.delmout.com/sitemap.xml
+Sitemap:https://wwww.fermedelacivraie.delmout.com/sitemap.xml

@@ -25,7 +25,7 @@ const routes = [
 		component: Signup,
 		meta: {
 			publicRoute: true,
-			title: "Magasin Civraie",
+			title: "Magasin La Civraie",
 			metaTags: [{ name: "description", content: "Commande de produits locaux, BIO." }],
 		},
 	},
@@ -34,7 +34,7 @@ const routes = [
 		name: "Password",
 		component: Password,
 		meta: {
-			title: "Magasin Civraie / Initialisation mot de passe",
+			title: "Magasin La Civraie / Initialisation mot de passe",
 		},
 	},
 
@@ -43,7 +43,7 @@ const routes = [
 		name: "Panier",
 		component: Panier,
 		meta: {
-			title: "Magasin Civraie / Mon Panier",
+			title: "Magasin La Civraie / Mon Panier",
 			requiresAuth: true,
 		},
 	},
@@ -54,7 +54,7 @@ const routes = [
 		component: ProdOrder,
 		meta: {
 			publicRoute: true,
-			title: "Magasin Civraie / Produits commande",
+			title: "Magasin La Civraie / Produits commande",
 			metaTags: [
 				{
 					name: "description",
@@ -71,7 +71,7 @@ const routes = [
 
 		meta: {
 			publicRoute: true,
-			title: "Magasin Civraie / Producteurs",
+			title: "Magasin La Civraie / Producteurs",
 			metaTags: [
 				{
 					name: "description",
@@ -86,7 +86,7 @@ const routes = [
 		name: "MentionsLegales",
 		component: MentionsLegales,
 		meta: {
-			title: "Magasin Civraie / Mentions Légales",
+			title: "Magasin La Civraie / Mentions Légales",
 		},
 	},
 	{
@@ -110,7 +110,7 @@ const routes = [
 		name: "SendEmail",
 		component: SendEmail,
 		meta: {
-			title: "Magasin Civraie / Envoi email",
+			title: "Magasin La Civraie / Envoi email",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -130,7 +130,7 @@ const routes = [
 		name: "Products",
 		component: Products,
 		meta: {
-			title: "Magasin Civraie / Tous Produits",
+			title: "Magasin La Civraie / Tous Produits",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -150,7 +150,7 @@ const routes = [
 		name: "StockManag",
 		component: StockManag,
 		meta: {
-			title: "Magasin Civraie / Suivi Stock",
+			title: "Magasin La Civraie / Suivi Stock",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -170,7 +170,7 @@ const routes = [
 		name: "Categories",
 		component: Categories,
 		meta: {
-			title: "Magasin Civraie / Categories",
+			title: "Magasin La Civraie / Categories",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -190,7 +190,7 @@ const routes = [
 		name: "Producers",
 		component: Producers,
 		meta: {
-			title: "Magasin Civraie / Liste Producteurs",
+			title: "Magasin La Civraie / Liste Producteurs",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -210,7 +210,7 @@ const routes = [
 		name: "Users",
 		component: Users,
 		meta: {
-			title: "Magasin Civraie / Utilisateurs",
+			title: "Magasin La Civraie / Utilisateurs",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -230,7 +230,7 @@ const routes = [
 		name: "Orders",
 		component: Orders,
 		meta: {
-			title: "Magasin Civraie / Commandes",
+			title: "Magasin La Civraie / Commandes",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -250,7 +250,7 @@ const routes = [
 		name: "Snails",
 		component: Snails,
 		meta: {
-			title: "Magasin Civraie / Escargots",
+			title: "Magasin La Civraie / Escargots",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");
@@ -270,7 +270,7 @@ const routes = [
 		name: "OpeningHours",
 		component: OpeningHours,
 		meta: {
-			title: "Magasin Civraie / Horaires ouverture",
+			title: "Magasin La Civraie / Horaires ouverture",
 		},
 		beforeEnter: (to, from, next) => {
 			store.dispatch("checkConnect");

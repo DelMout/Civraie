@@ -1,7 +1,6 @@
 <template>
 	<div id="signup">
 		<div>
-			<!-- <img src="../assets/butterfly.png" alt="" /> -->
 			<img
 				@click="returnHome"
 				id="logoAccueil"
@@ -459,6 +458,7 @@ export default {
 	font-size: 1.8rem;
 	margin-bottom: 1rem;
 	font-family: "caveat";
+	cursor: url("../assets/but.png"), auto;
 }
 #openhours {
 	margin-bottom: 2rem;
@@ -467,7 +467,6 @@ export default {
 #signup {
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 	color: white;
-	cursor: url("../assets/but.png"), auto;
 }
 label {
 	text-align: left;
@@ -476,7 +475,6 @@ label {
 #rgpd {
 	width: 15%;
 	margin: auto;
-	cursor: none;
 }
 .fill {
 	width: 100%;
@@ -486,6 +484,7 @@ label {
 }
 .login {
 	font-weight: bold;
+	cursor: pointer;
 }
 #createForget {
 	display: flex;
