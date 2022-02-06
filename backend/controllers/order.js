@@ -71,9 +71,7 @@ exports.emailConfirm = (req, res) => {
 
 					const titre = "[La Civraie] Confirmation de votre commande";
 					const message =
-						"<p>Votre commande sera livrée au magasin de la ferme de La Civraie le " +
-						req.params.delivery_date +
-						".</p>";
+						"<p>Vous trouverez ci-dessous le détail de votre commande.<br/>Livraison à la ferme de la Civraie.</p>";
 					const contenu = req.params.contenu;
 					transporter.sendMail(
 						{
@@ -85,9 +83,9 @@ exports.emailConfirm = (req, res) => {
 								prenom +
 								" " +
 								nom +
-								",</p></br>" +
+								",</p>" +
 								message +
-								"</br><p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;width:150px;height:40px;'>Produit</th><th style='border: 1px solid black;width:80px;height:40px;'>Quantité</th><th style='border: 1px solid black;width:80px;height:40px;'>Unité</th></tr>" +
+								"<p>Le contenu de votre commande :</br><table style='border-collapse: collapse;'><tr><th style='border: 1px solid black;width:150px;height:40px;'>Produit</th><th style='border: 1px solid black;width:80px;height:40px;'>Quantité</th><th style='border: 1px solid black;width:80px;height:40px;'>Unité</th><th style='border: 1px solid black;width:200px;height:40px;'>Jour livraison</th></tr>" +
 								contenu +
 								"</table></p></br></br><p>Merci de ne pas répondre à cet email.</p><p>A bientôt au magasin Civraie, Si Frais.</p><p style='margin:0'>Adrien et Céline Pichon</p><a href='mailto:adrienpichon@live.fr'>adrienpichon@live.fr</a><p style='color:green;font-weight:bold;margin:0;'>Ferme de la Civraie</p><p style='color:green;font-weight:bold;margin:0'>Magasin Civraie, Si Frais</p>" +
 								openhours +

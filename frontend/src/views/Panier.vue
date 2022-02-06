@@ -268,14 +268,16 @@ export default {
 									this.ifescarg = 1;
 									this.counter_escarg =
 										this.counter_escarg + JSON.parse(this.products[i].qty);
-									this.tablMail_escarg =
-										this.tablMail_escarg +
+									this.tablMail =
+										this.tablMail +
 										"<tr style='text-align:center'><td style='border: 1px solid black;width:150px;height:50px;'>" +
 										encodeURIComponent(this.products[i].product) +
 										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
 										this.products[i].qty +
 										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-										encodeURIComponent(this.unitee);
+										encodeURIComponent(this.unitee) +
+										"<td style='border: 1px solid black;width:200px;height:50px;'>" +
+										encodeURIComponent(this.deliveryDateNextW);
 									this.delivery_day_gene = this.deliveryDateNextW;
 								} else {
 									this.ifescarg = 0;
@@ -288,7 +290,9 @@ export default {
 										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
 										this.products[i].qty +
 										"<td style='border: 1px solid black;width:80px;height:50px;'>" +
-										encodeURIComponent(this.unitee);
+										encodeURIComponent(this.unitee) +
+										"<td style='border: 1px solid black;width:200px;height:50px;'>" +
+										encodeURIComponent(this.deliveryDate);
 									this.delivery_day_gene = this.deliveryDate;
 								}
 								localStorage.removeItem(this.products[i].id);
@@ -355,65 +359,63 @@ export default {
 										}
 										this.counter++;
 										//send email confirmation
-										//for escargots
-										if (
-											this.counter_escarg ===
-												JSON.parse(localStorage.getItem("escarg")) &&
-											this.counter ===
-												JSON.parse(localStorage.getItem("Total"))
-										) {
-											axios({
-												method: "post",
-												url:
-													process.env.VUE_APP_API +
-													"order/emailconf/" +
-													this.userId +
-													"/" +
-													this.deliveryDateNextW +
-													"/" +
-													this.tablMail_escarg,
+										// //for escargots
+										// if (
+										// 	this.counter_escarg ===
+										// 		JSON.parse(localStorage.getItem("escarg")) &&
+										// 	this.counter ===
+										// 		JSON.parse(localStorage.getItem("Total"))
+										// ) {
+										// 	axios({
+										// 		method: "post",
+										// 		url:
+										// 			process.env.VUE_APP_API +
+										// 			"order/emailconf/" +
+										// 			this.userId +
+										// 			"/" +
+										// 			this.deliveryDateNextW +
+										// 			"/" +
+										// 			this.tablMail_escarg,
 
-												headers: {
-													Authorization: `Bearer ${this.token}`,
-												},
-											})
-												.then(() => {
-													this.products = [];
-													this.total = 0;
-													localStorage.removeItem("Total");
-													localStorage.removeItem("escarg");
-													if (this.counter_other > 0) {
-														this.message =
-															"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
-														this.dialog = true;
-													} else {
-														this.message =
-															"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-														this.dialog = true;
-													}
-												})
-												.catch(() => {
-													this.products = [];
-													this.total = 0;
-													localStorage.removeItem("Total");
-													localStorage.removeItem("escarg");
-													if (this.counter_other > 0) {
-														this.message =
-															"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
-														this.dialog = true;
-													} else {
-														this.message =
-															"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
-														this.dialog = true;
-													}
-												});
-										}
-										//for other_escargots
+										// 		headers: {
+										// 			Authorization: `Bearer ${this.token}`,
+										// 		},
+										// 	})
+										// 		.then(() => {
+										// 			this.products = [];
+										// 			this.total = 0;
+										// 			localStorage.removeItem("Total");
+										// 			localStorage.removeItem("escarg");
+										// 			if (this.counter_other > 0) {
+										// 				this.message =
+										// 					"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
+										// 				this.dialog = true;
+										// 			} else {
+										// 				this.message =
+										// 					"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+										// 				this.dialog = true;
+										// 			}
+										// 		})
+										// 		.catch(() => {
+										// 			this.products = [];
+										// 			this.total = 0;
+										// 			localStorage.removeItem("Total");
+										// 			localStorage.removeItem("escarg");
+										// 			if (this.counter_other > 0) {
+										// 				this.message =
+										// 					"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
+										// 				this.dialog = true;
+										// 			} else {
+										// 				this.message =
+										// 					"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
+										// 				this.dialog = true;
+										// 			}
+										// 		});
+										// }
+										// //for other_escargots
 										if (
-											this.counter_other ===
-												JSON.parse(localStorage.getItem("other_escarg")) &&
 											this.counter ===
-												JSON.parse(localStorage.getItem("Total"))
+											JSON.parse(localStorage.getItem("Total"))
 										) {
 											axios({
 												method: "post",
@@ -421,8 +423,6 @@ export default {
 													process.env.VUE_APP_API +
 													"order/emailconf/" +
 													this.userId +
-													"/" +
-													this.deliveryDate +
 													"/" +
 													this.tablMail,
 
@@ -435,30 +435,32 @@ export default {
 													this.total = 0;
 													localStorage.removeItem("Total");
 													localStorage.removeItem("other_escarg");
-													if (this.counter_escarg > 0) {
-														this.message =
-															"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
-														this.dialog = true;
-													} else {
-														this.message =
-															"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
-														this.dialog = true;
-													}
+													localStorage.removeItem("escarg");
+													// if (this.counter_escarg > 0) {
+													// 	this.message =
+													// 		"Vos 2 commandes ont été enregistrées. Vous allez recevoir 2 emails de confirmation.";
+													// 	this.dialog = true;
+													// } else {
+													this.message =
+														"Votre commande a été enregistrée. Vous allez recevoir un email de confirmation.";
+													this.dialog = true;
+													// }
 												})
 												.catch(() => {
 													this.products = [];
 													this.total = 0;
 													localStorage.removeItem("Total");
 													localStorage.removeItem("other_escarg");
-													if (this.counter_escarg > 0) {
-														this.message =
-															"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
-														this.dialog = true;
-													} else {
-														this.message =
-															"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
-														this.dialog = true;
-													}
+													localStorage.removeItem("escarg");
+													// if (this.counter_escarg > 0) {
+													// 	this.message =
+													// 		"Vos 2 commandes ont été enregistrées. Nous sommes désolés un problème technique a empêché l'envoi des emails de confirmation, mais vos commandes ont bien été prises en compte.";
+													// 	this.dialog = true;
+													// } else {
+													this.message =
+														"Votre commande a été enregistrée. Nous sommes désolés un problème technique a empêché l'envoi de l'email de confirmation, mais votre commande a bien été prise en compte.";
+													this.dialog = true;
+													// }
 												});
 										}
 									})

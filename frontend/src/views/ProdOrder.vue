@@ -473,7 +473,7 @@ h4 {
 	--height-title: 4rem;
 }
 ::v-deep(.p-card) {
-	box-shadow: 5px 5px 5px white;
+	/* box-shadow: 5px 5px 5px white; */
 	width: 10rem;
 	margin: 0;
 	padding: 0;
@@ -558,7 +558,7 @@ img {
 	padding: 0rem 0rem 0rem 0rem;
 	margin: 0 1rem 1rem 1rem;
 	border-radius: 10px;
-	box-shadow: 5px 5px 5px white;
+	box-shadow: 3px 3px 0px #4a7d55;
 	width: 8rem;
 	height: 3.5rem;
 	font-weight: bolder;
@@ -566,6 +566,7 @@ img {
 	font-size: 1.2rem;
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 	cursor: pointer;
+	background-color: white;
 }
 
 .category_card:hover {
@@ -573,14 +574,12 @@ img {
 	-moz-transform: scale(1.25); /* Firefox */
 	-ms-transform: scale(1.25); /* Internet Explorer 9 */
 	transform: scale(1.25);
-	transition: transform ease-in;
+	transition: transform ease-in-out;
 }
 .category_card p {
 	margin: auto;
-	text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 40px #ffffff, 0 0 80px #ffffff,
-		0 0 160px #ffffff;
 }
-#fruit {
+/* #fruit {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/pomme.jpg");
 	background-size: 100%;
@@ -674,7 +673,7 @@ img {
 	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5)),
 		url("../assets/rayon_magasin.jpg");
 	background-size: 100%;
-}
+} */
 
 /* MEDIA QUERIES */
 @media only screen and (max-width: 1500px) {

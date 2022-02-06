@@ -13,5 +13,5 @@ router.post("/createorder/:userid/:delivery_date", auth, orderCtrl.createOrder);
 router.get("/getallorders/:escarg/:delivery_date", admin, orderCtrl.getAllOrders);
 
 // * Send email for order confirmation
-router.post("/emailconf/:userid/:delivery_date/:contenu", auth, orderCtrl.emailConfirm);
+router.post("/emailconf/:userid/:contenu", auth, orderCtrl.emailConfirm);
 module.exports = router;
